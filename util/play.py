@@ -1,12 +1,10 @@
-from config import config
 import pyautogui as gui
 import numpy as np
 import os
 import re
 import time
-class Replay:
+class Play:
   def __init__(self):
-    self.objectDir = config.ASSETS_PATH + config.OBJECT_NAME
     self.steps = [
       # {
       #   'loc': (0,0),
@@ -15,16 +13,16 @@ class Replay:
       # }
     ]
     pass
-  def getSteps(self):
+  def getSteps(self, objectDir):
     loop = 0
-    fileList = os.listdir(self.objectDir)
+    fileList = os.listdir(objectDir)
     for fileName in fileList:
       timestamp = re.search(r'^\d*?\.?\d*?(?=\_)', fileName).group()
       loc = eval(re.search(r'\(\d*?, \d*?\)', fileName).group())
       nextTime = self.getNextTime(loop, fileList)
       self.steps.append({
         'loc': loc,
-        'file': self.objectDir + '\\' + fileName,
+        'file': objectDir + '\\' + fileName,
         'sleep': float(nextTime) - float(timestamp),
       })
       loop = loop + 1
@@ -38,7 +36,7 @@ class Replay:
       gui.click()
       time.sleep(curStep['sleep'])
       loop = loop + 1
-  def getNextTime(curIndex, fileList):
+  def getNextTime(self, curIndex, fileList):
     if curIndex < len(fileList) - 1:
       nextFile = fileList[curIndex + 1]
     else:
