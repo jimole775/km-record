@@ -2,14 +2,14 @@ import cv2 as cv
 import numpy as np
 from PIL import Image
 class Locator():
-  def getCoord(self, origin, temp_path):
+  def getCoord(self, origin, tempPath):
     """初始化"""
-    # temp = Image.open(temp_path)
+    # temp = Image.open(tempPath)
     # temp = 255 * np.array(temp).astype('uint8')
     # temp = cv.cvtColor(np.array(temp), cv.COLOR_RGB2BGR)  # PIL转cv
     # 选择匹配算法
     cv_origin = cv.cvtColor(np.array(origin), cv.COLOR_RGB2BGR)  # PIL转cv
-    cv_temp = cv.cvtColor(np.array(cv.imread(temp_path, 0)), cv.COLOR_RGB2BGR) # PIL转cv
+    cv_temp = cv.cvtColor(np.array(cv.imread(tempPath, 0)), cv.COLOR_RGB2BGR) # PIL转cv
 
     gray_origin = cv.cvtColor(cv_origin, cv.COLOR_BGR2GRAY)
     gray_temp = cv.cvtColor(cv_temp, cv.COLOR_BGR2GRAY)

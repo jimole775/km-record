@@ -1,6 +1,6 @@
 # 引入模块
 import os
-def mkdir(path):
+def rmdir(path):
   # 去除首位空格
   path = path.strip()
   # 去除尾部 \ 符号
@@ -9,12 +9,12 @@ def mkdir(path):
   isExists = os.path.exists(path)
   # 判断结果
   if not isExists:
-    # 如果不存在则创建目录
-    # 创建目录操作函数
-    os.makedirs(path) 
-    print(path+' 创建成功')
-    return True
-  else:
     # 如果目录存在则不创建，并提示目录已存在
-    print(path+' 目录已存在')
+    print(path + ' 目录不存在')
     return False
+  else:
+    fileList = os.listdir(path)
+    for fileName in fileList:
+      os.remove(path + '\\' + fileName)
+    print(path + ' 删除成功')
+    return True

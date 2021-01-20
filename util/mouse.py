@@ -1,9 +1,8 @@
 from pynput import mouse
 from util.scissor import Scissor
-scissor = Scissor()
 class MEvent:
-  def __init__(self, object_name):
-    self.object_name = object_name
+  def __init__(self):
+    self.scissor = Scissor()
   def on_move(self, x, y):
     # 监听鼠标移动
     # print('Pointer moved to {0}'.format((x, y)))
@@ -13,9 +12,10 @@ class MEvent:
     # 监听鼠标点击
     print(x, y, button, pressed)
     if not pressed:
-      scissor.cutReact((x, y)).save(self.object_name)
-      # Stop listener
-      # return False
+      self.scissor.cutReact((x, y)).save()
+    if button == mouse.Button.right:
+      return False
+    # Stop listener
 
   def on_scroll(self, x, y, dx, dy):
     # 监听鼠标滚轮

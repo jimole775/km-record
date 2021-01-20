@@ -1,4 +1,5 @@
 from pynput import keyboard
+from config import config
 def standard_key():
   pass
 def assist_key():
@@ -8,8 +9,9 @@ def assist_key():
   # ctrl Key.ctrl_l Key.ctrl_r
   pass
 class KEvent:
-  def __init__(self, object_name):
-    self.object_name = object_name
+  def __init__(self):
+    self.assets_path = config.ASSETS_PATH
+    self.object_name = config.OBJECT_NAME
   def on_press(self, key):
     try:
       print('alphanumeric key {0} pressed'.format(key.char))
