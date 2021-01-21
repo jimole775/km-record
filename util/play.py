@@ -5,7 +5,12 @@ import re
 import time
 class Play:
   def __init__(self):
-    self.steps = [
+    self.play_type = 'single'
+    self.pause_sign = False
+    self.stop_sign = False
+    self.step = 0
+    self.step_at_pause = 0
+    self.step_items = [
       # {
       #   'loc': (0,0),
       #   'file': path + name,
@@ -13,35 +18,85 @@ class Play:
       # }
     ]
     pass
+
   def getSteps(self, objectDir):
-    loop = 0
-    fileList = os.listdir(objectDir)
-    for fileName in fileList:
-      timestamp = re.search(r'^\d*?\.?\d*?(?=\_)', fileName).group()
-      loc = eval(re.search(r'\(\d*?, \d*?\)', fileName).group())
-      nextTime = self.getNextTime(loop, fileList)
-      self.steps.append({
+    i = 0
+    file_list = os.listdir(objectDir)
+    for file_name in file_list:
+      timestamp = re.search(r'^\d*?\.?\d*?(?=\_)', file_name).group()
+      loc = eval(re.search(r'\(\d*?, \d*?\)', file_name).group())
+      nextTime = self.getNextTime(i, file_list)
+      self.step_items.append({
         'loc': loc,
-        'file': objectDir + '\\' + fileName,
+        'file': objectDir + '\\' + file_name,
         'sleep': float(nextTime) - float(timestamp),
       })
-      loop = loop + 1
+      i = i + 1
     pass
-  def run(self):
-    loop = 0
-    while loop < len(self.steps):
-      curStep = self.steps[loop]
-      x, y = curStep['loc']
+
+  def getNextTime(self, cur_index, file_list):
+    if cur_index < len(file_list) - 1:
+      nextFile = file_list[cur_index + 1]
+    else:
+      nextFile = file_list[cur_index]
+    return re.search(r'^\d*?\.?\d*?(?=\_)', nextFile).group()
+
+  def start(self, type = 'single'):
+    self.play_type = type
+    self.stop_sign = False
+    self.pause_sign = False
+    self.step = 0
+    self.doplay()
+
+  def doplay(self):
+    if self.play_type == 'single':
+      self.single()
+    if self.play_type == 'repeat':
+      self.repeat()
+
+  def runHandler(self):
+    while self.step < len(self.step_items):
+      print('flow step:', self.step)
+      cur_step_item = self.step_items[self.step]
+      x, y = cur_step_item['loc']
       gui.moveTo(x, y)
       gui.click()
-      time.sleep(curStep['sleep'])
-      loop = loop + 1
-  def getNextTime(self, curIndex, fileList):
-    if curIndex < len(fileList) - 1:
-      nextFile = fileList[curIndex + 1]
+      time.sleep(cur_step_item['sleep'])
+      self.step = self.stepGrowp()
+
+  def stop(self):
+    self.stop_sign = True
+    self.step = len(self.step_items)
+    pass
+
+  def _pause(self):
+    self.pause_sign = True
+    self.step_at_pause = self.step
+    self.step = len(self.step_items)
+    print('_pause step:', self.step)
+    pass
+
+  def _continue(self):
+    self.pause_sign = False
+    self.step = self.step_at_pause
+    print('continue step:', self.step)
+    self.doplay()
+    pass
+
+  def stepGrowp(self):
+    if (self.pause_sign or self.stop_sign):
+      return len(self.step_items)
     else:
-      nextFile = fileList[curIndex]
-    return re.search(r'^\d*?\.?\d*?(?=\_)', nextFile).group()
+      return self.step + 1
+
+  def single(self):
+    self.runHandler()
+
+  def repeat(self):
+    while self.pause_sign == False and self.stop_sign == False:
+      self.runHandler()
+      self.step = 0
+
 # if (index == 8):
 #   gui.moveTo(x + 120, y + 20)
 #   gui.click()

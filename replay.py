@@ -1,6 +1,10 @@
-from util.play import Play
+from util.keyboard import KEvent
+from util.controller import KeyCtrl
 from config import config
-play = Play()
-play.getSteps(config.ASSETS_PATH + config.OBJECT_NAME)
-while True:
-  play.run()
+# play = Play()
+kEvent = KEvent()
+keyCtrl = KeyCtrl()
+keyCtrl.getSteps(config.ASSETS_PATH + config.OBJECT_NAME)
+kEvent.start(keyCtrl.mount)
+# while True:
+# keyCtrl.start()
