@@ -18,8 +18,8 @@ def is_assist_key(key):
   ]
   return ass_keys.index(key) > -1
 class KEvent:
-  def __init__(self):
-    self.hook = None
+  def __init__(self, hook = None):
+    self.hook = hook
     self.combo_keys = []
     self.assets_path = config.ASSETS_PATH
     self.object_name = config.OBJECT_NAME
@@ -37,7 +37,7 @@ class KEvent:
     if key == keyboard.Key.esc:
       return False
 
-  def store_combo(self):
+  def storeCombo(self):
     pass
 
   def consumeCombo(self):
@@ -46,8 +46,7 @@ class KEvent:
   def clearCombo(self):
     self.combo_keys = []
 
-  def start(self, hook = None):
-    self.hook = hook
+  def start(self):
     with keyboard.Listener(on_press = self.on_press, on_release = self.on_release) as klistener:
       klistener.join()
 
