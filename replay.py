@@ -1,8 +1,8 @@
 from util.keyboard import KEvent
-from util.controller import KeyCtrl
+from util.controller import HotKeyCtrl
 from config import config
 # play = Play()
-keyCtrl = KeyCtrl()
+keyCtrl = HotKeyCtrl()
 keyCtrl.getSteps(config.ASSETS_PATH + config.OBJECT_NAME)
 kEvent = KEvent(keyCtrl.mount)
 kEvent.start()

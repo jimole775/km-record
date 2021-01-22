@@ -17,7 +17,7 @@ class UICtrl(Play):
     }
     event_list.get(key)()
 
-class KeyCtrl(Play):
+class HotKeyCtrl(Play):
   def __init__(self):
     super().__init__()
     pass

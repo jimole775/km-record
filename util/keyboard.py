@@ -61,8 +61,11 @@ class KEvent:
     self.thread_queue.append(threading.Thread(target=self.hook, args=(key,)))
     pass
 
-  # 使用这种方法,会使主线程被子线程队列占满,跑不完子线程,主线程就无法有其他动作
+  """
+  # 使用线程队列的模式,会使主线程被子线程队列的递归逻辑占满,
+  # 跑不完子线程,主线程就无法有其他动作
   # 这导致控制器的其他功能无法使用
+  """
   def consumeThrd(self):
     if self.thread_active:
       if self.thread_active.is_alive():
