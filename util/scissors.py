@@ -10,7 +10,7 @@ import time
 #   cross = (react_left_y ** 2 + react_bottom_x ** 2) ** 0.5
 #   return ((x2 - x1) / 2, cross / 2)
 
-class Scissor:
+class Scissors:
   def __init__(self):
     self.point = ''
     self.rectLoc = ''
@@ -23,6 +23,10 @@ class Scissor:
     self.rectLoc = (x - 50, y - 50, x + 50, y + 50)
     self.timestamp = time.time()
     self.img = cv.cvtColor(np.array(ImageGrab.grab(self.rectLoc)), cv.COLOR_RGB2BGR)
+    return self
+  def cutScreen(self):
+    self.timestamp = time.time()
+    self.img = cv.cvtColor(np.array(ImageGrab.grab()), cv.COLOR_RGB2BGR)
     return self
   def save(self):
     fileName = str(self.timestamp) + '_' + str(self.point) + '.jpg'

@@ -21,6 +21,8 @@ class KEvent:
   def __init__(self, hook = None):
     self.hook = hook
     self.combo_keys = []
+    self.thread_queue = []
+    self.thread_active = None
     self.assets_path = config.ASSETS_PATH
     self.object_name = config.OBJECT_NAME
 
@@ -52,8 +54,29 @@ class KEvent:
 
   def triggerHooker(self, key):
     if (self.hook):
-      thread = self.crtSubThrd(key)
+      thread = threading.Thread(target=self.hook, args=(key,))
       thread.start()
 
   def crtSubThrd(self, key):
-      return threading.Thread(target=self.hook, args=(key,))
+    self.thread_queue.append(threading.Thread(target=self.hook, args=(key,)))
+    pass
+
+  # 使用这种方法,会使主线程被子线程队列占满,跑不完子线程,主线程就无法有其他动作
+  # 这导致控制器的其他功能无法使用
+  def consumeThrd(self):
+    if self.thread_active:
+      if self.thread_active.is_alive():
+        return self.consumeThrd()
+      else:
+        if len(self.thread_queue):
+          self.thread_active = self.thread_queue.pop(0)
+          self.thread_active.start()
+          self.thread_active.join()
+          return self.consumeThrd()
+    else:
+      if len(self.thread_queue):
+        self.thread_active = self.thread_queue.pop(0)
+        self.thread_active.start()
+        self.thread_active.join()
+        return self.consumeThrd()
+    pass

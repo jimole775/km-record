@@ -1,8 +1,10 @@
 import pyautogui as gui
 import numpy as np
+import cv2 as cv
 import os
 import re
 import time
+from util.scissors import Scissors
 class Play:
   def __init__(self):
     self.play_type = 'single'
@@ -10,13 +12,8 @@ class Play:
     self.stop_sign = False
     self.step = 0
     self.step_at_pause = 0
-    self.step_items = [
-      # {
-      #   'loc': (0,0),
-      #   'file': path + name,
-      #   'sleep': 0
-      # }
-    ]
+    self.step_items = []
+    self.scissors = Scissors()
     pass
 
   def getSteps(self, objectDir):
@@ -59,10 +56,13 @@ class Play:
       print('flow step:', self.step)
       cur_step_item = self.step_items[self.step]
       x, y = cur_step_item['loc']
-      gui.moveTo(x, y)
-      gui.click()
-      time.sleep(cur_step_item['sleep'])
-      self.step = self.stepGrowp()
+      if self.hasCorrectImg(cur_step_item['file']):
+        gui.moveTo(x, y)
+        gui.click()
+        time.sleep(cur_step_item['sleep'])
+        self.step = self.stepGrowp()
+      else:
+        time.sleep(0.5)
 
   def stop(self):
     self.stop_sign = True
@@ -90,12 +90,27 @@ class Play:
       return self.step + 1
 
   def single(self):
+    self.play_type = 'single'
     self.runHandler()
 
   def repeat(self):
+    self.play_type = 'repeat'
     while self.pause_sign == False and self.stop_sign == False:
       self.runHandler()
       self.step = 0
+
+  def hasCorrectImg(self, file):
+    template = cv.imread(file, 0)
+    cv_temp = cv.cvtColor(np.array(template), cv.COLOR_RGB2BGR) # PIL转cv
+    res = cv.matchTemplate(self.scissors.cutScreen().img, cv_temp, cv.TM_CCOEFF_NORMED)
+    min_val, max_val, min_loc, max_loc = cv.minMaxLoc(res)
+    # print(max_loc[0], max_loc[1])
+    if (max_loc[0] > 0 and max_loc[1] > 0):
+      return True
+    else:
+      return False
+
+
 
 # if (index == 8):
 #   gui.moveTo(x + 120, y + 20)

@@ -1,6 +1,6 @@
 from scaner import FindWindow
 from locator import Locator
-from util.scissor import Scissor
+from util.scissors import Scissors
 from replay import Replay
 import cv2 as cv
 import numpy as np
@@ -12,7 +12,7 @@ wdname = u'OMS外包管理系统 - Google Chrome'
 demo = FindWindow(wdname)
 loct = Locator()
 rep = Replay()
-scor = Scissor()
+scor = Scissors()
 # time.sleep(1)
 if demo.hwnd:
     temps = [

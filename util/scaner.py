@@ -12,8 +12,7 @@ class FindWindow:
     win32gui.SetForegroundWindow(self.hwnd)
   def position(self):
     return win32gui.GetWindowRect(self.hwnd)
-# class Cutout:
-#   def cutScreen(self):
-#     x1, y1, x2, y2 = win32gui.GetWindowRect(self.hwnd)
-#     print(x1, y1, x2, y2)
-#     return ImageGrab.grab((x1, y1, x2, y2))
+  # def cutScreen(self):
+  #   x1, y1, x2, y2 = win32gui.GetWindowRect(self.hwnd)
+  #   print(x1, y1, x2, y2)
+  #   return ImageGrab.grab((x1, y1, x2, y2))
