@@ -1,5 +1,14 @@
 import pytesseract
 from PIL import Image
-image = Image.open('E:\\automatic\\assets\\whole.png')
-content = pytesseract.image_to_string(image)   # 解析图片
+from PIL import ImageFilter
+image = Image.open('E:\\automatic\\assets\\text.jpg')
+wb_image = image.convert('L')
+# edgeF = wb_image.filter(ImageFilter.BLUR)
+# conF = wb_image.filter(ImageFilter.CONTOUR)
+# image.thumbnail((1000, 500), Image.ANTIALIAS)
+bigger = image.resize((wb_image.size[0] * 2, wb_image.size[1] * 2), Image.ANTIALIAS)
+bigger.save('E:\\automatic\\assets\\text_3.jpg')
+# edgeF.save('E:\\automatic\\assets\\text_1.jpg')
+# conF.save('E:\\automatic\\assets\\text_2.jpg')
+content = pytesseract.image_to_string(bigger)   # 解析图片
 print(content)
