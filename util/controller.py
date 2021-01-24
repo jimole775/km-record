@@ -25,9 +25,10 @@ class HotKeyCtrl(Play):
   def mount(self, key):
     event_list = {
       keyboard.Key.f1: self.start,
-      keyboard.Key.f2: self._pause,
-      keyboard.Key.f3: self._continue,
-      keyboard.Key.f4: self.stop,
+      keyboard.Key.f2: self.repeat,
+      keyboard.Key.f3: self._pause,
+      keyboard.Key.f4: self._continue,
+      keyboard.Key.f5: self.stop,
     }
     fn = event_list.get(key)
     if fn:
