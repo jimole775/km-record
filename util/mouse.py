@@ -10,8 +10,8 @@ class MEvent:
 
   def on_click(self, x, y, button, pressed):
     # 监听鼠标点击
-    print(x, y, button, pressed)
     if not pressed:
+      print('mouse click:', x, y)
       self.scissors.cutReact((x, y)).save()
     if button == mouse.Button.right:
       return False
