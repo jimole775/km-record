@@ -12,7 +12,8 @@ class MEvent:
     # 监听鼠标点击
     if not pressed:
       print('mouse click:', x, y)
-      self.scissors.cutReact((x, y)).save()
+      self.scissors.cutUniqueReact((x, y))
+      # self.scissors.save(self.scissors.cutReact((x, y)))
     if button == mouse.Button.right:
       return False
     # Stop listener
