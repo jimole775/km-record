@@ -7,24 +7,22 @@ from matplotlib import pyplot as plt
 # 原文：https://blog.csdn.net/qq_21840201/article/details/85084621
 
 # 1. 读入原图和模板
-img_rgb = cv2.imread('big.jpg')
+img_rgb = cv2.imread('.\\assets\\mario.jpg')
 img_gray = cv2.cvtColor(img_rgb, cv2.COLOR_BGR2GRAY)
-template = cv2.imread('smart.jpg', 0)
+template = cv2.imread('.\\assets\\mario-icon.jpg', 0)
 h, w = template.shape[:2]
 
 # 归一化平方差匹配
 res = cv2.matchTemplate(img_gray, template, cv2.TM_CCOEFF_NORMED)
 threshold = 0.8
 
-
-# 返回res中值大于0.8的所有坐标
-# 返回坐标格式(col,row) 注意：是先col后row 一般是(row,col)!!!
+# 返回res数组矩阵中，值大于0.8的【坐标】，每匹配成功一个元素
+# 就把当前元素的坐标，分别填入(['纵坐标'], ['横坐标'])中
 loc = np.where(res >= threshold)
 
-# loc：标签/行号索引 常用作标签索引
-# iloc：行号索引
-# loc[::-1]：取从后向前（相反）的元素
-# *号表示可选参数
+# zip：把loc中的所有相同下标的元素，都拼成一个元组，最后返回一个数组[(),()]
+# loc[::-1]：取从后向前（相反）的元素，使其结果对应 x, y
+# *号表示解压
 for pt in zip(*loc[::-1]):
     right_bottom = (pt[0] + w, pt[1] + h)
     print(pt)

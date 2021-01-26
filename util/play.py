@@ -54,7 +54,7 @@ class Play:
         break
       cur_step_item = self.step_items[self.step]
       """
-      # 录制的时候, 是鼠标移上去点击之后的,
+      # 录制时截取的图片, 是鼠标移动到目标位置，点击之后的,
       # 那么, 需要准确的记录出移动到目的地之后的滞留时间
       """
       self.domove(cur_step_item)

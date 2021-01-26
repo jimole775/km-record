@@ -1,10 +1,10 @@
 import sys
 DEFAULT = {
-  'match_times': 10,
-  'match_interval': 0.5,
-  'match_click': True,
-  'object_name': 'temp',
-  'assets_path': '.\\business\\'
+  'match_times': 10, # 对图像中的插入元素，需要等待匹配的次数
+  'match_interval': 0.5, # 每次匹配需要等待的时间
+  'match_click': True, # 在执行click事件的时候，是否需要匹配有没有目标元素
+  'object_name': 'temp', # 录制的项目名，默认为temp
+  'assets_path': '.\\business\\' # 录制项目的存储路径
 }
 if len(sys.argv) > 1:
   DEFAULT['object_name'] = sys.argv[1]
