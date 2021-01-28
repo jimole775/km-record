@@ -26,14 +26,17 @@ class Scaner:
   # 2. 不唯一匹配
   # 3. 无匹配
   """
-  def hasUniqueTarget(self, temp):
+  def hasUniqueTarget(self, screen, temp):
+    if type(screen) == str:
+      screen = cv.imread(screen, 0)
     if type(temp) == str:
       temp = cv.imread(temp, 0)
     cv_temp = cv.cvtColor(np.array(temp), cv.COLOR_RGB2BGR)
-    cv_bg = cv.cvtColor(np.array(ImageGrab.grab()), cv.COLOR_RGB2BGR)
+    cv_bg = cv.cvtColor(np.array(screen), cv.COLOR_RGB2BGR)
     res = cv.matchTemplate(cv_bg, cv_temp, cv.TM_CCOEFF_NORMED)
     threshold = 0.8
     loc = np.where(res >= threshold) # 返回下标
+    print('hasUniqueTarget:', len(loc), len(loc[0]), len(loc[1]))
     if len(loc) > 0 and len(loc[0]) == 1:
       return True
     else:

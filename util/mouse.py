@@ -1,4 +1,5 @@
 from pynput import mouse
+from config import config
 from util.scissors import Scissors
 class MEvent:
   def __init__(self):
@@ -12,8 +13,11 @@ class MEvent:
     # 监听鼠标点击
     if not pressed:
       print('mouse click:', x, y)
-      self.scissors.cutUniqueReact((x, y))
-      # self.scissors.save(self.scissors.cutReact((x, y)))
+      screen = self.scissors.cutScreen()
+      if config.MATCH_CLICK:
+        self.scissors.cutUniqueReact(screen, (x, y))
+      else:
+        self.scissors.cutReactAndSave(screen, (x, y))
     if button == mouse.Button.right:
       return False
     # Stop listener

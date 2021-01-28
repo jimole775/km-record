@@ -38,7 +38,9 @@ class Play:
       """
       self._domoves(step_item)
       if config.MATCH_CLICK:
-        if self.scaner.hasUniqueTarget(step_item['file']) or self.check_times == 0:
+        screen = ImageGrab.grab()
+        temp = step_item['file']
+        if self.scaner.hasUniqueTarget(screen, temp) or self.check_times == 0:
           self._resetCheckTimes()
           self._doclick(step_item)
           self._stepGrow()
