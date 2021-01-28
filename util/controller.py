@@ -26,8 +26,8 @@ class HotKeyCtrl(Play):
     event_list = {
       keyboard.Key.f1: self.start,
       keyboard.Key.f2: self.repeat,
-      keyboard.Key.f3: self._pause,
-      keyboard.Key.f4: self._continue,
+      keyboard.Key.f3: self.pause,
+      keyboard.Key.f4: self.continues,
       keyboard.Key.f5: self.stop,
     }
     fn = event_list.get(key)
