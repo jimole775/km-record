@@ -1,1 +1,0 @@
-py replay.py --config:match_click=False
