@@ -1,32 +1,35 @@
 DEFAULT = {
-  'match_times': 10, # 对图像中的插入元素，需要等待匹配的次数
-  'match_interval': 0.5, # 每次匹配需要等待的时间
-  'match_click': True, # 在执行click事件的时候，是否需要匹配有没有目标元素
+  'match': {
+    'times': 10, # 在执行click事件的时候，是否需要匹配有没有目标元素
+    'interval': 0.5, # 在执行click事件的时候，是否需要匹配有没有目标元素
+  },
   'object_name': 'temp', # 录制的项目名，默认为temp
-  'assets_path': '.\\business\\' # 录制项目的存储路径
+  'assets_path': '.\\business\\', # 录制项目的存储路径
+  'hotkey_play': {
+    'F1': u'开始',
+    'F2': u'循环', 
+    'F3': u'暂停', 
+    'F4': u'继续', 
+    'F5': u'结束', 
+  },
+  'hotkey_record': {
+    'F1': u'开始',
+    'F2': u'暂停',
+    'F3': u'继续',
+    'F4': u'结束',
+  }
 }
 
 import sys
+from util.spillargv import spillargv
 if len(sys.argv) > 1:
-  from util.asserts import Assert
-  import re
-  param_dirty = sys.argv[1]
-  param_str = re.search(r'--config:(.+)', param_dirty, re.M|re.I).group(1)
-  param_arr = param_str.split(',')
-  asserts = Assert()
-  for param in param_arr:
-    key = param.split('=')[0]
-    val = param.split('=')[1]
-    if asserts.isNumber(val):
-      DEFAULT[key] = val * 1
-    if asserts.isBoolean(val):
-      DEFAULT[key] = eval(val)
-    else:
-      DEFAULT[key] = val
+  DEFAULT = spillargv(sys.argv, DEFAULT)
 
 class config():
-  MATCH_INTERVAL = DEFAULT['match_interval']
-  MATCH_CLICK = DEFAULT['match_click']
-  MATCH_TIMES = DEFAULT['match_times']
+  MATCH = DEFAULT['match']
+  MATCH_INTERVAL = DEFAULT['match']['interval'] if DEFAULT['match'] else 0
+  MATCH_TIMES = DEFAULT['match']['times'] if DEFAULT['match'] else 0
   OBJECT_NAME = DEFAULT['object_name']
   ASSETS_PATH = DEFAULT['assets_path']
+  HOTKEY_PLAY = DEFAULT['hotkey_play']
+  HOTKEY_RECORD = DEFAULT['hotkey_record']

@@ -37,8 +37,8 @@ class Play:
       # 那么, 需要准确的记录出移动到目的地之后的滞留时间
       """
       self.__domoves__(step_item)
-      if config.MATCH_CLICK:
-        screen = ImageGrab.grab()
+      if config.MATCH:
+        screen = self.scissors.cutScreen()
         temp = step_item['file']
         if self.scaner.hasUniqueTarget(screen, temp) or self.check_times == 0:
           self.__resetCheckTimes__()

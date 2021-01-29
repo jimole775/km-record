@@ -14,7 +14,7 @@ class MEvent:
     if not pressed:
       print('mouse click:', x, y)
       screen = self.scissors.cutScreen()
-      if config.MATCH_CLICK:
+      if config.MATCH:
         self.scissors.cutUniqueReact(screen, (x, y))
       else:
         self.scissors.cutReactAndSave(screen, (x, y))
