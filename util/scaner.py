@@ -27,13 +27,9 @@ class Scaner:
   # 3. 无匹配
   """
   def hasUniqueTarget(self, screen, temp):
-    if type(screen) == str:
-      screen = cv.imread(screen, 0)
-    if type(temp) == str:
-      temp = cv.imread(temp, 0)
-    cv_temp = cv.cvtColor(np.array(temp), cv.COLOR_RGB2BGR)
-    cv_bg = cv.cvtColor(np.array(screen), cv.COLOR_RGB2BGR)
-    res = cv.matchTemplate(cv_bg, cv_temp, cv.TM_CCOEFF_NORMED)
+    cv_temp = self.__pl2cv__(temp)
+    cv_screen = self.__pl2cv__(screen)
+    res = cv.matchTemplate(cv_screen, cv_temp, cv.TM_CCOEFF_NORMED)
     threshold = 0.8
     loc = np.where(res >= threshold) # 返回下标
     print('hasUniqueTarget:', len(loc), len(loc[0]), len(loc[1]))
@@ -64,3 +60,10 @@ class Scaner:
   #   x1, y1, x2, y2 = win32gui.GetWindowRect(self.hwnd)
   #   print(x1, y1, x2, y2)
   #   return ImageGrab.grab((x1, y1, x2, y2))
+  def __pl2cv__(self, img):
+    if type(img) == str:
+      return cv.cvtColor(np.array(cv.imread(img, 0)), cv.COLOR_RGB2BGR)
+    if isinstance(img, Image.Image):
+      return cv.cvtColor(np.array(img), cv.COLOR_RGB2BGR)
+    if isinstance(img, np.ndarray):
+      return img

@@ -20,14 +20,14 @@ class Play:
     self.check_times = config.MATCH_TIMES # 检查次数
     pass
 
-  def _getNextTime(self, cur_index, file_list):
+  def __getNextTime__(self, cur_index, file_list):
     if cur_index < len(file_list) - 1:
       nextFile = file_list[cur_index + 1]
     else:
       nextFile = file_list[cur_index]
     return re.search(r'^\d*?\.?\d*?(?=\_)', nextFile).group()
 
-  def _runHandler(self):
+  def __runHandler__(self):
     while self.step < len(self.step_items):
       if (self.pause_sign or self.stop_sign):
         break
@@ -36,55 +36,55 @@ class Play:
       # 录制时截取的图片, 是鼠标移动到目标位置，点击之后的,
       # 那么, 需要准确的记录出移动到目的地之后的滞留时间
       """
-      self._domoves(step_item)
+      self.__domoves__(step_item)
       if config.MATCH_CLICK:
         screen = ImageGrab.grab()
         temp = step_item['file']
         if self.scaner.hasUniqueTarget(screen, temp) or self.check_times == 0:
-          self._resetCheckTimes()
-          self._doclick(step_item)
-          self._stepGrow()
-          self._waiting(step_item['sleep'] - self._checkedSeconds())
+          self.__resetCheckTimes__()
+          self.__doclick__(step_item)
+          self.__stepGrow__()
+          self.__waiting__(step_item['sleep'] - self.__checkedSeconds__())
         else:
-          self._checkReduce()
-          self._waiting(config.MATCH_INTERVAL)
+          self.__checkReduce__()
+          self.__waiting__(config.MATCH_INTERVAL)
       else:
-        self._doclick(step_item)
-        self._stepGrow()
-        self._waiting(config.MATCH_INTERVAL)
+        self.__doclick__(step_item)
+        self.__stepGrow__()
+        self.__waiting__(config.MATCH_INTERVAL)
 
   # 计算匹配消耗的时间
-  def _checkedSeconds(self):
+  def __checkedSeconds__(self):
     return (config.MATCH_TIMES - self.check_times) * config.MATCH_INTERVAL
 
-  def _domoves(self, step_item):
+  def __domoves__(self, step_item):
     x, y = step_item['loc']
     gui.moveTo(x, y)
     time.sleep(config.MATCH_INTERVAL)
 
-  def _doclick(self, step_item):
+  def __doclick__(self, step_item):
     x, y = step_item['loc']
     gui.moveTo(x, y)
     gui.click()
 
-  def _waiting(self, t_remian):
+  def __waiting__(self, t_remian):
     if t_remian > config.MATCH_INTERVAL:
       time.sleep(t_remian)
     else:
       time.sleep(config.MATCH_INTERVAL)
 
-  def _checkReduce(self):
+  def __checkReduce__(self):
     print('check_times:', self.check_times)
     self.check_times = self.check_times - 1
 
-  def _resetCheckTimes(self):
+  def __resetCheckTimes__(self):
     self.check_times = config.MATCH_TIMES
 
-  def _stepGrow(self):
+  def __stepGrow__(self):
     self.step = self.step + 1
     print('step:', self.step)
 
-  def _doplay(self):
+  def __doplay__(self):
     if self.play_type == 'single':
       self.single()
     if self.play_type == 'repeat':
@@ -95,7 +95,7 @@ class Play:
     self.stop_sign = False
     self.pause_sign = False
     self.step = 0
-    self._doplay()
+    self.__doplay__()
 
   def stop(self):
     self.stop_sign = True
@@ -113,17 +113,17 @@ class Play:
     self.pause_sign = False
     self.step = self.step_at_pause
     print('continue:', self.step)
-    self._doplay()
+    self.__doplay__()
     pass
 
   def single(self):
     self.play_type = 'single'
-    self._runHandler()
+    self.__runHandler__()
 
   def repeat(self):
     self.play_type = 'repeat'
     while self.pause_sign == False and self.stop_sign == False:
-      self._runHandler()
+      self.__runHandler__()
       self.step = 0
 
   def getSteps(self, objectDir):
@@ -133,7 +133,7 @@ class Play:
       timestamp = re.search(r'^\d*?\.?\d*?(?=\_)', file_name).group()
       loc = eval(re.search(r'\(\d*?, \d*?\)', file_name).group())
       insert = re.search(r'insert', file_name)
-      nextTime = self._getNextTime(i, file_list)
+      nextTime = self.__getNextTime__(i, file_list)
       self.step_items.append({
         'loc': loc,
         'insert': insert,
@@ -142,19 +142,3 @@ class Play:
       })
       i = i + 1
     pass
-
-  # def hasCorrectImg(self, step_item):
-  #   file = step_item['file']
-  #   template = cv.imread(file, 0)
-  #   cv_temp = cv.cvtColor(np.array(template), cv.COLOR_RGB2BGR) # PIL转cv
-  #   cv_bg = self.scissors.cutScreen()
-  #   res = cv.matchTemplate(cv_bg, cv_temp, cv.TM_CCOEFF_NORMED)
-  #   min_val, max_val, min_loc, max_loc = cv.minMaxLoc(res)
-  #   if (max_loc[0] > 0 and max_loc[1] > 0):
-  #     self.fixLocator(step_item, max_loc)
-  #     return True
-  #   else:
-  #     return False
-
-  # def fixLocator(self, step_item, max_loc):
-  #   step_item['loc'] = max_loc

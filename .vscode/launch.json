@@ -8,7 +8,7 @@
       "name": "Python: record",
       "type": "python",
       "request": "launch",
-      "program": "${file}",
+      "program": "${workspaceRoot}\\record.py",
       "console": "integratedTerminal"
     }
   ]
