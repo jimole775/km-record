@@ -17,7 +17,13 @@ class Play:
     self.step_items = []
     self.scissors = Scissors()
     self.scaner = Scaner()
-    self.check_times = config.MATCH_TIMES # 检查次数
+    if config.MATCH: # 是否启用视觉匹配
+      print('config.MATCH:', config.MATCH)
+      self.check_times = config.MATCH['times']
+      self.interval = config.MATCH['interval']
+    else:
+      self.check_times = 0
+      self.interval = 0.5
     pass
 
   def __getNextTime__(self, cur_index, file_list):
@@ -47,20 +53,20 @@ class Play:
           self.__waiting__(step_item['sleep'] - self.__checkedSeconds__())
         else:
           self.__checkReduce__()
-          self.__waiting__(config.MATCH_INTERVAL)
+          self.__waiting__(self.interval)
       else:
         self.__doclick__(step_item)
         self.__stepGrow__()
-        self.__waiting__(config.MATCH_INTERVAL)
+        self.__waiting__(self.interval)
 
   # 计算匹配消耗的时间
   def __checkedSeconds__(self):
-    return (config.MATCH_TIMES - self.check_times) * config.MATCH_INTERVAL
+    return (config.MATCH_TIMES - self.check_times) * self.interval
 
   def __domoves__(self, step_item):
     x, y = step_item['loc']
     gui.moveTo(x, y)
-    time.sleep(config.MATCH_INTERVAL)
+    time.sleep(self.interval)
 
   def __doclick__(self, step_item):
     x, y = step_item['loc']
@@ -68,17 +74,20 @@ class Play:
     gui.click()
 
   def __waiting__(self, t_remian):
-    if t_remian > config.MATCH_INTERVAL:
+    if t_remian > self.interval:
       time.sleep(t_remian)
     else:
-      time.sleep(config.MATCH_INTERVAL)
+      time.sleep(self.interval)
 
   def __checkReduce__(self):
     print('check_times:', self.check_times)
     self.check_times = self.check_times - 1
 
   def __resetCheckTimes__(self):
-    self.check_times = config.MATCH_TIMES
+    if config.MATCH:
+      self.check_times = config.MATCH['times']
+    else:
+      self.check_times = 0
 
   def __stepGrow__(self):
     self.step = self.step + 1
@@ -126,8 +135,9 @@ class Play:
       self.__runHandler__()
       self.step = 0
 
-  def getSteps(self, objectDir):
+  def getSteps(self):
     i = 0
+    objectDir = config.PROJECT['path'] + config.PROJECT['name']
     file_list = os.listdir(objectDir)
     for file_name in file_list:
       timestamp = re.search(r'^\d*?\.?\d*?(?=\_)', file_name).group()

@@ -7,7 +7,7 @@ import time
 import threading
 class Scissors:
   def __init__(self):
-    self.saveDir = config.ASSETS_PATH + config.OBJECT_NAME
+    self.saveDir = config.PROJECT['path'] + config.PROJECT['name']
     self.scaner = Scaner()
 
   def cutUniqueReact(self, screen, point):

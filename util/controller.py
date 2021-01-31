@@ -46,7 +46,8 @@ class HotKeyCtrl(Play):
     pass
 
   def mount(self, key):
-    fn_name = config.HOTKEY_PLAY[key_dicts[key]]
+    hotkey = config.HOTKEY['play']
+    fn_name = hotkey[key_dicts[key]]
     fn = eval('self.' + fn_dicts[fn_name])
     if fn:
       if callable(fn):

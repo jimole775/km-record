@@ -23,8 +23,6 @@ class KEvent:
     self.combo_keys = []
     self.thread_queue = []
     self.thread_active = None
-    self.assets_path = config.ASSETS_PATH
-    self.object_name = config.OBJECT_NAME
 
   def on_press(self, key):
     try:
