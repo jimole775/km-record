@@ -1,5 +1,5 @@
-from util.mouse import MEvent
-from util.keyboard import KEvent
+from core.mouse import MEvent
+from core.keyboard import KEvent
 import init
 import threading
 class Monitor (threading.Thread):

@@ -3,7 +3,7 @@ import numpy as np
 import os
 import re
 import time
-from util.play import Play
+from core.play import Play
 from pynput import keyboard
 from config import config
 key_dicts = {
@@ -46,9 +46,13 @@ class HotKeyCtrl(Play):
     pass
 
   def mount(self, key):
-    hotkey = config.HOTKEY['play']
-    fn_name = hotkey[key_dicts[key]]
-    fn = eval('self.' + fn_dicts[fn_name])
+    global _getfn
+    fn = _getfn(self, key)
     if fn:
       if callable(fn):
         fn()
+
+def _getfn(play, key):
+    hotkey = config.HOTKEY['play']
+    fn_name = hotkey[key_dicts[key]]
+    return fn_dicts[fn_name]

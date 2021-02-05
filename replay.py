@@ -1,5 +1,5 @@
-from util.keyboard import KEvent
-from util.controller import HotKeyCtrl
+from core.keyboard import KEvent
+from core.controller import HotKeyCtrl
 # play = Play()
 keyCtrl = HotKeyCtrl()
 keyCtrl.getSteps()

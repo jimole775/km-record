@@ -1,5 +1,5 @@
 from config import config
-from util.mkdir import mkdir
+from core.mkdir import mkdir
 from util.rmdir import rmdir
 import os
 objectDir = config.PROJECT['path'] + config.PROJECT['name']
