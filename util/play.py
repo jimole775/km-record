@@ -19,10 +19,12 @@ class Play:
     self.scaner = Scaner()
     if config.MATCH: # 是否启用视觉匹配
       print('config.MATCH:', config.MATCH)
-      self.check_times = config.MATCH['times']
+      self.check_i = config.MATCH['times']
+      self.check_max = config.MATCH['times']
       self.interval = config.MATCH['interval']
     else:
-      self.check_times = 0
+      self.check_i = 0
+      self.check_max = 0
       self.interval = 0.5
     pass
 
@@ -46,7 +48,7 @@ class Play:
       if config.MATCH:
         screen = self.scissors.cutScreen()
         temp = step_item['file']
-        if self.scaner.hasUniqueTarget(screen, temp) or self.check_times == 0:
+        if self.scaner.hasUniqueTarget(screen, temp) or self.check_i == 0:
           self.__resetCheckTimes__()
           self.__doclick__(step_item)
           self.__stepGrow__()
@@ -61,7 +63,7 @@ class Play:
 
   # 计算匹配消耗的时间
   def __checkedSeconds__(self):
-    return (config.MATCH_TIMES - self.check_times) * self.interval
+    return (self.check_max - self.check_i) * self.interval
 
   def __domoves__(self, step_item):
     x, y = step_item['loc']
@@ -80,14 +82,14 @@ class Play:
       time.sleep(self.interval)
 
   def __checkReduce__(self):
-    print('check_times:', self.check_times)
-    self.check_times = self.check_times - 1
+    print('check_i:', self.check_i)
+    self.check_i = self.check_i - 1
 
   def __resetCheckTimes__(self):
     if config.MATCH:
-      self.check_times = config.MATCH['times']
+      self.check_i = config.MATCH['times']
     else:
-      self.check_times = 0
+      self.check_i = 0
 
   def __stepGrow__(self):
     self.step = self.step + 1
