@@ -14,9 +14,9 @@ class Play:
         self.stop_sign = False
         self.step = 0
         self.step_at_pause = 0
-        self.step_items = []
         self.scissors = Scissors()
         self.scaner = Scaner()
+        self.step_items = self.__getSteps__()
         if config.MATCH: # 是否启用视觉匹配
             print('config.MATCH:', config.MATCH)
             self.check_i = config.MATCH['times']
@@ -137,20 +137,21 @@ class Play:
             self.__runHandler__()
             self.step = 0
 
-    def getSteps(self):
+    def __getSteps__(self):
         i = 0
         objectDir = config.PROJECT['path'] + config.PROJECT['name']
         file_list = os.listdir(objectDir)
+        step_items = []
         for file_name in file_list:
             timestamp = re.search(r'^\d*?\.?\d*?(?=\_)', file_name).group()
             loc = eval(re.search(r'\(\d*?, \d*?\)', file_name).group())
             insert = re.search(r'insert', file_name)
             nextTime = self.__getNextTime__(i, file_list)
-            self.step_items.append({
+            step_items.append({
               'loc': loc,
               'insert': insert,
               'file': objectDir + '\\' + file_name,
               'sleep': float(nextTime) - float(timestamp),
             })
             i = i + 1
-        pass
+        return step_items
