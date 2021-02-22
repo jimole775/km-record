@@ -33,4 +33,4 @@ class MEvent:
           on_move=self.on_move,
           on_click=self.on_click,
           on_scroll=self.on_scroll) as mlistener:
-              mlistener.join()
+            mlistener.join()

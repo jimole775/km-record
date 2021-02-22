@@ -8,8 +8,11 @@
       "name": "Python: record",
       "type": "python",
       "request": "launch",
-      "program": "${workspaceRoot}\\record.py",
-      "console": "integratedTerminal"
+      "program": "${workspaceRoot}\\main.py",
+      "console": "integratedTerminal",
+      "args": [
+        "replay"
+      ]
     }
   ]
 }

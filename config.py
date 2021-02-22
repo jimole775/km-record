@@ -25,9 +25,9 @@ DEFAULT = {
 }
 
 import sys
-from util.spillargv import spillargv
 # 收集命令行参数
 if len(sys.argv) > 1:
+  from util.spillargv import spillargv
   DEFAULT = spillargv(sys.argv, DEFAULT)
 
 class config():

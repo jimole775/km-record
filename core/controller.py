@@ -46,13 +46,13 @@ class HotKeyCtrl(Play):
     pass
 
   def mount(self, key):
-    global _getfn
-    fn = _getfn(self, key)
-    if fn:
-      if callable(fn):
-        fn()
+    global getFunction
+    fn_n = getFunction(self, 'play', key)
+    if callable(fn_n):
+      fn_n()
 
-def _getfn(play, key):
-    hotkey = config.HOTKEY['play']
-    fn_name = hotkey[key_dicts[key]]
-    return fn_dicts[fn_name]
+def getFunction(instance, type, key):
+    hotkey = config.HOTKEY[type]
+    fn_c = hotkey[key_dicts[key]]
+    fn_n = fn_dicts[fn_c]
+    return eval('instance.' + fn_n)

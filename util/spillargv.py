@@ -60,6 +60,7 @@ def cutSuffix(val):
   else:
     return val
 
+# 判断参数指令，并解构参数
 def spillargv(argvs, def_conf):
   for argv in argvs:
     # 先截掉最后一个分隔符';'
