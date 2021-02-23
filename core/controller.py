@@ -52,4 +52,5 @@ def getFunction(instance, type, key):
     hotkey = swapdict(config.HOTKEY[type])
     fn_c = hotkey[key_dicts[key]]
     fn_n = fn_dicts[fn_c]
-    return eval('instance.' + fn_n)
+    if fn_n in dir(instance):
+        return eval('instance.' + fn_n)

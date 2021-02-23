@@ -29,6 +29,8 @@ def desktop ():
 # 把第二个指令参数当作函数调用
 import sys
 if len(sys.argv) > 1:
-    fn_n = eval(sys.argv[1])
-    if callable(fn_n):
-        fn_n()
+    argv = sys.argv[1]
+    if argv in dir():
+        fn_n = eval(argv)
+        if callable(fn_n):
+            fn_n()
