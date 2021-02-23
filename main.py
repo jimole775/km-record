@@ -24,7 +24,8 @@ def replay ():
 
 def desktop ():
     from core.desktop import Desktop
-    Desktop().mount()
+    
+    Desktop().open()
 
 # 把第二个指令参数当作函数调用
 import sys

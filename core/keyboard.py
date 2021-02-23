@@ -17,6 +17,8 @@ def is_assist_key(key):
     keyboard.Key.ctrl_r
   ]
   return ass_keys.index(key) > -1
+
+
 class KEvent:
     def __init__(self, hook = None):
         self.hook = hook

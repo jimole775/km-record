@@ -5,21 +5,19 @@ class Desktop ():
         self.main = Tk()
         self.main.title("OPR")
         self.main.geometry("200x30")
-        self.create_ico()
-        self.create_button()
+        self.createIco()
+        self.createButton()
 
-    def create_ico (self):
+    def createIco (self):
         self.ico_record = PhotoImage(file='assets/record.png')
         self.ico_play = PhotoImage(file='assets/play.png')
         self.ico_edit = PhotoImage(file='assets/edit.png')
         self.ico_config = PhotoImage(file='assets/config.png')
 
-
     def helloCallBack(self):
         messagebox.showinfo("Hello Python", "asdasd")
 
-
-    def create_button (self):
+    def createButton (self):
         b_record = Button(self.main, text = "录制", command = self.helloCallBack)
         b_play = Button(self.main, text = "播放", command = self.helloCallBack)
         b_edit = Button(self.main, text = "编辑", command = self.helloCallBack)
@@ -33,7 +31,6 @@ class Desktop ():
         b_play.grid(row=0, column=1)
         b_edit.grid(row=0, column=2)
         b_config.grid(row=0, column=3, sticky='E')
-
 
     ## 录制
     "【弹窗】"
@@ -51,7 +48,11 @@ class Desktop ():
     "录制=>开始，暂停，结束..."
     "播放=>开始，暂停，结束..."
 
+    ## 注册功能函数
+    def registerFunction (self, fn_dicts):
+
+
     ## 退出
-    def mount (self):
+    def open (self):
         ## 挂载
         self.main.mainloop()
