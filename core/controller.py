@@ -23,17 +23,17 @@ fn_dicts = {
     u'循环': 'repeat',
     u'继续': 'continues',
 }
-class UICtrl(Play):
-    def __init__(self):
-        super().__init__()
-        pass
+# class UICtrl(Play):
+#     def __init__(self):
+#         super().__init__()
+#         pass
 
-    def mount(self, key):
-        event_list = {
-            'F1': self.start,
-            'F2': self.stop
-        }
-        event_list.get(key)()
+#     def mount(self, key):
+#         event_list = {
+#             'F1': self.start,
+#             'F2': self.stop
+#         }
+#         event_list.get(key)()
 
 class HotKeyCtrl(Play):
     def __init__(self):

@@ -36,6 +36,7 @@ class KEvent:
         self.consumeCombo()
         self.clearCombo()
         self.triggerHooker(key)
+        print(key)
         if key == keyboard.Key.esc:
             return False
 

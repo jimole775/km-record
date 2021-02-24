@@ -1,4 +1,4 @@
-def record ():
+def record (test):
     from config import config
     from core.record import moniting
     from util.mkdir import mkdir
@@ -24,8 +24,10 @@ def replay ():
 
 def desktop ():
     from core.desktop import Desktop
-    
-    Desktop().open()
+    desktop = Desktop()
+    desktop.registerFunction('record', (record, 1))
+    desktop.registerFunction('play', (replay,))
+    desktop.open()
 
 # 把第二个指令参数当作函数调用
 import sys
