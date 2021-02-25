@@ -1,32 +1,21 @@
-def record (test):
-    from config import config
-    from core.record import moniting
-    from util.mkdir import mkdir
-    from util.rmdir import rmdir
-    import os
-    object_dir = config.PROJECT['path'] + config.PROJECT['name']
-    # 如果目录已经存在,先删除之
-    if os.path.exists(object_dir) == True:
-        rmdir(object_dir)
-        mkdir(object_dir)
-    else:
-        mkdir(object_dir)
-    moniting()
+def record ():
+    from core.record import Record
+    from core.initbuspace import initbuspace
+    initbuspace()
+    Record().run()
     pass
 
 
-def replay ():
-    from core.keyboard import KEvent
-    from core.controller import HotKeyCtrl
-    kEvent = KEvent(HotKeyCtrl().mount)
-    kEvent.start()
+def play ():
+    from core.play import Play
+    Play().run()
 
 
 def desktop ():
     from core.desktop import Desktop
     desktop = Desktop()
     desktop.registerFunction('record', (record, 1))
-    desktop.registerFunction('play', (replay,))
+    desktop.registerFunction('play', (play,))
     desktop.open()
 
 # 把第二个指令参数当作函数调用

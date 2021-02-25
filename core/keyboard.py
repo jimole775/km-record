@@ -8,7 +8,7 @@ def is_assist_key(key):
   # shift Key.shift Key.shift_r
   # alt Key.alt_l key.alt_gr
   # ctrl Key.ctrl_l Key.ctrl_r
-  ass_keys = [
+  asst_keys = [
     keyboard.Key.shift,
     keyboard.Key.shift_r,
     keyboard.Key.alt_l,
@@ -20,46 +20,48 @@ def is_assist_key(key):
 
 
 class KEvent:
-    def __init__(self, hook = None):
-        self.hook = hook
+    def __init__ (self):
         self.combo_keys = []
         self.thread_queue = []
         self.thread_active = None
 
-    def on_press(self, key):
+    def on_press (self, key):
         try:
             print('alphanumeric key {0} pressed'.format(key.char))
         except AttributeError:
             print('special key {0} pressed'.format(key))
 
-    def on_release(self, key):
+    def on_release (self, key):
         self.consumeCombo()
         self.clearCombo()
-        self.triggerHooker(key)
+        self.triggerEvent(key)
         print(key)
         if key == keyboard.Key.esc:
             return False
 
-    def storeCombo(self):
+    def storeCombo (self):
         pass
 
-    def consumeCombo(self):
+    def consumeCombo (self):
         pass
 
-    def clearCombo(self):
+    def clearCombo (self):
         self.combo_keys = []
 
-    def start(self):
+    def start (self):
         with keyboard.Listener(on_press = self.on_press, on_release = self.on_release) as klistener:
             klistener.join()
 
-    def triggerHooker(self, key):
-        if (self.hook):
-            thread = threading.Thread(target=self.hook, args=(key,))
+    def bindExcution (self, excutionFn):
+        self.eventsExcution = excutionFn
+
+    def triggerEvent (self, key):
+        if (self.eventsExcution):
+            thread = threading.Thread(target=self.eventsExcution, args=(key,))
             thread.start()
 
-    def crtSubThrd(self, key):
-        self.thread_queue.append(threading.Thread(target=self.hook, args=(key,)))
+    def createSubThrd (self, key):
+        self.thread_queue.append(threading.Thread(target=self.eventsExcution, args=(key,)))
         pass
 
 
@@ -68,7 +70,7 @@ class KEvent:
     # 跑不完子线程,主线程就无法有其他动作
     # 这导致控制器的其他功能无法使用
     """
-    def consumeThrd(self):
+    def consumeThrd (self):
         if self.thread_active:
             if self.thread_active.is_alive():
                 return self.consumeThrd()

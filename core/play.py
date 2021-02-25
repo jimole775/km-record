@@ -4,9 +4,12 @@ import cv2 as cv
 import os
 import re
 import time
+import threading
 from config import config
 from util.scaner import Scaner
 from util.scissors import Scissors
+from core.keyboard import KEvent
+from core.controller import createController
 class Play:
     def __init__(self):
         self.play_type = 'once'
@@ -136,6 +139,23 @@ class Play:
         while self.pause_sign == False and self.stop_sign == False:
             self.__runHandler__()
             self.step = 0
+
+    def run (self):
+        self.__createThread__(self.__keyboardEvent__)
+
+    def __createThread__ (self, event):
+        thread = threading.Thread(target=event)
+        thread.start()
+
+    def __keyboardEvent__ (self):
+        kEvent = KEvent()
+        ctrl = createController(Play)()
+        kEvent.bindExcution(ctrl.excution)
+        kEvent.start()
+
+    def __mouseEvent__ (self):
+        mEvent = MEvent()
+        mEvent.start()
 
     def __getSteps__(self):
         i = 0

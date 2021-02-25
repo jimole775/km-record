@@ -1,6 +1,7 @@
 import pyautogui as gui
-from core.play import Play
 from pynput import keyboard
+from config import config
+from util.swapdict import swapdict
 key_dicts = {
     keyboard.Key.f1: 'F1',
     keyboard.Key.f2: 'F2',
@@ -35,22 +36,23 @@ fn_dicts = {
 #         }
 #         event_list.get(key)()
 
-class HotKeyCtrl(Play):
-    def __init__(self):
-        super().__init__()
-        pass
+def createController (_cls):
+    class HotKeyCtrl(_cls):
+        def __init__(self):
+            super().__init__()
+            pass
 
-    def mount(self, key):
-        global getFunction
-        fn_n = getFunction(self, 'play', key)
-        if callable(fn_n):
-            fn_n()
+        def excution(self, key):
+            fn_type = _cls.__name__.lower()
+            fn_n = self.getFunction(self, fn_type, key)
+            if callable(fn_n):
+                fn_n()
 
-from config import config
-from util.swapdict import swapdict
-def getFunction(instance, type, key):
-    hotkey = swapdict(config.HOTKEY[type])
-    fn_c = hotkey[key_dicts[key]]
-    fn_n = fn_dicts[fn_c]
-    if fn_n in dir(instance):
-        return eval('instance.' + fn_n)
+        def getFunction(self, instance, type, key):
+            hotkey = swapdict(config.HOTKEY[type])
+            fn_c = hotkey[key_dicts[key]]
+            fn_n = fn_dicts[fn_c]
+            if fn_n in dir(instance):
+                return eval('instance.' + fn_n)
+
+    return HotKeyCtrl

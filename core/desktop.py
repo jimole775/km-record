@@ -3,6 +3,7 @@ from tkinter import messagebox
 import threading
 class Desktop ():
     def __init__ (self):
+        print('desktop init')
         self.main = Tk()
         self.main.title("OPR")
         self.main.geometry("200x30")
