@@ -12,7 +12,7 @@ def play ():
 
 
 def desktop ():
-    from core.desktop import Desktop
+    from ui.desktop import Desktop
     desktop = Desktop()
     desktop.registerFunction('record', (record, 1))
     desktop.registerFunction('play', (play,))

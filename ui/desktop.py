@@ -15,24 +15,27 @@ class Desktop ():
         self.createButton()
 
     def record (self):
-        thread = threading.Thread(target=self.callInjectedFunction, args=(self.record_events,))
-        thread.start()
-        self.helloCallBack('录制功能调用成功！')
+        self.excuteEventInThread(self.record_events)
         pass
 
     def play (self):
-        thread = threading.Thread(target=self.callInjectedFunction, args=(self.play_events,))
-        thread.start()
+        self.excuteEventInThread(self.play_events)
         pass
+
     def edit (self):
-        thread = threading.Thread(target=self.callInjectedFunction, args=(self.edit_events,))
-        thread.start()
+        self.excuteEventInThread(self.edit_events)
         pass
 
     def config (self):
-        thread = threading.Thread(target=self.callInjectedFunction, args=(self.config_events,))
-        thread.start()
+        self.excuteEventInThread(self.config_events)
         pass
+
+    def excuteEventInThread (self, event):
+        thread = self.createThread(self.callInjectedFunction, event)
+        thread.start()
+
+    def createThread (self, fn, param):
+        return threading.Thread(target=fn, args=(param,))
 
     def callInjectedFunction (self, events):
         for event in events:
@@ -96,7 +99,6 @@ class Desktop ():
             event_stack = eval('self.' + fn_type + '_events')
             event_stack.append(fn_tuple)
 
-    ## 退出
     def open (self):
         ## 挂载
         self.main.mainloop()
