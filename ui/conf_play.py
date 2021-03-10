@@ -63,32 +63,21 @@ class MyFrame ( wx.Frame ):
     
     main_frame = wx.BoxSizer( wx.VERTICAL )
     # 文件选框
-    self.__FilePickModule__ (main_frame)
+    self.__FilePickerModule__( main_frame )
 
     # 是否匹配背景
-    self.__MatchConfirmModule__ (main_frame)
+    self.__MatchConfirmModule__( main_frame )
 
     # 配置快捷键
-    self.__HotKeyConfigModule__ (main_frame)    
-
-    m_sdbSizer1 = wx.StdDialogButtonSizer()
-    self.m_sdbSizer1OK = wx.Button( self, wx.ID_OK )
-    m_sdbSizer1.AddButton( self.m_sdbSizer1OK )
-    self.m_sdbSizer1Cancel = wx.Button( self, wx.ID_CANCEL )
-    m_sdbSizer1.AddButton( self.m_sdbSizer1Cancel )
-    m_sdbSizer1.Realize();
+    self.__HotKeyConfigModule__( main_frame )
     
-    main_frame.Add( m_sdbSizer1, 1, wx.ALIGN_CENTER, 5 )
-    
+    # 底部按钮
+    self.__ConfirmButtonModule__( main_frame )
     
     self.SetSizer( main_frame )
     self.Layout()
     
     self.Centre( wx.BOTH )
-
-    # Connect Events
-    self.m_sdbSizer1Cancel.Bind( wx.EVT_BUTTON, self.cancelEvent )
-    self.m_sdbSizer1OK.Bind( wx.EVT_BUTTON, self.confirmEvent )
 
   def __del__( self ):
     pass
@@ -131,7 +120,6 @@ class MyFrame ( wx.Frame ):
     main_frame.Add( fgSizer, 0, wx.EXPAND, 5 )
     return main_frame
 
-
   def __MatchConfirmModule__ (self, main_frame):
     
     fgSizer = wx.FlexGridSizer( 0, 3, 0, 0 )
@@ -158,8 +146,7 @@ class MyFrame ( wx.Frame ):
     
     main_frame.Add( fgSizer, 0, wx.EXPAND, 5 )
 
-
-  def __FilePickModule__ (self, main_frame):
+  def __FilePickerModule__ (self, main_frame):
     fgSizer = wx.FlexGridSizer( 0, 2, 0, 0 )
     fgSizer.SetFlexibleDirection( wx.BOTH )
     fgSizer.SetNonFlexibleGrowMode( wx.FLEX_GROWMODE_SPECIFIED )
@@ -180,6 +167,18 @@ class MyFrame ( wx.Frame ):
     
     main_frame.Add( fgSizer, 0, wx.EXPAND, 5 )
 
+  def __ConfirmButtonModule__ (self, main_frame):
+    m_sdbSizer = wx.StdDialogButtonSizer()
+    m_sdbSizerOK = wx.Button( self, wx.ID_OK )
+    m_sdbSizerCancel = wx.Button( self, wx.ID_CANCEL )
+    m_sdbSizer.AddButton( m_sdbSizerOK )
+    m_sdbSizer.AddButton( m_sdbSizerCancel )
+    m_sdbSizer.Realize()
+    main_frame.Add( m_sdbSizer, 1, wx.ALIGN_CENTER, 5 )
+    # Connect Events
+    m_sdbSizerOK.Bind( wx.EVT_BUTTON, self.confirmEvent )
+    m_sdbSizerCancel.Bind( wx.EVT_BUTTON, self.cancelEvent )
+
   # Virtual event handlers, overide them in your derived class
   def cancelEvent( self, event ):
     event.Skip()
@@ -188,7 +187,6 @@ class MyFrame ( wx.Frame ):
   def confirmEvent( self, event ):
     event.Skip()
     self.Hide()
-
 
 if __name__== "__main__":
     app = wx.App()
