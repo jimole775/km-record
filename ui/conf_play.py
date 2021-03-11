@@ -47,18 +47,28 @@
 
 import wx
 import wx.xrc
-
+from util.call import call
 ###########################################################################
-## Class MyFrame
+## Class PlayConfigUI
 ###########################################################################
 FN_KEY = [ u"F1", u"F2", u"F3", u"F4", u"F5", u"F6", u"F7", u"F8", u"F9", u"F10", u"F11", u"F12" ]
 FN_TITLE = [ u"开始播放", u"循环播放", u"暂停播放", u"继续播放", u"停止播放", u"F6", u"F7", u"退出", u"F9", u"F10", u"F11", u"F12" ]
-class MyFrame ( wx.Frame ):
+class PlayConfigUI ( wx.Frame ):
 
   def __init__( self, parent ):
+    self.cancelFn = None
+    self.cancelParam = None
+    self.confirmFn = None
+    self.confirmParam = None
+    self.__buildingFlow__(parent)
+
+  def __del__( self ):
+    pass
+
+  def __buildingFlow__ ( self, parent ):
     wx.Frame.__init__ ( self, parent, id = wx.ID_ANY, title = wx.EmptyString, pos = wx.DefaultPosition, size = wx.Size( 629,478 ), style = wx.DEFAULT_FRAME_STYLE|wx.TAB_TRAVERSAL )
     
-    self.SetSizeHintsSz( wx.DefaultSize, wx.DefaultSize )
+    self.SetSizeHints( wx.DefaultSize, wx.DefaultSize )
     self.SetBackgroundColour( wx.SystemSettings.GetColour( wx.SYS_COLOUR_WINDOWFRAME ) )
     
     main_frame = wx.BoxSizer( wx.VERTICAL )
@@ -78,9 +88,6 @@ class MyFrame ( wx.Frame ):
     self.Layout()
     
     self.Centre( wx.BOTH )
-
-  def __del__( self ):
-    pass
 
   def __CreateSelect__ ( self, fgSizer, title ):
     m_staticText = wx.StaticText( self, wx.ID_ANY, title, wx.Point( -1,-1 ), wx.Size( -1,-1 ), wx.ALIGN_RIGHT )
@@ -176,20 +183,30 @@ class MyFrame ( wx.Frame ):
     m_sdbSizer.Realize()
     main_frame.Add( m_sdbSizer, 1, wx.ALIGN_CENTER, 5 )
     # Connect Events
-    m_sdbSizerOK.Bind( wx.EVT_BUTTON, self.confirmEvent )
-    m_sdbSizerCancel.Bind( wx.EVT_BUTTON, self.cancelEvent )
+    m_sdbSizerOK.Bind( wx.EVT_BUTTON, self.confirmHandler )
+    m_sdbSizerCancel.Bind( wx.EVT_BUTTON, self.cancelHandler )
 
   # Virtual event handlers, overide them in your derived class
-  def cancelEvent( self, event ):
+  def cancelHandler( self, event ):
     event.Skip()
+    call(self.cancelFn, self.cancelParam)
     self.Hide()
   
-  def confirmEvent( self, event ):
+  def confirmHandler( self, event ):
     event.Skip()
+    call(self.confirmFn, self.confirmParam)
     self.Hide()
+
+  def regConfirmEvent( self, fn, param ):
+    self.confirmFn = fn
+    self.confirmParam = param
+
+  def regCancelEvent( self, fn, param ):
+    self.cancelFn = fn
+    self.cancelParam = param
 
 if __name__== "__main__":
     app = wx.App()
-    frame = MyFrame(parent=None)
+    frame = PlayConfigUI(parent=None)
     frame.Show()
     app.MainLoop()

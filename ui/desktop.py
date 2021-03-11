@@ -1,9 +1,12 @@
 from tkinter import *
 from tkinter import messagebox
+from ui.conf_play import PlayConfigUI
+from util.call import call
 import threading
+import wx
 class Desktop ():
     def __init__ (self):
-        print('desktop init')
+        self.app = wx.App()
         self.main = Tk()
         self.main.title("OPR")
         self.main.geometry("200x30")
@@ -13,13 +16,20 @@ class Desktop ():
         self.config_events = []
         self.createIco()
         self.createButton()
+        self.createWxThrd()
+        self.playConfigUI = PlayConfigUI(parent=None)
+
+    def createWxThrd (self):
+        thread = threading.Thread(target=self.app.MainLoop)
+        thread.start()
 
     def record (self):
         self.excuteEventInThread(self.record_events)
         pass
 
     def play (self):
-        self.excuteEventInThread(self.play_events)
+        self.playConfigUI.regConfirmEvent(self.excuteEventInThread, self.play_events)
+        self.playConfigUI.Show()
         pass
 
     def edit (self):
@@ -37,22 +47,26 @@ class Desktop ():
     def createThread (self, fn, param):
         return threading.Thread(target=fn, args=(param,))
 
+    # 自动调用注入函数队列
     def callInjectedFunction (self, events):
         for event in events:
             e_instance = event[0]
             e_paramets = event[1:]
-            if callable(e_instance):
-                param_dict = {}
-                param_cont = e_instance.__code__.co_argcount
-                if param_cont > 0:
-                    param_names = e_instance.__code__.co_varnames[0:param_cont]
-                    i = 0
-                    for p_name in param_names:
-                        param_dict[p_name] = e_paramets[i]
-                        i = i + 1
-                e_instance.__call__(**param_dict)
+            call(e_instance, e_paramets)
+            # if callable(e_instance):
+            #     param_dict = {}
+            #     # 获取函数的参数数量
+            #     param_cont = e_instance.__code__.co_argcount
+            #     if param_cont > 0:
+            #         # 获取函数的参数列表
+            #         param_names = e_instance.__code__.co_varnames[0:param_cont]
+            #         i = 0
+            #         for p_name in param_names:
+            #             # 把参数列表和参数值拼成字典
+            #             param_dict[p_name] = e_paramets[i]
+            #             i = i + 1
+            #     e_instance.__call__(**param_dict)
 
-        pass
     def createIco (self):
         self.ico_record = PhotoImage(file='assets/record.png')
         self.ico_play = PhotoImage(file='assets/play.png')
@@ -96,8 +110,8 @@ class Desktop ():
     ## 注册功能函数
     def registerFunction (self, fn_type, fn_tuple):
         if type(fn_type) == str and type(fn_tuple) == tuple:
-            event_stack = eval('self.' + fn_type + '_events')
-            event_stack.append(fn_tuple)
+            self_event_stack = eval('self.' + fn_type + '_events')
+            self_event_stack.append(fn_tuple)
 
     def open (self):
         ## 挂载

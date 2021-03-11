@@ -38,6 +38,7 @@
 
 from tkinter import *
 from tkinter import messagebox
+from util.call import call
 import threading
 class RecordConfig ():
     def __init__ (self):
@@ -75,20 +76,25 @@ class RecordConfig ():
     def createThread (self, fn, param):
         return threading.Thread(target=fn, args=(param,))
 
+    # 自动调用注入函数队列
     def callInjectedFunction (self, events):
         for event in events:
             e_instance = event[0]
             e_paramets = event[1:]
-            if callable(e_instance):
-                param_dict = {}
-                param_cont = e_instance.__code__.co_argcount
-                if param_cont > 0:
-                    param_names = e_instance.__code__.co_varnames[0:param_cont]
-                    i = 0
-                    for p_name in param_names:
-                        param_dict[p_name] = e_paramets[i]
-                        i = i + 1
-                e_instance.__call__(**param_dict)
+            call(e_instance, e_paramets)
+            # if callable(e_instance):
+            #     param_dict = {}
+            #     # 获取函数的参数数量
+            #     param_cont = e_instance.__code__.co_argcount
+            #     if param_cont > 0:
+            #         # 获取函数的参数列表
+            #         param_names = e_instance.__code__.co_varnames[0:param_cont]
+            #         i = 0
+            #         for p_name in param_names:
+            #             # 把参数列表和参数值拼成字典
+            #             param_dict[p_name] = e_paramets[i]
+            #             i = i + 1
+            #     e_instance.__call__(**param_dict)
 
         pass
     def createIco (self):
