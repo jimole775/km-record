@@ -1,12 +1,12 @@
 ##############################################
-# @template apply(func, (param_a, param_b))
+# @exmple: apply(func, (param_a, param_b))
 ##############################################
 def apply (e_instance, e_paramets=()):
     if callable(e_instance):
         __core__ (e_instance, e_paramets)
 
 ##############################################
-# @template call(func, param_a, param_b)
+# @exmple: call(func, param_a, param_b)
 ##############################################
 def call (e_instance, *e_paramets):
     if callable(e_instance):
