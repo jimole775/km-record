@@ -1,7 +1,7 @@
 from tkinter import *
 from tkinter import messagebox
 from ui.conf_play import PlayConfigUI
-from util.call import call
+from util.func import apply
 import threading
 import wx
 class Desktop ():
@@ -49,23 +49,11 @@ class Desktop ():
 
     # 自动调用注入函数队列
     def callInjectedFunction (self, events):
+        print(events)
         for event in events:
             e_instance = event[0]
             e_paramets = event[1:]
-            call(e_instance, e_paramets)
-            # if callable(e_instance):
-            #     param_dict = {}
-            #     # 获取函数的参数数量
-            #     param_cont = e_instance.__code__.co_argcount
-            #     if param_cont > 0:
-            #         # 获取函数的参数列表
-            #         param_names = e_instance.__code__.co_varnames[0:param_cont]
-            #         i = 0
-            #         for p_name in param_names:
-            #             # 把参数列表和参数值拼成字典
-            #             param_dict[p_name] = e_paramets[i]
-            #             i = i + 1
-            #     e_instance.__call__(**param_dict)
+            apply(e_instance, e_paramets)
 
     def createIco (self):
         self.ico_record = PhotoImage(file='assets/record.png')

@@ -47,7 +47,7 @@
 
 import wx
 import wx.xrc
-from util.call import call
+from util.func import call
 ###########################################################################
 ## Class PlayConfigUI
 ###########################################################################
@@ -61,9 +61,6 @@ class PlayConfigUI ( wx.Frame ):
     self.confirmFn = None
     self.confirmParam = None
     self.__buildingFlow__(parent)
-
-  def __del__( self ):
-    pass
 
   def __buildingFlow__ ( self, parent ):
     wx.Frame.__init__ ( self, parent, id = wx.ID_ANY, title = wx.EmptyString, pos = wx.DefaultPosition, size = wx.Size( 629,478 ), style = wx.DEFAULT_FRAME_STYLE|wx.TAB_TRAVERSAL )
@@ -127,7 +124,7 @@ class PlayConfigUI ( wx.Frame ):
     main_frame.Add( fgSizer, 0, wx.EXPAND, 5 )
     return main_frame
 
-  def __MatchConfirmModule__ (self, main_frame):
+  def __MatchConfirmModule__ ( self, main_frame ):
     
     fgSizer = wx.FlexGridSizer( 0, 3, 0, 0 )
     fgSizer.SetFlexibleDirection( wx.BOTH )
@@ -153,7 +150,7 @@ class PlayConfigUI ( wx.Frame ):
     
     main_frame.Add( fgSizer, 0, wx.EXPAND, 5 )
 
-  def __FilePickerModule__ (self, main_frame):
+  def __FilePickerModule__ ( self, main_frame ):
     fgSizer = wx.FlexGridSizer( 0, 2, 0, 0 )
     fgSizer.SetFlexibleDirection( wx.BOTH )
     fgSizer.SetNonFlexibleGrowMode( wx.FLEX_GROWMODE_SPECIFIED )
@@ -174,7 +171,7 @@ class PlayConfigUI ( wx.Frame ):
     
     main_frame.Add( fgSizer, 0, wx.EXPAND, 5 )
 
-  def __ConfirmButtonModule__ (self, main_frame):
+  def __ConfirmButtonModule__ ( self, main_frame ):
     m_sdbSizer = wx.StdDialogButtonSizer()
     m_sdbSizerOK = wx.Button( self, wx.ID_OK )
     m_sdbSizerCancel = wx.Button( self, wx.ID_CANCEL )

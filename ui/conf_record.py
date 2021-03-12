@@ -38,7 +38,7 @@
 
 from tkinter import *
 from tkinter import messagebox
-from util.call import call
+from util.func import apply
 import threading
 class RecordConfig ():
     def __init__ (self):
