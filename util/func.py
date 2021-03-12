@@ -1,11 +1,17 @@
+##############################################
+# @template apply(func, (param_a, param_b))
+##############################################
 def apply (e_instance, e_paramets=()):
     if callable(e_instance):
         __core__ (e_instance, e_paramets)
 
-
+##############################################
+# @template call(func, param_a, param_b)
+##############################################
 def call (e_instance, *e_paramets):
     if callable(e_instance):
         __core__ (e_instance, e_paramets)
+
 
 def __core__ (e_instance, e_paramets):
     param_dict = {}
@@ -16,6 +22,7 @@ def __core__ (e_instance, e_paramets):
         param_names = e_instance.__code__.co_varnames[0:param_cont]
         i = 0
         for p_name in param_names:
+            # 一般情况下，self都是class的成员方法
             if p_name == 'self':
                 continue
             # 把参数列表和参数值拼成字典
