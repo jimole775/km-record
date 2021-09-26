@@ -1,5 +1,8 @@
 from core.mouse import MEvent
 from core.keyboard import KEvent
+from config import config
+from pynput import mouse
+from core.controller import createController
 import threading
 # class Monitor (threading.Thread):
 #     def __init__ (self, threadID, name, counter):
@@ -25,10 +28,27 @@ class Record ():
 
     def keyboardEvent (self):
         kEvent = KEvent()
+        ctrl = createController(Record)()
+        kEvent.bindExcution(ctrl.excution)
         kEvent.start()
 
+    # def run (self):
+    #     self.__createThread__(self.__keyboardEvent__)
+
+    # def __createThread__ (self, event):
+    #     thread = threading.Thread(target=event)
+    #     thread.start()
+
+    # def __keyboardEvent__ (self):
+    #     kEvent = KEvent()
+    #     ctrl = createController(Play)()
+    #     kEvent.bindExcution(ctrl.excution)
+    #     kEvent.start()
     def mouseEvent (self):
         mEvent = MEvent()
+        mEvent.registe({
+          'click': self.clickEvent
+        })
         mEvent.start()
 
     def run (self):
@@ -45,5 +65,15 @@ class Record ():
         # while True:
         #     if (monitor1.is_alive() == False or monitor2.is_alive() == False):
         #         break
-
-
+    def clickEvent (self, x, y, button, pressed):
+        # 监听鼠标点击
+        if not pressed:
+            print('mouse click:', x, y)
+            screen = self.scissors.cutScreen()
+            if config.MATCH:
+                print('MATCH:', config.MATCH)
+                self.scissors.cutUniqueReact(screen, (x, y))
+            else:
+                self.scissors.cutReactAndSave(screen, (x, y))
+        if button == mouse.Button.right:
+            return False

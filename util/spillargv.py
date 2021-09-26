@@ -40,7 +40,7 @@ def __evalHandle__(def_conf, param_str):
 # py record match:times=5,interval=0.5;
 # py record hotkey:play:F1=开始,F2=暂停;record:F1=开始;
 """
-def __children__(def_conf, parent_val):
+def __children__ (def_conf, parent_val):
     obj_arr = parent_val.split(obj_split_char)
     for obj in obj_arr:
         c_param = re.search(r_is_params, obj, re.I)
@@ -54,14 +54,14 @@ def __children__(def_conf, parent_val):
             else:
                 __evalHandle__(def_conf[c_param_key], c_param_val)
 
-def cutSuffix(val):
+def cutSuffix (val):
     if re.search(r_has_suffix, val, re.I):
         return val[:len(val) - 1]
     else:
         return val
 
 # 判断参数指令，并解构参数
-def spillargv(argvs, def_conf):
+def spillargv (argvs, def_conf):
     for argv in argvs:
         # 先截掉最后一个分隔符';'
         argv = cutSuffix(argv)

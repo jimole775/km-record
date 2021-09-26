@@ -176,7 +176,6 @@ class MyFrame ( wx.Frame ):
 		self.m_choice6.SetSelection( 7 )
 		fgSizer2.Add( self.m_choice6, 0, wx.ALL, 5 )
 
-
 		bSizer3.Add( fgSizer2, 0, wx.EXPAND, 5 )
 
 		m_sdbSizer1 = wx.StdDialogButtonSizer()

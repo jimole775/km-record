@@ -75,7 +75,7 @@ class RecordConfig ():
 
     def createThread (self, fn, param):
         return threading.Thread(target=fn, args=(param,))
-
+    
     # 自动调用注入函数队列
     def callInjectedFunction (self, events):
         for event in events:
