@@ -9,17 +9,44 @@ DEFAULT = {
     },
     'hotkey': {
         'play': {
-            u'开始': 'F1',
-            u'循环': 'F2',
-            u'暂停': 'F3',
-            u'继续': 'F4',
-            u'结束': 'F5',
+            'start': {
+                'label': u'开始',
+                'key': 'F1'
+            },
+            'repeat': {
+                'label': u'循环',
+                'key': 'F2'
+            },
+            'pause': {
+                'label': u'暂停',
+                'key': 'F3'
+            },
+            'continue': {
+                'label': u'继续',
+                'key': 'F4'
+            },
+            'stop': {
+                'label': u'结束',
+                'key': 'F5'
+            }
         },
         'record': {
-            u'开始': 'F1',
-            u'暂停': 'F2',
-            u'继续': 'F3',
-            u'结束': 'F4',
+            'start': {
+                'label': u'开始',
+                'key': 'F1'
+            },
+            'pause': {
+                'label': u'暂停',
+                'key': 'F2'
+            },
+            'continue': {
+                'label': u'继续',
+                'key': 'F3'
+            },
+            'stop': {
+                'label': u'结束',
+                'key': 'F4'
+            }
         }
     }
 }

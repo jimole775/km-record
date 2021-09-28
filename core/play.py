@@ -8,6 +8,7 @@ import threading
 from config import config
 from util.scaner import Scaner
 from util.scissors import Scissors
+from core.mouse import MEvent
 from core.keyboard import KEvent
 from core.controller import createController
 class Play:
@@ -19,6 +20,8 @@ class Play:
         self.step_at_pause = 0
         self.scissors = Scissors()
         self.scaner = Scaner()
+        self.kEvent = KEvent()
+        self.mEvent = MEvent()
         self.step_items = self.__getSteps__()
         if config.MATCH: # 是否启用视觉匹配
             print('config.MATCH:', config.MATCH)
@@ -148,14 +151,12 @@ class Play:
         thread.start()
 
     def __keyboardEvent__ (self):
-        kEvent = KEvent()
         ctrl = createController(Play)()
-        kEvent.bindExcution(ctrl.excution)
-        kEvent.start()
+        self.kEvent.bindExecution(ctrl.execution)
+        self.kEvent.start()
 
     def __mouseEvent__ (self):
-        mEvent = MEvent()
-        mEvent.start()
+        self.mEvent.start()
 
     def __getSteps__(self):
         i = 0

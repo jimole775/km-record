@@ -19,11 +19,13 @@ def is_assist_key(key):
   return ass_keys.index(key) > -1
 
 
-class KEvent:
+class KEvent():
     def __init__ (self):
         self.combo_keys = []
         self.thread_queue = []
         self.thread_active = None
+        self.listener = None
+        self.active = False
 
     def on_press (self, key):
         try:
@@ -49,10 +51,13 @@ class KEvent:
         self.combo_keys = []
 
     def start (self):
-        with keyboard.Listener(on_press = self.on_press, on_release = self.on_release) as klistener:
-            klistener.join()
+        self.listener = keyboard.Listener(on_press = self.on_press, on_release = self.on_release)
+        self.listener.start()
+        # self._doActive()
+        # while self.active:
+        #     self.listener.join()
 
-    def bindExcution (self, excutionFn):
+    def bindExecution (self, excutionFn):
         self.eventsExcution = excutionFn
 
     def triggerEvent (self, key):
@@ -87,3 +92,9 @@ class KEvent:
                 self.thread_active.join()
                 return self.consumeThrd()
         pass
+
+    def stop(self):
+        self.listener.stop()
+
+    def restart(self):
+        self.listener.start()
