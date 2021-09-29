@@ -1,8 +1,9 @@
 DEFAULT = {
-    'match': {
-        'times': 10, # 在执行click事件的时候，是否需要匹配有没有目标元素
-        'interval': 0.5, # 在执行click事件的时候，是否需要匹配有没有目标元素
-    },
+    # 'match': {
+    #     'times': 10, # 在执行click事件的时候，是否需要匹配有没有目标元素
+    #     'interval': 0.5, # 在执行click事件的时候，是否需要匹配有没有目标元素
+    # },
+    'match': False,
     'project': {
         'name': 'temp', # 录制的项目名，默认为temp
         'path': '.\\business\\' # 录制项目的存储路径

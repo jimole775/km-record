@@ -1,93 +1,120 @@
+import time
 from pynput import mouse
-class MEvent:
-    def __init__(self):
-        self.clickEvent = None
-        self.moveEvent = None
-        self.scrollEvent = None
-        self.isPressed = False
+class MouseController:
+    state = False
+    behaviors = [
+        # { 'event': 'press', 'button': 'left', 'time': '', 'loc': (),  },
+        # { 'event': 'move', 'button': 'left', 'time': '', 'loc': () },
+        # { 'event': 'release', 'button': 'left', 'time': '', 'loc': () },
+        # { 'event': 'scroll', 'button': 'left', 'time': '', 'loc': () }
+    ]
+    def __init__(self, assets_dir):
+        self.event_move = None
+        self.event_click = None
+        self.event_scroll = None
+        self.is_pressed = False
         self.listener = False
         self.sx = None
         self.sy = None
         self.x = None
         self.y = None
         self.active = False
+        self.assets_dir = assets_dir
 
+    # 评估是否退出监听
+    def _evalExit(self):
+        if self._getState() == False:
+            return False
+        else:
+            return True
+
+    # 监听鼠标滑动
     def _move(self, x, y):
-        if self.isPressed:
+        timeStamp = time.time()
+        if self.is_pressed:
             self.x = x
             self.y = y
-        # print('move:', x, y)
-        # 监听鼠标移动
-        # print('Pointer moved to {0}'.format((x, y)))
-        pass
+            self._recordBehavior('move', timeStamp, (x, y))
+        return self._evalExit()
 
+    # 监听鼠标点击
     def _click(self, x, y, button, pressed):
-        print('click:', button, pressed)
-        self.isPressed = pressed
-        if self.isPressed:
+        timeStamp = time.time()
+        self.is_pressed = pressed
+        self._press(self, x, y, timeStamp)
+        self._release(self, x, y, timeStamp)
+        return self._evalExit()
+
+    # 监听鼠标滚轮
+    def _scroll(self, x, y, dx, dy):
+        timeStamp = time.time()
+        self._recordBehavior('scroll', timeStamp, (x, y, dx, dy))
+        return self._evalExit()
+
+    def _press(self, x, y, timeStamp):
+        if self.is_pressed:
             self.x = self.sx = x
             self.y = self.sy = y
-        if not self.isPressed:
+            self._recordBehavior('press', timeStamp, (x, y))
+
+    def _release(self, x, y, timeStamp):
+        if not self.is_pressed:
             if (self.x != self.sx or self.y != self.sy):
                 print('trigge drag event')
             else:
-                print('trigge click event')
-                if callable(self.clickEvent):
-                    self.clickEvent(x, y, button, pressed)
+                if callable(self.event_click):
+                    self.event_click(x, y, timeStamp)
                 else:
                     print('没有注册鼠标点击事件！')
-            self._reset()
+            self.reset()
+            self._recordBehavior('release', timeStamp, (x, y))
 
-        # 监听鼠标点击
-        # if not pressed:
-        #     print('mouse click:', x, y)
-        #     screen = self.scissors.cutScreen()
-        #     if config.MATCH:
-        #         print('MATCH:', config.MATCH)
-        #         self.scissors.cutUniqueReact(screen, (x, y))
-        #     else:
-        #         self.scissors.cutReactAndSave(screen, (x, y))
-        # if button == mouse.Button.right:
-        #     return False
-
-        # Stop listener
-        pass
-    def _scroll(self, x, y, dx, dy):
-        print('scroll:', dx, dy)
-        # 监听鼠标滚轮
-        pass
-
+    # 注册鼠标事件
     def registe (self, event_dict):
-        self.clickEvent = event_dict['click']
+        self.event_click = event_dict['click']
         for item in event_dict:
             print(item)
-        # self.moveEvent = event_dict['move']
-        # self.scrollEvent = event_dict['scroll']
         pass
 
+    # 开启鼠标监听
     def start(self):
-        self.listener = mouse.Listener(
+        self._doActive()
+        with mouse.Listener(
           on_move=self._move,
           on_click=self._click,
           on_scroll=self._scroll
-        )
-        self.listener.start()
-        self._doActive()
-        while self.active:
-            self.listener.join()
+        ) as listener:
+            listener.join()
 
-    def _reset(self):
+    # 重置坐标记录，用于判断是否是拖拽行为
+    def reset(self):
         self.x = None
         self.y = None
         self.sx = None
         self.sy = None
         pass
 
+    # 关闭监听
     def stop(self):
-        self._doClose()
+        self._undoActive()
 
+    # 记录操作
+    def _recordBehavior(self, event, time, loc):
+        MouseController.behaviors.append({
+            'loc': loc,
+            'time': time,
+            'event': event,
+        })
+        pass
+
+    # 开启监听的逻辑
     def _doActive(self):
-        self.active = True
+        MouseController.state = True
 
-    def _doClose(self):
-        self.active = False
+    # 关闭监听的逻辑
+    def _undoActive(self):
+        MouseController.state = False
+
+    # 获取监听器的状态
+    def _getState(self):
+        return MouseController.state

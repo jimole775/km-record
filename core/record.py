@@ -1,5 +1,5 @@
-from core.mouse import MEvent
-from core.keyboard import KEvent
+from core.mouse import MouseController
+from core.keyboard import KeyboardController
 from config import config
 from pynput import mouse
 from core.controller import createController
@@ -14,17 +14,18 @@ import threading
 
 #     def run (self):
 #         if self.name == 'Thread-1':
-#             kEvent = KEvent()
-#             kEvent.start()
+#             k_controller = KeyboardController()
+#             k_controller.start()
 #         if self.name == 'Thread-2':
-#             mEvent = MEvent()
-#             mEvent.start()
+#             m_controller = MouseController()
+#             m_controller.start()
 
 class Record ():
     def __init__ (self):
-        self.scissors = Scissors()
-        self.kEvent = KEvent()
-        self.mEvent = MEvent()
+        assetsDir = config.PROJECT['path'] + config.PROJECT['name']
+        self.scissors = Scissors(assetsDir)
+        self.k_controller = KeyboardController(assetsDir)
+        self.m_controller = MouseController(assetsDir)
         pass
 
     def _createThread (self, event):
@@ -39,22 +40,22 @@ class Record ():
     #     thread.start()
 
     # def __keyboardEvent__ (self):
-    #     kEvent = KEvent()
+    #     k_controller = KeyboardController()
     #     ctrl = createController(Play)()
-    #     kEvent.bindExecution(ctrl.execution)
-    #     kEvent.start()
+    #     k_controller.bindExecution(ctrl.execution)
+    #     k_controller.start()
 
     def _keyboardEvent (self):
         ctrl = createController(Record)()
-        self.kEvent.bindExecution(ctrl.execution)
-        self.kEvent.start()
+        self.k_controller.bindExecution(ctrl.execution)
+        self.k_controller.start()
 
     def _mouseEvent (self):
-        self.mEvent.registe({
+        self.m_controller.registe({
           'click': self._clickEvent,
           'drag': self._dragEvent
         })
-        self.mEvent.start()
+        self.m_controller.start()
 
     def run (self):
         # 创建新线程
@@ -70,22 +71,18 @@ class Record ():
         # while True:
         #     if (monitor1.is_alive() == False or monitor2.is_alive() == False):
         #         break
-    def _clickEvent (self, x, y, button, pressed):
-        # 监听鼠标点击
-        if not pressed:
-            screen = self.scissors.cutScreen()
-            if config.MATCH:
-                print('MATCH:', config.MATCH)
-                self.scissors.cutUniqueReact(screen, (x, y))
-            else:
-                self.scissors.cutReactAndSave(screen, (x, y))
-        if button == mouse.Button.right:
-            return False
+    def _clickEvent (self, x, y, stamp):
+        screen = self.scissors.cutScreen()
+        if config.MATCH:
+            print('MATCH:', config.MATCH)
+            self.scissors.cutUniqueReact(screen, (x, y), stamp)
+        else:
+            self.scissors.cutReactAndSave(screen, (x, y), stamp)
 
     def _dragEvent (self, x, y, button, pressed):
         print('drag')
         pass
 
     def stop (self):
-        self.kEvent.stop()
-        self.mEvent.stop()
+        self.k_controller.stop()
+        self.m_controller.stop()

@@ -8,8 +8,8 @@ import threading
 from config import config
 from util.scaner import Scaner
 from util.scissors import Scissors
-from core.mouse import MEvent
-from core.keyboard import KEvent
+from core.mouse import MouseController
+from core.keyboard import KeyboardController
 from core.controller import createController
 class Play:
     def __init__(self):
@@ -20,9 +20,9 @@ class Play:
         self.step_at_pause = 0
         self.scissors = Scissors()
         self.scaner = Scaner()
-        self.kEvent = KEvent()
-        self.mEvent = MEvent()
-        self.step_items = self.__getSteps__()
+        self.k_controller = KeyboardController()
+        self.m_controller = MouseController()
+        self.step_items = self._getSteps()
         if config.MATCH: # 是否启用视觉匹配
             print('config.MATCH:', config.MATCH)
             self.check_i = config.MATCH['times']
@@ -34,14 +34,14 @@ class Play:
             self.interval = 0.5
         pass
 
-    def __getNextTime__(self, cur_index, file_list):
+    def _getNextTime(self, cur_index, file_list):
         if cur_index < len(file_list) - 1:
             nextFile = file_list[cur_index + 1]
         else:
             nextFile = file_list[cur_index]
         return re.search(r'^\d*?\.?\d*?(?=\_)', nextFile).group()
 
-    def __runHandler__(self):
+    def _runHandler(self):
         while self.step < len(self.step_items):
             if (self.pause_sign or self.stop_sign):
                 break
@@ -50,58 +50,58 @@ class Play:
             # 录制时截取的图片, 是鼠标移动到目标位置，点击之后的,
             # 那么, 需要准确的记录出移动到目的地之后的滞留时间
             """
-            self.__domoves__(step_item)
+            self._domoves(step_item)
             if config.MATCH:
                 screen = self.scissors.cutScreen()
                 temp = step_item['file']
                 if self.scaner.hasUniqueTarget(screen, temp) or self.check_i == 0:
-                    self.__resetCheckTimes__()
-                    self.__doclick__(step_item)
-                    self.__stepGrow__()
-                    self.__waiting__(step_item['sleep'] - self.__checkedSeconds__())
+                    self._resetCheckTimes()
+                    self._doclick(step_item)
+                    self._stepGrow()
+                    self._waiting(step_item['sleep'] - self._checkedSeconds())
                 else:
-                    self.__checkReduce__()
-                    self.__waiting__(self.interval)
+                    self._checkReduce()
+                    self._waiting(self.interval)
             else:
-                self.__doclick__(step_item)
-                self.__stepGrow__()
-                self.__waiting__(self.interval)
+                self._doclick(step_item)
+                self._stepGrow()
+                self._waiting(self.interval)
 
     # 计算匹配消耗的时间
-    def __checkedSeconds__(self):
+    def _checkedSeconds(self):
         return (self.check_max - self.check_i) * self.interval
 
-    def __domoves__(self, step_item):
+    def _domoves(self, step_item):
         x, y = step_item['loc']
         gui.moveTo(x, y)
         time.sleep(self.interval)
 
-    def __doclick__(self, step_item):
+    def _doclick(self, step_item):
         x, y = step_item['loc']
         gui.moveTo(x, y)
         gui.click()
 
-    def __waiting__(self, t_remian):
+    def _waiting(self, t_remian):
         if t_remian > self.interval:
             time.sleep(t_remian)
         else:
             time.sleep(self.interval)
 
-    def __checkReduce__(self):
+    def _checkReduce(self):
         print('check_i:', self.check_i)
         self.check_i = self.check_i - 1
 
-    def __resetCheckTimes__(self):
+    def _resetCheckTimes(self):
         if config.MATCH:
           self.check_i = config.MATCH['times']
         else:
           self.check_i = 0
 
-    def __stepGrow__(self):
+    def _stepGrow(self):
         self.step = self.step + 1
         print('step:', self.step)
 
-    def __doplay__(self):
+    def _doplay(self):
         if self.play_type == 'once':
             self.once()
         if self.play_type == 'repeat':
@@ -112,7 +112,7 @@ class Play:
         self.stop_sign = False
         self.pause_sign = False
         self.step = 0
-        self.__doplay__()
+        self._doplay()
 
     def stop(self):
         self.stop_sign = True
@@ -130,48 +130,48 @@ class Play:
         self.pause_sign = False
         self.step = self.step_at_pause
         print('continue:', self.step)
-        self.__doplay__()
+        self._doplay()
         pass
 
     def once(self):
         self.play_type = 'once'
-        self.__runHandler__()
+        self._runHandler()
 
     def repeat(self):
         self.play_type = 'repeat'
         while self.pause_sign == False and self.stop_sign == False:
-            self.__runHandler__()
+            self._runHandler()
             self.step = 0
 
     def run (self):
-        self.__createThread__(self.__keyboardEvent__)
+        self._createThread(self._keyboardEvent)
 
-    def __createThread__ (self, event):
+    def _createThread (self, event):
         thread = threading.Thread(target=event)
         thread.start()
 
-    def __keyboardEvent__ (self):
+    def _keyboardEvent (self):
         ctrl = createController(Play)()
-        self.kEvent.bindExecution(ctrl.execution)
-        self.kEvent.start()
+        self.k_controller.bindExecution(ctrl.execution)
+        self.k_controller.start()
 
-    def __mouseEvent__ (self):
-        self.mEvent.start()
+    def _mouseEvent (self):
+        self.m_controller.start()
 
-    def __getSteps__(self):
+    def _getSteps(self):
         i = 0
-        objectDir = config.PROJECT['path'] + config.PROJECT['name']
-        file_list = os.listdir(objectDir)
+        object_dir = config.PROJECT['path'] + config.PROJECT['name']
+        file_list = os.listdir(object_dir)
         step_items = []
         for file_name in file_list:
             timestamp = re.search(r'^\d*?\.?\d*?(?=\_)', file_name).group()
             loc = eval(re.search(r'\(\d*?, \d*?\)', file_name).group())
             insert = re.search(r'insert', file_name)
-            nextTime = self.__getNextTime__(i, file_list)
+            nextTime = self._getNextTime(i, file_list)
             step_items.append({
               'loc': loc,
               'insert': insert,
-              'file': objectDir + '\\' + file_name,
+              'file': object_dir + '\\' + file_name,
               'sleep': float(nextTime) - float(timestamp),
             })
             i = i + 1
