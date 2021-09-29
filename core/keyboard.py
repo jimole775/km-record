@@ -24,7 +24,7 @@ class KeyboardController():
         self.combo_keys = []
         self.thread_queue = []
         self.thread_active = None
-        self.assets_dir = assets_dir
+        self.r_file = open(assets_dir + '/index.json', 'w')
 
     def _press (self, key):
         try:
@@ -33,9 +33,9 @@ class KeyboardController():
             print('special key {0} pressed'.format(key))
 
     def _release (self, key):
-        self._consumeCombo()
         self._clearCombo()
         self._triggerEvent(key)
+        self.r_file.write(123)
         return self._evalExit(key)
 
     def _evalExit(self, key):

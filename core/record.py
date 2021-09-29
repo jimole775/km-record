@@ -22,10 +22,10 @@ import threading
 
 class Record ():
     def __init__ (self):
-        assetsDir = config.PROJECT['path'] + config.PROJECT['name']
-        self.scissors = Scissors(assetsDir)
-        self.k_controller = KeyboardController(assetsDir)
-        self.m_controller = MouseController(assetsDir)
+        assets_dir = config.PROJECT['path'] + config.PROJECT['name']
+        self.scissors = Scissors(assets_dir)
+        self.k_controller = KeyboardController(assets_dir)
+        self.m_controller = MouseController(assets_dir)
         pass
 
     def _createThread (self, event):

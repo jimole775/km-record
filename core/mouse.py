@@ -1,4 +1,5 @@
 import time
+import json
 from pynput import mouse
 class MouseController:
     state = False
@@ -9,6 +10,7 @@ class MouseController:
         # { 'event': 'scroll', 'button': 'left', 'time': '', 'loc': () }
     ]
     def __init__(self, assets_dir):
+        self.r_file = open(assets_dir + '/index.json', 'w')
         self.event_move = None
         self.event_click = None
         self.event_scroll = None
@@ -19,7 +21,6 @@ class MouseController:
         self.x = None
         self.y = None
         self.active = False
-        self.assets_dir = assets_dir
 
     # 评估是否退出监听
     def _evalExit(self):
@@ -41,8 +42,8 @@ class MouseController:
     def _click(self, x, y, button, pressed):
         timeStamp = time.time()
         self.is_pressed = pressed
-        self._press(self, x, y, timeStamp)
-        self._release(self, x, y, timeStamp)
+        self._press(x, y, timeStamp)
+        self._release(x, y, timeStamp)
         return self._evalExit()
 
     # 监听鼠标滚轮
@@ -96,15 +97,20 @@ class MouseController:
 
     # 关闭监听
     def stop(self):
+        self._save()
         self._undoActive()
 
     # 记录操作
     def _recordBehavior(self, event, time, loc):
-        MouseController.behaviors.append({
+        data = {
             'loc': loc,
             'time': time,
             'event': event,
-        })
+        }
+        str = json.dumps(data)
+        print('mcb:', str)
+        self.r_file.write(str)
+        MouseController.behaviors.append(data)
         pass
 
     # 开启监听的逻辑
