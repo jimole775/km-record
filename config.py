@@ -12,41 +12,41 @@ DEFAULT = {
         'play': {
             'start': {
                 'label': u'开始',
-                'key': 'F1'
+                'key': 'ctrl+1'
             },
             'repeat': {
                 'label': u'循环',
-                'key': 'F2'
+                'key': 'ctrl+2'
             },
             'pause': {
                 'label': u'暂停',
-                'key': 'F3'
+                'key': 'ctrl+3'
             },
             'continue': {
                 'label': u'继续',
-                'key': 'F4'
+                'key': 'ctrl+4'
             },
             'stop': {
                 'label': u'结束',
-                'key': 'F5'
+                'key': 'ctrl+5'
             }
         },
         'record': {
             'start': {
                 'label': u'开始',
-                'key': 'F1'
+                'key': 'ctrl+1'
             },
             'pause': {
                 'label': u'暂停',
-                'key': 'F2'
+                'key': 'ctrl+2'
             },
             'continue': {
                 'label': u'继续',
-                'key': 'F3'
+                'key': 'ctrl+3'
             },
             'stop': {
                 'label': u'结束',
-                'key': 'F4'
+                'key': 'ctrl+4'
             }
         }
     }

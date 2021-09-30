@@ -1,4 +1,4 @@
-import pyautogui as gui
+# import pyautogui as gui
 from pynput import keyboard
 from config import config
 # from util.swapdict import swapdict
@@ -17,13 +17,13 @@ key_dicts = {
     keyboard.Key.f11: 'F11',
     keyboard.Key.f12: 'F12',
 }
-fn_dicts = {
-    u'开始': 'start',
-    u'结束': 'stop',
-    u'暂停': 'pause',
-    u'循环': 'repeat',
-    u'继续': 'continues',
-}
+# fn_dicts = {
+#     u'开始': 'start',
+#     u'结束': 'stop',
+#     u'暂停': 'pause',
+#     u'循环': 'repeat',
+#     u'继续': 'continues',
+# }
 # class UICtrl(Play):
 #     def __init__(self):
 #         super().__init__()
@@ -60,7 +60,7 @@ def createController (_cls): # 继承后，cls原本的变更无法跟踪，需�
             fn_name = None
             for key_item in key_map:
                 item = key_map[key_item]
-                if item['key'] == key_dicts[hot_key]:
+                if hot_key in key_dicts and item['key'] == key_dicts[hot_key]:
                     fn_name = key_item
                     break
             return fn_name

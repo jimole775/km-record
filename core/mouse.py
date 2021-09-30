@@ -97,7 +97,7 @@ class MouseController:
 
     # 关闭监听
     def stop(self):
-        self._save()
+        # self._save()
         self._undoActive()
 
     # 记录操作
