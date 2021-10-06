@@ -6,8 +6,7 @@ import numpy as np
 import time
 import threading
 class Scissors:
-    def __init__(self, saveDir):
-        self.saveDir = saveDir
+    def __init__(self):
         self.scaner = Scaner()
 
     def cutUniqueReact(self, screen, point, timeStamp):
@@ -30,7 +29,8 @@ class Scissors:
     def save(self, point, temp, timeStamp):
         cv_temp = self._pl2cv(temp)
         fileName = str(timeStamp) + '_' + str(point) + '.jpg'
-        cv.imwrite(self.saveDir + '\\' + fileName, cv_temp)
+        assets_dir = config.PROJECT['path'] + config.PROJECT['name']
+        cv.imwrite(assets_dir + '\\' + fileName, cv_temp)
         return self
 
     def _pl2cv(self, img):

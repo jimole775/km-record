@@ -1,9 +1,16 @@
+import json
+import time
 from pynput import keyboard
 from config import config
-from util.key import getKeyChar, isFunctionKey
+from util.keychar import getKeyChar, isFunctionKey
 import threading
+
+assets_dir = config.PROJECT['path'] + config.PROJECT['name']
+abbr = config.ABBR
+
 def standard_key():
   pass
+
 # 辅助键
 def is_assist_key(key):
     res = False
@@ -18,25 +25,24 @@ def is_assist_key(key):
         keyboard.Key.ctrl_l, # 左侧ctrl
         keyboard.Key.ctrl_r # 右侧ctrl
     ]
-    if type(key) == keyboard.Key and key in asst_keys > -1:
+    if type(key) == keyboard.Key and key in asst_keys:
         res = True
-    if type(key) == str and key in asst_key_chars > -1:
+    if type(key) == str and key in asst_key_chars:
         res = True
 
     return res
 
 class KeyboardController():
     state = False
-    def __init__(self, assets_dir):
+    def __init__(self):
         self.combo_keys = []
         self.thread_queue = []
         self.thread_active = None
-        self.record_file = open(assets_dir + '/index.json', 'w')
-
     def _press(self, key):
-        if is_assist_key(key):
-            self._storeCombo(key)
-        elif len(self.combo_keys) > 0:
+        print('press key:', key)
+        # 如果是辅助键，就存comb，理论上不限定组合键的个数
+
+        if is_assist_key(key) or len(self.combo_keys) > 0:
             self._storeCombo(key)
         # try:
         #     print('alphanumeric key {0} pressed'.format(key.char))
@@ -47,17 +53,21 @@ class KeyboardController():
         if is_assist_key(key):
             self._clearCombo() # 如果辅助键松开，那么代表用户取消这次组合键
         else:
+            # 有组合键
             if len(self.combo_keys) > 0:
-                # 执行组合键
-
+                # 如果配置有功能键，那么就直接触发绑定的事件
+                if isFunctionKey(self.combo_keys):
+                    self._triggerEvent(self.combo_keys)
+                else:
+                    self._recordBehavior(self.combo_keys)
                 # 执行完毕之后清空
                 self._clearCombo()
             else:
                 # 如果配置有功能键，那么就直接触发绑定的事件
                 if isFunctionKey(key):
                     self._triggerEvent(key)
-
-        self._recordBehavior(key)
+                else:
+                    self._recordBehavior(key)
         return self._evalExit(key)
 
     def _evalExit(self, key):
@@ -129,6 +139,14 @@ class KeyboardController():
         return KeyboardController.state
 
     def _recordBehavior(self, key):
-        if not isFunctionKey(key):
-            keyChar = getKeyChar(key)
-            self.record_file.write(keyChar)
+        value = {
+            abbr['time']: time.time(),
+            abbr['key']: getKeyChar(key)
+        }
+        self._write(value)
+
+    def _write(self, val):
+        str = json.dumps(val)
+        record_file = open(assets_dir + '/index.log', 'a+')
+        record_file.write(str + '\n')
+        record_file.close()

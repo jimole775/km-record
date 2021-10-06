@@ -14,6 +14,20 @@ def getSingleKeyChar(key):
 
     return keyChar
 
+# [keyboard.Key.ctrl_l, keyboard.Key.d] => 'ctrl + d'
+def getCombKeyChar(comb_key):
+    res = ''
+    print('comb_key', comb_key)
+    for key in comb_key:
+        key_char = getSingleKeyChar(key)
+        print('key:', key, ', char:', key_char)
+        key_char = flatAsstKey(key_char)
+        print('flatAsstKey:', key_char)
+        res = res + '+' + key_char
+        
+    return res[1:]
+
+
 # 功能键部分左右，所以去掉 'ctrl_l' 的 '_l'，返回 'ctrl'
 def flatAsstKey(key):
     signs = ['ctrl', 'alt', 'shift']
@@ -27,22 +41,17 @@ def flatAsstKey(key):
         res = key_char
     return res
 
-# [keyboard.Key.ctrl_l, keyboard.Key.d] => 'ctrl + d'
-def joinCombKeysToStr(comb_key):
-    res = ''
-    for key in comb_key:
-        key_char = getSingleKeyChar(key)
-        key_char = flatAsstKey(key_char)
-        res = res + '+' + key_char
-    return res[1:]
-
+# 获取 key 的字符串类型
 def getKeyChar(key_or_comb):
     key_char = ''
     key_type = type(key_or_comb)
+    # 组合键
     if (key_type == list):
-        key_char = joinCombKeysToStr(key_or_comb)
+        key_char = getCombKeyChar(key_or_comb)
+    # 字符串
     elif (key_type == str):
         key_char = key_or_comb
+    # 单键
     else:
         key_char = getSingleKeyChar(key_or_comb)
     return key_char

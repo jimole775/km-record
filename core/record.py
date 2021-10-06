@@ -22,10 +22,9 @@ import threading
 
 class Record ():
     def __init__ (self):
-        assets_dir = config.PROJECT['path'] + config.PROJECT['name']
-        self.scissors = Scissors(assets_dir)
-        self.k_controller = KeyboardController(assets_dir)
-        self.m_controller = MouseController(assets_dir)
+        self.scissors = Scissors()
+        self.k_controller = KeyboardController()
+        self.m_controller = MouseController()
         pass
 
     def _createThread (self, event):
@@ -72,12 +71,11 @@ class Record ():
         #     if (monitor1.is_alive() == False or monitor2.is_alive() == False):
         #         break
     def _clickEvent (self, x, y, stamp):
-        screen = self.scissors.cutScreen()
         if config.MATCH:
-            print('MATCH:', config.MATCH)
+            screen = self.scissors.cutScreen()
             self.scissors.cutUniqueReact(screen, (x, y), stamp)
-        else:
-            self.scissors.cutReactAndSave(screen, (x, y), stamp)
+        # else:
+            # self.scissors.cutReactAndSave(screen, (x, y), stamp)
 
     def _dragEvent (self, x, y, button, pressed):
         print('drag')

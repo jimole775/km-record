@@ -8,9 +8,12 @@ import threading
 from config import config
 from util.scaner import Scaner
 from util.scissors import Scissors
-from core.mouse import MouseController
+# from core.mouse import MouseController
 from core.keyboard import KeyboardController
 from core.controller import createController
+
+assets_dir = config.PROJECT['path'] + config.PROJECT['name']
+
 class Play:
     def __init__(self):
         self.play_type = 'once'
@@ -21,7 +24,6 @@ class Play:
         self.scissors = Scissors()
         self.scaner = Scaner()
         self.k_controller = KeyboardController()
-        self.m_controller = MouseController()
         self.step_items = self._getSteps()
         if config.MATCH: # 是否启用视觉匹配
             print('config.MATCH:', config.MATCH)
@@ -155,24 +157,25 @@ class Play:
         self.k_controller.bindExecution(ctrl.execution)
         self.k_controller.start()
 
-    def _mouseEvent (self):
-        self.m_controller.start()
-
     def _getSteps(self):
         i = 0
-        object_dir = config.PROJECT['path'] + config.PROJECT['name']
-        file_list = os.listdir(object_dir)
         step_items = []
-        for file_name in file_list:
-            timestamp = re.search(r'^\d*?\.?\d*?(?=\_)', file_name).group()
-            loc = eval(re.search(r'\(\d*?, \d*?\)', file_name).group())
-            insert = re.search(r'insert', file_name)
-            nextTime = self._getNextTime(i, file_list)
-            step_items.append({
-              'loc': loc,
-              'insert': insert,
-              'file': object_dir + '\\' + file_name,
-              'sleep': float(nextTime) - float(timestamp),
-            })
-            i = i + 1
+        if config.MATCH: # 是否启用视觉匹配
+            match_pic_dir = assets_dir + '\\matchs'
+            file_list = os.listdir(assets_dir)
+            for file_name in file_list:
+                timestamp = re.search(r'^\d*?\.?\d*?(?=\_)', file_name).group()
+                loc = eval(re.search(r'\(\d*?, \d*?\)', file_name).group())
+                insert = re.search(r'insert', file_name)
+                nextTime = self._getNextTime(i, file_list)
+                step_items.append({
+                    'loc': loc,
+                    'insert': insert,
+                    'file': assets_dir + '\\' + file_name,
+                    'sleep': float(nextTime) - float(timestamp),
+                })
+                i = i + 1
+        else: # 直接从log中拉取操作记录
+            
+            print('sss')
         return step_items

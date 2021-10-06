@@ -1,6 +1,11 @@
 import time
 import json
 from pynput import mouse
+from config import config
+
+assets_dir = config.PROJECT['path'] + config.PROJECT['name']
+abbr = config.ABBR
+
 class MouseController:
     state = False
     behaviors = [
@@ -9,8 +14,7 @@ class MouseController:
         # { 'event': 'release', 'button': 'left', 'time': '', 'loc': () },
         # { 'event': 'scroll', 'button': 'left', 'time': '', 'loc': () }
     ]
-    def __init__(self, assets_dir):
-        self.r_file = open(assets_dir + '/index.json', 'w')
+    def __init__(self):
         self.event_move = None
         self.event_click = None
         self.event_scroll = None
@@ -35,40 +39,40 @@ class MouseController:
         if self.is_pressed:
             self.x = x
             self.y = y
-            self._recordBehavior('move', timeStamp, (x, y))
+            self._recordBehavior(abbr['drag'], timeStamp, (x, y))
         return self._evalExit()
 
     # 监听鼠标点击
     def _click(self, x, y, button, pressed):
         timeStamp = time.time()
         self.is_pressed = pressed
-        self._press(x, y, timeStamp)
-        self._release(x, y, timeStamp)
+        if self.is_pressed:
+            self._press(x, y, timeStamp)
+        if not self.is_pressed:
+            self._release(x, y, timeStamp)
         return self._evalExit()
 
     # 监听鼠标滚轮
     def _scroll(self, x, y, dx, dy):
         timeStamp = time.time()
-        self._recordBehavior('scroll', timeStamp, (x, y, dx, dy))
+        self._recordBehavior(abbr['scroll'], timeStamp, (x, y, dx, dy))
         return self._evalExit()
 
     def _press(self, x, y, timeStamp):
-        if self.is_pressed:
-            self.x = self.sx = x
-            self.y = self.sy = y
-            self._recordBehavior('press', timeStamp, (x, y))
+        self.x = self.sx = x
+        self.y = self.sy = y
+        self._recordBehavior(abbr['press'], timeStamp, (x, y))
 
     def _release(self, x, y, timeStamp):
-        if not self.is_pressed:
-            if (self.x != self.sx or self.y != self.sy):
-                print('trigge drag event')
+        if (self.x != self.sx or self.y != self.sy):
+            print('trigge drag event')
+        else:
+            if callable(self.event_click):
+                self.event_click(x, y, timeStamp)
             else:
-                if callable(self.event_click):
-                    self.event_click(x, y, timeStamp)
-                else:
-                    print('没有注册鼠标点击事件！')
-            self.reset()
-            self._recordBehavior('release', timeStamp, (x, y))
+                print('没有注册鼠标点击事件！')
+        self._recordBehavior(abbr['release'], timeStamp, (x, y))
+        self.reset()
 
     # 注册鼠标事件
     def registe (self, event_dict):
@@ -97,19 +101,16 @@ class MouseController:
 
     # 关闭监听
     def stop(self):
-        # self._save()
         self._undoActive()
 
     # 记录操作
     def _recordBehavior(self, event, time, loc):
         data = {
-            'loc': loc,
-            'time': time,
-            'event': event,
+            abbr['loc']: loc,
+            abbr['time']: time,
+            abbr['mouse']: event,
         }
-        str = json.dumps(data)
-        print('mcb:', str)
-        self.r_file.write(str)
+        self._write(data)
         MouseController.behaviors.append(data)
         pass
 
@@ -124,3 +125,10 @@ class MouseController:
     # 获取监听器的状态
     def _getState(self):
         return MouseController.state
+
+    def _write(self, val):
+        str = json.dumps(val)
+        r_file = open(assets_dir + '/index.log', 'a+')
+        r_file.write(str + '\n')
+        r_file.close()
+

@@ -8,6 +8,18 @@ DEFAULT = {
         'name': 'temp', # 录制的项目名，默认为temp
         'path': '.\\business\\' # 录制项目的存储路径
     },
+    'abbr_dict': { # 缩写字典
+        'loc': 'l', # 用于记录坐标的，一般使用数组的形式存储(json转换)
+        'key': 'k', # 键盘按键
+        'drag': 'd', # 鼠标事件
+        'time': 't', # 时间戳
+        'type': 'tp', # 类型，对应鼠标或者键盘
+        'mouse': 'm', # 鼠标
+        'move': 'mv', # 鼠标事件-移动
+        'press': 'p', # 鼠标事件-按
+        'scroll': 's', # 鼠标事件-滚轮
+        'release': 'r' # 鼠标事件-放
+    },
     'hotkey': {
         'play': {
             'start': {
@@ -62,5 +74,6 @@ if len(sys.argv) > 1:
 
 class config():
     MATCH = DEFAULT['match']
+    ABBR = DEFAULT['abbr_dict']
     PROJECT = DEFAULT['project']
     HOTKEY = DEFAULT['hotkey']
