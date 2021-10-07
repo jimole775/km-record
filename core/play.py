@@ -53,35 +53,41 @@ class Play:
         self.step = opr_file.tell()
         # while self.step < len(self.step_items):
         while len(line) > 0:
-            if (self.pause_sign or self.stop_sign):
-                break
             # step_item = self.step_items[self.step]
             step_item = json.loads(line)
+            """
             # todo 需要区分事件类型：
             # 包括 点击，拖拽，按键，组合键
             """
-            # 录制时截取的图片, 是鼠标移动到目标位置，点击之后的,
-            # 那么, 需要准确的记录出移动到目的地之后的滞留时间
-            """
-            self._domoves(step_item)
-            if config.MATCH:
-                screen = self.scissors.cutScreen()
-                temp = step_item['shot']
-                if self.scaner.hasUniqueTarget(screen, temp) or self.check_i == 0:
-                    self._resetCheckTimes()
+            # 鼠标事件
+            if step_item[abbr['type']] == abbr['mouse']:
+                # self._domoves(step_item)
+                if config.MATCH:
+                    screen = self.scissors.cutScreen()
+                    shot_name = step_item[abbr['time']]
+                    shot_img = open(assets_dir + '\\' + shot_name + '.jpg')
+                    if self.scaner.hasUniqueTarget(screen, shot_img) or self.check_i == 0:
+                        self._resetCheckTimes()
+                        self._doclick(step_item)
+                        # self._stepGrow()
+                        # self._waiting(step_item['sleep'] - self._checkedSeconds())
+                    else:
+                        self._checkReduce()
+                        # self._waiting(self.interval)
+                else:
                     self._doclick(step_item)
                     # self._stepGrow()
-                    # self._waiting(step_item['sleep'] - self._checkedSeconds())
-                else:
-                    self._checkReduce()
                     # self._waiting(self.interval)
-            else:
-                self._doclick(step_item)
-                # self._stepGrow()
-                # self._waiting(self.interval)
+            # 键盘事件
+            if step_item[abbr['type']] == abbr['keyboard']:
+                print('keyboard')
+
             self._waiting(self.interval)
+            if (self.pause_sign or self.stop_sign):
+                break
             line = opr_file.readline()
             self.step = opr_file.tell()
+        opr_file.close()
 
     # 计算匹配消耗的时间
     def _checkedSeconds(self):

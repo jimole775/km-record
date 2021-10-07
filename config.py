@@ -8,6 +8,7 @@ DEFAULT = {
         'name': 'temp', # 录制的项目名，默认为temp
         'path': '.\\business\\' # 录制项目的存储路径
     },
+    'ran_type_cmd': 'ctrl+alt+i', # 键入随机字符的指令
     'abbr': { # 缩写字典
         'loc': 'l', # 用于记录坐标的，一般使用数组的形式存储(json转换)
         'key': 'k', # 键盘按键
