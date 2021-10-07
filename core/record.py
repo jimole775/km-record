@@ -4,6 +4,7 @@ from config import config
 from pynput import mouse
 from core.controller import createController
 from util.scissors import Scissors
+from util.times import cute_head
 import threading
 # class Monitor (threading.Thread):
 #     def __init__ (self, threadID, name, counter):
@@ -73,12 +74,10 @@ class Record ():
     def _clickEvent (self, x, y, stamp):
         if config.MATCH:
             screen = self.scissors.cutScreen()
-            self.scissors.cutUniqueReact(screen, (x, y), stamp)
-        # else:
-            # self.scissors.cutReactAndSave(screen, (x, y), stamp)
+            self.scissors.cutUniqueReact(screen, (x, y), cute_head(stamp))
 
     def _dragEvent (self, x, y, button, pressed):
-        print('drag')
+        # print('drag')
         pass
 
     def stop (self):

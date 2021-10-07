@@ -3,12 +3,14 @@ import time
 from pynput import keyboard
 from config import config
 from util.keychar import getKeyChar, isFunctionKey
+from util.times import cute_head
 import threading
 
 assets_dir = config.PROJECT['path'] + config.PROJECT['name']
 abbr = config.ABBR
 
 def standard_key():
+
   pass
 
 # 辅助键
@@ -39,11 +41,10 @@ class KeyboardController():
         self.thread_queue = []
         self.thread_active = None
     def _press(self, key):
-        print('press key:', key)
         # 如果是辅助键，就存comb，理论上不限定组合键的个数
-
         if is_assist_key(key) or len(self.combo_keys) > 0:
-            self._storeCombo(key)
+            if key not in self.combo_keys:
+                self._storeCombo(key)
         # try:
         #     print('alphanumeric key {0} pressed'.format(key.char))
         # except AttributeError:
@@ -60,8 +61,6 @@ class KeyboardController():
                     self._triggerEvent(self.combo_keys)
                 else:
                     self._recordBehavior(self.combo_keys)
-                # 执行完毕之后清空
-                self._clearCombo()
             else:
                 # 如果配置有功能键，那么就直接触发绑定的事件
                 if isFunctionKey(key):
@@ -77,7 +76,8 @@ class KeyboardController():
             return True
 
     def _storeCombo(self, key):
-        self.combo_keys.append(key)
+        if key not in self.combo_keys:
+            self.combo_keys.append(key)
         pass
 
     def _consumeCombo(self):
@@ -140,7 +140,8 @@ class KeyboardController():
 
     def _recordBehavior(self, key):
         value = {
-            abbr['time']: time.time(),
+            abbr['type']: abbr['keyboard'],
+            abbr['time']: cute_head(time.time()),
             abbr['key']: getKeyChar(key)
         }
         self._write(value)

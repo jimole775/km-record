@@ -1,5 +1,6 @@
 # 引入模块
 import os
+import shutil
 def rmdir(path):
     # 去除首位空格
     path = path.strip()
@@ -13,8 +14,11 @@ def rmdir(path):
         print(path + ' 目录不存在')
         return False
     else:
-        fileList = os.listdir(path)
-        for fileName in fileList:
-            os.remove(path + '\\' + fileName)
-        print(path + ' 删除成功')
+        l_item = os.listdir(path)
+        for item in l_item:
+            p_item = path + '\\' + item
+            if os.path.isdir(item):
+                rmdir(p_item)
+            else:
+                shutil.rmtree(p_item)
         return True

@@ -1,12 +1,15 @@
 from PIL import Image, ImageGrab
 from config import config
 from util.scaner import Scaner
+from util.mkdir import mkdir
 import cv2 as cv
 import numpy as np
 import time
 import threading
+assets_dir = config.PROJECT['path'] + config.PROJECT['name'] + '\\shots'
 class Scissors:
     def __init__(self):
+        mkdir(assets_dir)
         self.scaner = Scaner()
 
     def cutUniqueReact(self, screen, point, timeStamp):
@@ -21,15 +24,14 @@ class Scissors:
 
     def cutReactAndSave(self, screen, point, timeStamp):
         temp = self.cutReact(screen, point)
-        return self.save(point, temp, timeStamp)
+        return self.save(temp, timeStamp)
 
     def cutScreen(self):
         return ImageGrab.grab()
 
-    def save(self, point, temp, timeStamp):
+    def save(self, temp, timeStamp):
         cv_temp = self._pl2cv(temp)
-        fileName = str(timeStamp) + '_' + str(point) + '.jpg'
-        assets_dir = config.PROJECT['path'] + config.PROJECT['name']
+        fileName = str(timeStamp) + '.jpg'
         cv.imwrite(assets_dir + '\\' + fileName, cv_temp)
         return self
 
@@ -42,20 +44,20 @@ class Scissors:
     def _uniqueHandle(self, sv_screen, point, i, timeStamp):
         temp = self.cutReact(sv_screen, point, i)
         if self.scaner.hasUniqueTarget(sv_screen, temp) or i == 10:
-            self.save(point, temp, timeStamp)
+            self.save(temp, timeStamp)
         else:
             time.sleep(0.5)
             i = i + 1
-            return self._uniqueHandle(sv_screen, point, i)
+            return self._uniqueHandle(sv_screen, point, i, timeStamp)
 
     def _countReactSize(self, screen, point, zoom):
         cv_scr = self._pl2cv(screen)
         h, w = cv_scr.shape[:2]
         x, y = point
-        x1 = x - zoom * 50
-        y1 = y - zoom * 50
-        x2 = x + zoom * 50
-        y2 = y + zoom * 50
+        x1 = x - zoom * 100
+        y1 = y - zoom * 100
+        x2 = x + zoom * 100
+        y2 = y + zoom * 100
         x1 = x1 if x1 > 0 else 0
         y1 = y1 if y1 > 0 else 0
         x2 = x2 if x2 < w else w

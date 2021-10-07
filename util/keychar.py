@@ -6,27 +6,22 @@ def getSingleKeyChar(key):
     keyChar = key
     # 普通键位 a b c d e f g ...
     if (type(key) == keyboard._win32.KeyCode):
-        keyChar = getattr(key, 'char')
+        asc_code = getattr(key, 'vk')
+        keyChar = chr(asc_code).lower()
 
     # 特殊键位包括 辅助键 shift 之类的，还包括 F1 F2 之类的
     if (type(key) == keyboard.Key):
         keyChar = getattr(key, 'name')
-
     return keyChar
 
 # [keyboard.Key.ctrl_l, keyboard.Key.d] => 'ctrl + d'
 def getCombKeyChar(comb_key):
     res = ''
-    print('comb_key', comb_key)
     for key in comb_key:
         key_char = getSingleKeyChar(key)
-        print('key:', key, ', char:', key_char)
         key_char = flatAsstKey(key_char)
-        print('flatAsstKey:', key_char)
         res = res + '+' + key_char
-        
     return res[1:]
-
 
 # 功能键部分左右，所以去掉 'ctrl_l' 的 '_l'，返回 'ctrl'
 def flatAsstKey(key):
@@ -69,5 +64,4 @@ def isFunctionKey(key_or_comb):
                 break
         if res == True:
             break
-
     return res

@@ -2,6 +2,7 @@ import time
 import json
 from pynput import mouse
 from config import config
+from util.times import cute_head
 
 assets_dir = config.PROJECT['path'] + config.PROJECT['name']
 abbr = config.ABBR
@@ -77,8 +78,8 @@ class MouseController:
     # 注册鼠标事件
     def registe (self, event_dict):
         self.event_click = event_dict['click']
-        for item in event_dict:
-            print(item)
+        # for item in event_dict:
+        #     print(item)
         pass
 
     # 开启鼠标监听
@@ -106,9 +107,10 @@ class MouseController:
     # 记录操作
     def _recordBehavior(self, event, time, loc):
         data = {
+            abbr['type']: abbr['mouse'],
             abbr['loc']: loc,
-            abbr['time']: time,
-            abbr['mouse']: event,
+            abbr['time']: cute_head(time),
+            abbr['mouse']: event
         }
         self._write(data)
         MouseController.behaviors.append(data)

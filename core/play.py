@@ -5,6 +5,7 @@ import os
 import re
 import time
 import threading
+import json
 from config import config
 from util.scaner import Scaner
 from util.scissors import Scissors
@@ -12,6 +13,7 @@ from util.scissors import Scissors
 from core.keyboard import KeyboardController
 from core.controller import createController
 
+abbr = config.ABBR
 assets_dir = config.PROJECT['path'] + config.PROJECT['name']
 
 class Play:
@@ -44,10 +46,19 @@ class Play:
         return re.search(r'^\d*?\.?\d*?(?=\_)', nextFile).group()
 
     def _runHandler(self):
-        while self.step < len(self.step_items):
+        opr_file = open(assets_dir + '\\index.log', 'r')
+        if self.step > 0:
+            opr_file.seek(self.step)
+        line = opr_file.readline()
+        self.step = opr_file.tell()
+        # while self.step < len(self.step_items):
+        while len(line) > 0:
             if (self.pause_sign or self.stop_sign):
                 break
-            step_item = self.step_items[self.step]
+            # step_item = self.step_items[self.step]
+            step_item = json.loads(line)
+            # todo 需要区分事件类型：
+            # 包括 点击，拖拽，按键，组合键
             """
             # 录制时截取的图片, 是鼠标移动到目标位置，点击之后的,
             # 那么, 需要准确的记录出移动到目的地之后的滞留时间
@@ -55,19 +66,22 @@ class Play:
             self._domoves(step_item)
             if config.MATCH:
                 screen = self.scissors.cutScreen()
-                temp = step_item['file']
+                temp = step_item['shot']
                 if self.scaner.hasUniqueTarget(screen, temp) or self.check_i == 0:
                     self._resetCheckTimes()
                     self._doclick(step_item)
-                    self._stepGrow()
-                    self._waiting(step_item['sleep'] - self._checkedSeconds())
+                    # self._stepGrow()
+                    # self._waiting(step_item['sleep'] - self._checkedSeconds())
                 else:
                     self._checkReduce()
-                    self._waiting(self.interval)
+                    # self._waiting(self.interval)
             else:
                 self._doclick(step_item)
-                self._stepGrow()
-                self._waiting(self.interval)
+                # self._stepGrow()
+                # self._waiting(self.interval)
+            self._waiting(self.interval)
+            line = opr_file.readline()
+            self.step = opr_file.tell()
 
     # 计算匹配消耗的时间
     def _checkedSeconds(self):
@@ -161,8 +175,8 @@ class Play:
         i = 0
         step_items = []
         if config.MATCH: # 是否启用视觉匹配
-            match_pic_dir = assets_dir + '\\matchs'
-            file_list = os.listdir(assets_dir)
+            match_pic_dir = assets_dir + '\\shots'
+            file_list = os.listdir(match_pic_dir)
             for file_name in file_list:
                 timestamp = re.search(r'^\d*?\.?\d*?(?=\_)', file_name).group()
                 loc = eval(re.search(r'\(\d*?, \d*?\)', file_name).group())
@@ -170,12 +184,18 @@ class Play:
                 nextTime = self._getNextTime(i, file_list)
                 step_items.append({
                     'loc': loc,
-                    'insert': insert,
-                    'file': assets_dir + '\\' + file_name,
+                    'insert': insert, # 判断是否是手动插入帧
+                    'shot': assets_dir + '\\' + file_name,
                     'sleep': float(nextTime) - float(timestamp),
                 })
                 i = i + 1
         else: # 直接从log中拉取操作记录
-            
-            print('sss')
+            opr_file = open(assets_dir + '\\index.log', 'r')
+            line = opr_file.readline()
+            item = json.loads(line)
+            step_items.append({
+                'loc': item.loc,
+                'shot': None
+                # 'sleep': float(nextTime) - float(timestamp),
+            })
         return step_items
