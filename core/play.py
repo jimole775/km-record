@@ -11,7 +11,7 @@ import ctypes
 
 
 from config import config
-from util.keychar import getKeyObj
+from util.keyboard import get_keyboard_key
 from util.scaner import Scaner
 from util.scissors import Scissors
 # from core.mouse import MouseController
@@ -137,9 +137,9 @@ class Play:
         if (type(keychars) == list):
             res = []
             for key in keychars:
-                res.append(getKeyObj(key))
+                res.append(get_keyboard_key(key))
         elif (type(keychars) == str):
-            res = getKeyObj(keychars)
+            res = get_keyboard_key(keychars)
         else:
             res = keychars
         return res

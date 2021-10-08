@@ -18,10 +18,10 @@ def _get_single_key(_t, key):
             res = getattr(key, 'value')
     return res
 
-# [keyboard.Key.ctrl_l, keyboard.Key.d] => 'ctrl + d'
-def _get_comb_key(_t, comb_key):
+# [keyboard.Key.ctrl_l, keyboard.Key.d] => 'ctrl+d'
+def _get_comb_key(_t, comb_key_list):
     res = ''
-    for key in comb_key:
+    for key in comb_key_list:
         _key = _get_single_key(_t, key)
         if (_t == 'char'):
             _key = flat_asst_key(_key)
@@ -74,6 +74,35 @@ def get_key_code(key_or_comb):
         res = _get_single_key('code', key_or_comb)
     return res
 
+def get_keyboard_key(code_or_char):
+    key_type = type(code_or_char)
+    # 组合键
+    if (key_type == list):
+        res = []
+        for item in code_or_char:
+            if type(item) == str:
+                res.append(keyboard.Key[item])
+            elif type(item) == int:
+                res.append(keyboard.KeyCode.from_vk(item))
+    # 统一转成字符串
+    elif (key_type == int):
+        res = keyboard.KeyCode.from_vk(code_or_char)
+    # 字符串
+    elif (key_type == str):
+        if '+' in code_or_char:
+            items = code_or_char.split('+')
+            res = []
+            for item in items:
+                try:
+                    code = int(item)
+                    res.append(keyboard.KeyCode.from_vk(code))
+                except ValueError:
+                    char = item
+                    res.append(keyboard.Key[char])
+        else:
+            res = keyboard.Key[code_or_char]
+    return res
+
 # 判断是否是功能键，包括组合键
 def is_function_key(key_or_comb):
     res = False
@@ -95,25 +124,3 @@ def is_function_key(key_or_comb):
         if res == True:
             break
     return res
-
-key_map = {
-    'ctrl': keyboard.Key.ctrl,
-    'shift': keyboard.Key.shift,
-    'alt': keyboard.Key.alt,
-    'space': keyboard.Key.space,
-    'esc': keyboard.Key.esc,
-    'enter': keyboard.Key.enter,
-    'page_down': keyboard.Key.page_down,
-    'page_up': keyboard.Key.page_up,
-    'caps_lock': keyboard.Key.caps_lock,
-    'tab': keyboard.Key.tab,
-    'backspace': keyboard.Key.backspace,
-    'delete': keyboard.Key.delete,
-    'insert': keyboard.Key.insert
-}
-
-def getKeyObj(str_key):
-    if (type(str_key) == str) and (str_key in key_map):
-        return key_map[str_key]
-    else:
-        return str_key

@@ -4,7 +4,7 @@ from core.mouse import MouseController
 from core.keyboard import KeyboardController
 from config import config
 from core.controller import createController
-from util.keychar import get_key_char
+from util.keyboard import get_key_char
 from util.scissors import Scissors
 from util.times import cute_head
 import threading

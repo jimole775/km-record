@@ -1,23 +1,8 @@
 # import pyautogui as gui
 from pynput import keyboard
 from config import config
-from util.keychar import get_key_char
+from util.keyboard import get_key_char
 # from util.swapdict import swapdict
-# key_dicts = {
-#     keyboard.Key.f1: 'F1',
-#     keyboard.Key.f2: 'F2',
-#     keyboard.Key.f3: 'F3',
-#     keyboard.Key.f4: 'F4',
-#     keyboard.Key.f5: 'F5',
-#     keyboard.Key.f5: 'F5',
-#     keyboard.Key.f6: 'F6',
-#     keyboard.Key.f7: 'F7',
-#     keyboard.Key.f8: 'F8',
-#     keyboard.Key.f9: 'F9',
-#     keyboard.Key.f10: 'F10',
-#     keyboard.Key.f11: 'F11',
-#     keyboard.Key.f12: 'F12',
-# }
 
 def createController (_cls): # 继承后，cls原本的变更无法跟踪，需要修改方案
     class HotKeyCtrl(_cls):

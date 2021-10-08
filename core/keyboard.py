@@ -2,7 +2,7 @@ import json
 import time
 from pynput import keyboard
 from config import config
-from util.keychar import is_function_key
+from util.keyboard import is_function_key
 import threading
 
 assets_dir = config.PROJECT['path'] + config.PROJECT['name']
