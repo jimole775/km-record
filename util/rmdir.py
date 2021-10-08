@@ -17,8 +17,11 @@ def rmdir(path):
         l_item = os.listdir(path)
         for item in l_item:
             p_item = path + '\\' + item
-            if os.path.isdir(item):
-                rmdir(p_item)
+            if os.path.isdir(p_item):
+                if len(os.listdir(p_item)) == 0:
+                    os.removedirs(p_item)
+                else:
+                    rmdir(p_item)
             else:
-                shutil.rmtree(p_item)
+                os.remove(p_item)
         return True

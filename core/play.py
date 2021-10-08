@@ -1,21 +1,32 @@
-import pyautogui as gui
-import numpy as np
-import cv2 as cv
+# import pyautogui as gui
+# import numpy as np
+# import cv2 as cv
 import os
 import re
 import time
 import threading
 import json
+import pynput
+import ctypes
+
+
 from config import config
+from util.keychar import getKeyObj
 from util.scaner import Scaner
 from util.scissors import Scissors
 # from core.mouse import MouseController
 from core.keyboard import KeyboardController
 from core.controller import createController
 
+# 处理windows系统对于坐标读取的误差问题
+PROCESS_PER_MONITOR_DPI_AWARE = 2
+ctypes.windll.shcore.SetProcessDpiAwareness(PROCESS_PER_MONITOR_DPI_AWARE)
+
 abbr = config.ABBR
 assets_dir = config.PROJECT['path'] + config.PROJECT['name']
 
+m_handler = pynput.mouse.Controller()
+k_handler = pynput.keyboard.Controller()
 class Play:
     def __init__(self):
         self.play_type = 'once'
@@ -26,7 +37,7 @@ class Play:
         self.scissors = Scissors()
         self.scaner = Scaner()
         self.k_controller = KeyboardController()
-        self.step_items = self._getSteps()
+        # self.step_items = self._getSteps()
         if config.MATCH: # 是否启用视觉匹配
             print('config.MATCH:', config.MATCH)
             self.check_i = config.MATCH['times']
@@ -61,47 +72,91 @@ class Play:
             """
             # 鼠标事件
             if step_item[abbr['type']] == abbr['mouse']:
-                # self._domoves(step_item)
-                if config.MATCH:
-                    screen = self.scissors.cutScreen()
-                    shot_name = step_item[abbr['time']]
-                    shot_img = open(assets_dir + '\\' + shot_name + '.jpg')
-                    if self.scaner.hasUniqueTarget(screen, shot_img) or self.check_i == 0:
-                        self._resetCheckTimes()
-                        self._doclick(step_item)
-                        # self._stepGrow()
-                        # self._waiting(step_item['sleep'] - self._checkedSeconds())
+                loc = step_item[abbr['loc']]
+                m_handler.position = (loc[0], loc[1])
+                if step_item[abbr['mouse_event']] == abbr['press']:
+                    # m_handler.move(loc[0], loc[1])
+                    m_handler.press(pynput.mouse.Button.left)
+
+                if step_item[abbr['mouse_event']] == abbr['release']:
+                    # self._domoves(step_item)
+                    # m_handler.position = tuple(step_item[abbr['loc']])
+                    if config.MATCH:
+                        screen = self.scissors.cutScreen()
+                        shot_name = step_item[abbr['time']]
+                        shot_img = assets_dir + '\\shots\\' + shot_name + '.jpg'
+                        if self.scaner.hasUniqueTarget(screen, shot_img) or self.check_i == 0:
+                            self._resetCheckTimes()
+                            m_handler.release(pynput.mouse.Button.left)
+                            # self._doclick(step_item)
+                            # self._stepGrow()
+                            # self._waiting(step_item['sleep'] - self._checkedSeconds())
+                        else:
+                            self._checkReduce()
+                            # self._waiting(self.interval)
                     else:
-                        self._checkReduce()
+                        m_handler.release(pynput.mouse.Button.left)
+                        # self._doclick(step_item)
+                        # self._stepGrow()
                         # self._waiting(self.interval)
-                else:
-                    self._doclick(step_item)
-                    # self._stepGrow()
-                    # self._waiting(self.interval)
+                if step_item[abbr['mouse_event']] == abbr['scroll']:
+                    # loc = step_item[abbr['loc']]
+                    # m_handler.move(tuple(loc[0:2]))
+                    # m_handler.position = tuple(loc[0:2])
+                    m_handler.scroll(loc[2], loc[3])
+
             # 键盘事件
             if step_item[abbr['type']] == abbr['keyboard']:
-                print('keyboard')
-
-            self._waiting(self.interval)
+                key_code = step_item[abbr['key']]
+                if '+' in key_code:
+                    combs = key_code.split('+')
+                    k_handler.type(self._keycode_swip(combs))
+                else:
+                    k_handler.type(self._keycode_swip(key_code))
+                # k_handler.type(step_item[abbr['key']])
             if (self.pause_sign or self.stop_sign):
                 break
             line = opr_file.readline()
+            if len(line) > 0:
+                o_item = step_item
+                n_item = json.loads(line)
+                # print(float(n_item['i']) - float(o_item['i']))
+                time.sleep(float(n_item['i']) - float(o_item['i']))
             self.step = opr_file.tell()
         opr_file.close()
+
+    """
+    # todo 使用 press 和 release 来模拟type，因为type对code的输入支持一般
+    """
+    def _kb_type(keys):
+
+        pass
+
+    def _keycode_swip(self, keychars):
+        res = None
+        if (type(keychars) == list):
+            res = []
+            for key in keychars:
+                res.append(getKeyObj(key))
+        elif (type(keychars) == str):
+            res = getKeyObj(keychars)
+        else:
+            res = keychars
+        return res
 
     # 计算匹配消耗的时间
     def _checkedSeconds(self):
         return (self.check_max - self.check_i) * self.interval
 
-    def _domoves(self, step_item):
-        x, y = step_item['loc']
-        gui.moveTo(x, y)
-        time.sleep(self.interval)
+    # def _domoves(self, step_item):
+    #     x, y = step_item['loc']
+    #     gui.moveTo(x, y)
+    #     time.sleep(self.interval)
 
-    def _doclick(self, step_item):
-        x, y = step_item['loc']
-        gui.moveTo(x, y)
-        gui.click()
+    # def _doclick(self, step_item):
+    #     x, y = step_item['loc']
+    #     gui.moveTo(x, y)
+    #     gui.click()
 
     def _waiting(self, t_remian):
         if t_remian > self.interval:
@@ -175,7 +230,7 @@ class Play:
     def _keyboardEvent (self):
         ctrl = createController(Play)()
         self.k_controller.bindExecution(ctrl.execution)
-        self.k_controller.start()
+        self.k_controller.active()
 
     def _getSteps(self):
         i = 0

@@ -2,8 +2,7 @@ import json
 import time
 from pynput import keyboard
 from config import config
-from util.keychar import getKeyChar, isFunctionKey
-from util.times import cute_head
+from util.keychar import is_function_key
 import threading
 
 assets_dir = config.PROJECT['path'] + config.PROJECT['name']
@@ -35,13 +34,17 @@ def is_assist_key(key):
     return res
 
 class KeyboardController():
-    state = False
+    active = False
+
     def __init__(self):
         self.combo_keys = []
         self.thread_queue = []
         self.thread_active = None
+        self.event_press = None
+        self.event_release = None
+
     def _press(self, key):
-        # 如果是辅助键，就存comb，理论上不限定组合键的个数
+        # 如果是辅助键，就存comb，理论上不限定组合键的个数123
         if is_assist_key(key) or len(self.combo_keys) > 0:
             if key not in self.combo_keys:
                 self._storeCombo(key)
@@ -51,26 +54,30 @@ class KeyboardController():
         #     print('special key {0} pressed'.format(key))
 
     def _release(self, key):
+        stamp = time.time()
+        print(key)
         if is_assist_key(key):
             self._clearCombo() # 如果辅助键松开，那么代表用户取消这次组合键
         else:
             # 有组合键
             if len(self.combo_keys) > 0:
                 # 如果配置有功能键，那么就直接触发绑定的事件
-                if isFunctionKey(self.combo_keys):
-                    self._triggerEvent(self.combo_keys)
+                if is_function_key(self.combo_keys):
+                    self._triggerFunction(self.combo_keys)
                 else:
-                    self._recordBehavior(self.combo_keys)
+                    if callable(self.event_release):
+                        self.event_release(self.combo_keys, stamp)
             else:
                 # 如果配置有功能键，那么就直接触发绑定的事件
-                if isFunctionKey(key):
-                    self._triggerEvent(key)
+                if is_function_key(key):
+                    self._triggerFunction(key)
                 else:
-                    self._recordBehavior(key)
+                    if callable(self.event_release):
+                        self.event_release(key, stamp)
         return self._evalExit(key)
 
     def _evalExit(self, key):
-        if self._getState() == False:
+        if KeyboardController.active == False:
             return False
         else:
             return True
@@ -86,24 +93,33 @@ class KeyboardController():
     def _clearCombo(self):
         self.combo_keys.clear()
 
-    def start(self):
+    def active(self):
         self._doActive()
-        listener = keyboard.Listener(on_press = self._press, on_release = self._release)
-        listener.start()
+        with keyboard.Listener(
+          on_press=self._press,
+          on_release=self._release
+        ) as listener:
+            listener.join()
 
     def stop(self):
-        self._undoActive()
+        self._unActive()
 
     def bindExecution(self, excutionFn):
         self.eventsExcution = excutionFn
 
-    def _triggerEvent(self, key):
+    def _triggerFunction(self, key):
         if (self.eventsExcution):
             thread = threading.Thread(target=self.eventsExcution, args=(key,))
             thread.start()
 
     def _createSubThread(self, key):
         self.thread_queue.append(threading.Thread(target=self.eventsExcution, args=(key,)))
+        pass
+
+    # 注册键盘事件
+    def registe(self, event_dict):
+        self.event_press = event_dict['press']
+        self.event_release = event_dict['release']
         pass
 
     """
@@ -130,24 +146,23 @@ class KeyboardController():
         pass
 
     def _doActive(self):
-        KeyboardController.state = True
+        KeyboardController.active = True
 
-    def _undoActive(self):
-        KeyboardController.state = False
+    def _unActive(self):
+        KeyboardController.active = False
 
-    def _getState(self):
-        return KeyboardController.state
+    # def _recordBehavior(self, key):
+    #     if KeyboardController.work == True:
+    #         value = {
+    #             abbr['type']: abbr['keyboard'],
+    #             abbr['time']: cute_head(time.time()),
+    #             abbr['key']: get_key_char(key)
+    #         }
+    #         self._write(value)
+    #     pass
 
-    def _recordBehavior(self, key):
-        value = {
-            abbr['type']: abbr['keyboard'],
-            abbr['time']: cute_head(time.time()),
-            abbr['key']: getKeyChar(key)
-        }
-        self._write(value)
-
-    def _write(self, val):
-        str = json.dumps(val)
-        record_file = open(assets_dir + '/index.log', 'a+')
-        record_file.write(str + '\n')
-        record_file.close()
+    # def _write(self, val):
+    #     str = json.dumps(val)
+    #     record_file = open(assets_dir + '/index.log', 'a+')
+    #     record_file.write(str + '\n')
+    #     record_file.close()dwaww

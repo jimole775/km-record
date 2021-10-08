@@ -14,6 +14,16 @@
       "args": [
         "record"
       ]
+    },
+    {
+      "name": "Python: play",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceRoot}\\main.py",
+      "console": "integratedTerminal",
+      "args": [
+        "play"
+      ]
     }
   ]
 }
