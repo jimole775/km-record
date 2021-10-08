@@ -126,7 +126,7 @@ class Play:
         opr_file.close()
 
     """
-    # todo 使用 press 和 release 来模拟type，因为type对code的输入支持一般
+    # todo 使用 press 和 release 来模拟type，因为keyboard.type()方法对code的输入支持一般
     """
     def _kb_type(keys):
 
