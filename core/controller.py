@@ -28,17 +28,24 @@ def createController (_cls): # 继承后，cls原本的变更无法跟踪，需�
         def _getFnName(self, key_map, hot_key):
             fn_name = None
             print('hot_key:', hot_key)
-            for key_item in key_map:
-                key_info = key_map[key_item]
-                if '+' in hot_key:
-                    key_char_list = hot_key.split('+')
-                    key_char_list.sort()
-                    fn_info_list = key_info['key'].split('+')
-                    fn_info_list.sort()
-                    if key_char_list == fn_info_list:
-                        fn_name = key_item
-                elif key_info['key'] == hot_key:
-                    fn_name = key_item
+            for key_item_name in key_map:
+                key_info = key_map[key_item_name]
+                hot_key_char = get_key_char(hot_key)
+                key_info_char = get_key_char(key_info['key'])
+                hot_key_char.sort()
+                key_info_char.sort()
+                if hot_key_char == key_info_char:
+                    fn_name = key_item_name
+                    break
+                # if '+' in hot_key:
+                #     key_char_list = hot_key.split('+')
+                #     key_char_list.sort()
+                #     fn_info_list = key_info['key'].split('+')
+                #     fn_info_list.sort()
+                #     if key_char_list == fn_info_list:
+                #         fn_name = key_item_name
+                # elif key_info['key'] == hot_key:
+                #     fn_name = key_item_name
             print('function name:', fn_name)
             return fn_name
 

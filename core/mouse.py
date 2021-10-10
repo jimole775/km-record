@@ -1,5 +1,4 @@
 import time
-import json
 from pynput import mouse
 from config import config
 
@@ -7,14 +6,7 @@ assets_dir = config.PROJECT['path'] + config.PROJECT['name']
 abbr = config.ABBR
 
 class MouseController:
-    # work = False
     active = False
-    # behaviors = [
-        # { 'event': 'press', 'button': 'left', 'time': '', 'loc': (),  },
-        # { 'event': 'move', 'button': 'left', 'time': '', 'loc': () },
-        # { 'event': 'release', 'button': 'left', 'time': '', 'loc': () },
-        # { 'event': 'scroll', 'button': 'left', 'time': '', 'loc': () }
-    # ]
     def __init__(self):
         self.event_drag = None
         self.event_drag_move = None
@@ -42,20 +34,15 @@ class MouseController:
             self.x = x
             self.y = y
             self.event_drag_move((x, y), timeStamp)
-            # self._recordBehavior(abbr['drag'], timeStamp, )
         return self._evalExit()
 
     # 监听鼠标点击
     def _click(self, x, y, button, pressed):
         timeStamp = time.time()
         self.is_pressed = pressed
-        print('_click x:', x)
-        print('_click y:', y)
         if self.is_pressed:
-            # self.event_press((x, y), timeStamp)
             self._press(x, y, timeStamp)
         if not self.is_pressed:
-            # self.event_release((x, y), timeStamp)
             self._release(x, y, timeStamp)
         return self._evalExit()
 
@@ -63,7 +50,6 @@ class MouseController:
     def _scroll(self, x, y, dx, dy):
         timeStamp = time.time()
         self.event_scroll((x, y, dx, dy), timeStamp)
-        # self._recordBehavior(abbr['scroll'], timeStamp, (x, y, dx, dy))
         return self._evalExit()
 
     def _press(self, x, y, timeStamp):
@@ -80,12 +66,6 @@ class MouseController:
             self.event_drag((x, y), timeStamp)
         else:
             self.event_release((x, y), timeStamp)
-            # self._clickEvent(timeStamp, (x, y))
-            # if callable(self.event_click):
-            #     self.event_click(x, y, timeStamp)
-            # else:
-            #     print('没有注册鼠标点击事件！')
-        # self._recordBehavior(abbr['release'], timeStamp, (x, y))
         self.reset()
 
     # 注册鼠标事件
@@ -107,9 +87,6 @@ class MouseController:
         ) as listener:
             listener.join()
 
-    # def start(self):
-    #     self._doWork()
-
     # 重置坐标记录，用于判断是否是拖拽行为
     def reset(self):
         self.x = None
@@ -123,12 +100,6 @@ class MouseController:
         self._unActive()
         # self._unWork()
 
-    # def _doWork(self):
-    #     MouseController.work = True
-
-    # def _unWork(self):
-    #     MouseController.work = False
-
     # 开启监听的逻辑
     def _doActive(self):
         MouseController.active = True
@@ -136,5 +107,3 @@ class MouseController:
     # 关闭监听的逻辑
     def _unActive(self):
         MouseController.active = False
-
-

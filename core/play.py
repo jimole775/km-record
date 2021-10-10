@@ -62,9 +62,7 @@ class Play:
             opr_file.seek(self.step)
         line = opr_file.readline()
         self.step = opr_file.tell()
-        # while self.step < len(self.step_items):
         while len(line) > 0:
-            # step_item = self.step_items[self.step]
             step_item = json.loads(line)
             """
             # todo 需要区分事件类型：
@@ -75,12 +73,9 @@ class Play:
                 loc = step_item[abbr['loc']]
                 m_handler.position = (loc[0], loc[1])
                 if step_item[abbr['mouse_event']] == abbr['press']:
-                    # m_handler.move(loc[0], loc[1])
                     m_handler.press(pynput.mouse.Button.left)
 
                 if step_item[abbr['mouse_event']] == abbr['release']:
-                    # self._domoves(step_item)
-                    # m_handler.position = tuple(step_item[abbr['loc']])
                     if config.MATCH:
                         screen = self.scissors.cutScreen()
                         shot_name = step_item[abbr['time']]
@@ -88,39 +83,23 @@ class Play:
                         if self.scaner.hasUniqueTarget(screen, shot_img) or self.check_i == 0:
                             self._resetCheckTimes()
                             m_handler.release(pynput.mouse.Button.left)
-                            # self._doclick(step_item)
-                            # self._stepGrow()
-                            # self._waiting(step_item['sleep'] - self._checkedSeconds())
                         else:
                             self._checkReduce()
-                            # self._waiting(self.interval)
                     else:
                         m_handler.release(pynput.mouse.Button.left)
-                        # self._doclick(step_item)
-                        # self._stepGrow()
-                        # self._waiting(self.interval)
                 if step_item[abbr['mouse_event']] == abbr['scroll']:
-                    # loc = step_item[abbr['loc']]
-                    # m_handler.move(tuple(loc[0:2]))
-                    # m_handler.position = tuple(loc[0:2])
                     m_handler.scroll(loc[2], loc[3])
 
             # 键盘事件
             if step_item[abbr['type']] == abbr['keyboard']:
                 key_code = step_item[abbr['key']]
-                if '+' in key_code:
-                    combs = key_code.split('+')
-                    k_handler.type(self._keycode_swip(combs))
-                else:
-                    k_handler.type(self._keycode_swip(key_code))
-                # k_handler.type(step_item[abbr['key']])
+                self._kb_type(key_code)
             if (self.pause_sign or self.stop_sign):
                 break
             line = opr_file.readline()
             if len(line) > 0:
                 o_item = step_item
                 n_item = json.loads(line)
-                # print(float(n_item['i']) - float(o_item['i']))
                 time.sleep(float(n_item['i']) - float(o_item['i']))
             self.step = opr_file.tell()
         opr_file.close()
@@ -129,20 +108,19 @@ class Play:
     # todo 使用 press 和 release 来模拟type，因为keyboard.type()方法对code的输入支持一般
     """
     def _kb_type(keys):
-
-        pass
-
-    def _keycode_swip(self, keychars):
-        res = None
-        if (type(keychars) == list):
-            res = []
-            for key in keychars:
-                res.append(get_keyboard_key(key))
-        elif (type(keychars) == str):
-            res = get_keyboard_key(keychars)
+        kb_key = get_keyboard_key(keys)
+        if type(kb_key) == list:
+            for item in kb_key:
+                k_handler.press(item)
+            l = len(kb_key)
+            while(l > 0):
+                l = l - 1
+                item = kb_key[l]
+                k_handler.release(item)
         else:
-            res = keychars
-        return res
+            k_handler.press(kb_key)
+            k_handler.release(kb_key)
+        pass
 
     # 计算匹配消耗的时间
     def _checkedSeconds(self):

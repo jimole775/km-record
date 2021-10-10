@@ -55,10 +55,8 @@ class KeyboardController():
 
     def _release(self, key):
         stamp = time.time()
-        print(key)
-        if is_assist_key(key):
-            self._clearCombo() # 如果辅助键松开，那么代表用户取消这次组合键
-        else:
+        # 非辅助键松开，才会执行事件
+        if not is_assist_key(key):
             # 有组合键
             if len(self.combo_keys) > 0:
                 # 如果配置有功能键，那么就直接触发绑定的事件
@@ -74,6 +72,7 @@ class KeyboardController():
                 else:
                     if callable(self.event_release):
                         self.event_release(key, stamp)
+        self._clearCombo()
         return self._evalExit(key)
 
     def _evalExit(self, key):
@@ -150,19 +149,3 @@ class KeyboardController():
 
     def _unActive(self):
         KeyboardController.active = False
-
-    # def _recordBehavior(self, key):
-    #     if KeyboardController.work == True:
-    #         value = {
-    #             abbr['type']: abbr['keyboard'],
-    #             abbr['time']: cute_head(time.time()),
-    #             abbr['key']: get_key_char(key)
-    #         }
-    #         self._write(value)
-    #     pass
-
-    # def _write(self, val):
-    #     str = json.dumps(val)
-    #     record_file = open(assets_dir + '/index.log', 'a+')
-    #     record_file.write(str + '\n')
-    #     record_file.close()dwaww
