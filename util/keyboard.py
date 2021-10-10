@@ -49,6 +49,7 @@ def _eval_comb(exp_t, comb_key_list):
         if (exp_t == 'char'):
             _key = flat_asst_key(_key)
         res.append(_key)
+    res.sort()
     return res
 
 # 获取 key 的字符类型

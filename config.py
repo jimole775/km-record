@@ -8,7 +8,6 @@ DEFAULT = {
         'name': 'temp', # 录制的项目名，默认为temp
         'path': '.\\business\\' # 录制项目的存储路径
     },
-    'ran_type_cmd': 'ctrl+alt+i', # 键入随机字符的指令
     'abbr': { # 缩写字典
         'loc': 'l', # 用于记录坐标的，一般使用数组的形式存储(json转换)
         'key': 'k', # 键盘按键
@@ -23,6 +22,12 @@ DEFAULT = {
         'keyboard': 'kb', # 键盘
         'drag_move': 'dm', # 鼠标拖拽过程
         'mouse_event': 'me', # 鼠标事件类型
+    },
+    'cmd': {
+        'random_type': { # 键入随机字符的指令
+            'label': u'键入随机数',
+            'key': 'ctrl+alt+i'
+        }
     },
     'hotkey': {
         'play': {
@@ -79,3 +84,4 @@ class config():
     ABBR = DEFAULT['abbr']
     PROJECT = DEFAULT['project']
     HOTKEY = DEFAULT['hotkey']
+    CMD = DEFAULT['cmd']

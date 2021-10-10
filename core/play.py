@@ -25,6 +25,8 @@ ctypes.windll.shcore.SetProcessDpiAwareness(PROCESS_PER_MONITOR_DPI_AWARE)
 abbr = config.ABBR
 assets_dir = config.PROJECT['path'] + config.PROJECT['name']
 
+random_type_key = get_keyboard_key(config.CMD['random_type'])
+
 m_handler = pynput.mouse.Controller()
 k_handler = pynput.keyboard.Controller()
 class Play:
@@ -107,8 +109,11 @@ class Play:
     """
     # todo 使用 press 和 release 来模拟type，因为keyboard.type()方法对code的输入支持一般
     """
-    def _kb_type(keys):
+    def _kb_type(self, keys):
         kb_key = get_keyboard_key(keys)
+        if (kb_key == random_type_key):
+            self._rundom_type()
+            pass
         if type(kb_key) == list:
             for item in kb_key:
                 k_handler.press(item)
@@ -121,6 +126,10 @@ class Play:
             k_handler.press(kb_key)
             k_handler.release(kb_key)
         pass
+
+    # 输入随机数
+    def _rundom_type():
+        k_handler.type(time.time())
 
     # 计算匹配消耗的时间
     def _checkedSeconds(self):
