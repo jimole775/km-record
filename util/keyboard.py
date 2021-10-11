@@ -82,7 +82,7 @@ def get_key_code(src):
         res = str(src)
     # 字符串
     elif (key_type == str):
-        if '+' in str:
+        if '+' in src:
             res = _eval_comb('code', src.split('+'))
         else:
             res = _eval_single('code', src)
@@ -99,7 +99,7 @@ def get_keyboard_key(src):
         res = _eval_comb('key', src)
     # 字符串
     elif (key_type == str):
-        if '+' in str:
+        if '+' in src:
             res = _eval_comb('key', src.split('+'))
         else:
             res = _eval_single('key', src)

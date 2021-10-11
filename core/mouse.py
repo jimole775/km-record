@@ -4,7 +4,6 @@ from config import config
 
 assets_dir = config.PROJECT['path'] + config.PROJECT['name']
 abbr = config.ABBR
-
 class MouseController:
     active = False
     def __init__(self):
@@ -29,8 +28,8 @@ class MouseController:
 
     # 监听鼠标滑动
     def _move(self, x, y):
-        timeStamp = time.time()
         if self.is_pressed:
+            timeStamp = time.time()
             self.x = x
             self.y = y
             self.event_drag_move((x, y), timeStamp)
