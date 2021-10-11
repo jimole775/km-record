@@ -11,7 +11,7 @@ m_handler.click(mouse.Button.left)
 # 111111111
 
 a = [keyboard.Key.enter, keyboard.Key.alt]
-b = [keyboard.Key.enter, keyboard.Key.alt]
+b = [keyboard.Key.alt, keyboard.Key.enter]
 print(a == b)
 # key = keyboard.KeyCode.from_vk(108)
 # c = getattr(key, 'vk')1

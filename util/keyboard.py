@@ -1,11 +1,22 @@
 import re
 from config import config
 from pynput import keyboard
+# 功能键部分左右，所以去掉 'ctrl_l' 的 '_l'，返回 'ctrl'
+def flat_asst_key(key):
+    signs = ['ctrl', 'alt', 'shift']
+    key_char = _eval_single('char', key)
+    res = key
+    for sign in signs:
+        if (re.match(sign, key_char)):
+            res = sign
+            break
+    return res
+
 def _eval_single(exp_t, src):
     res = src
     s_type = type(src)
-    if exp_t == 'code':
-        if s_type == str:
+    if exp_t == 'code': # 返回 code
+        if s_type == str: # char 转 code
             if (len(src) == 1):
                 res = ord(src)
             else:
@@ -16,8 +27,8 @@ def _eval_single(exp_t, src):
         if s_type == keyboard.Key:
             res = getattr(src, 'value')
 
-    if exp_t == 'char':
-        if s_type == int:
+    if exp_t == 'char': # 返回 char
+        if s_type == int: # int 转 char
             key = keyboard.KeyCode.from_vk(src)
             if (type(key) == keyboard.Key):
                 res = getattr(key, 'name')
@@ -31,10 +42,10 @@ def _eval_single(exp_t, src):
             res = getattr(src, 'name')
             res = flat_asst_key(res)
 
-    if exp_t == 'key':
-        if s_type == int:
+    if exp_t == 'key': # 返回 key 对象
+        if s_type == int: # int 转 key
             res = keyboard.KeyCode.from_vk(src)
-        if s_type == str:
+        if s_type == str: # char 转 key
             if len(src) == 1:
                 code = ord(src)
                 res = keyboard.KeyCode.from_vk(code)
@@ -49,93 +60,68 @@ def _eval_comb(exp_t, comb_key_list):
         if (exp_t == 'char'):
             _key = flat_asst_key(_key)
         res.append(_key)
-    res.sort()
+    return res
+
+def _transform_handler(exp_t, src):
+    res = None
+    key_type = type(src)
+    # 组合键
+    if (key_type == list):
+        res = _eval_comb(exp_t, src)
+    # 字符串
+    elif (key_type == str):
+        if '+' in src:
+            res = _eval_comb(exp_t, src.split('+'))
+        else:
+            res = _eval_single(exp_t, src)
+    # 单键
+    else:
+        res = _eval_single(exp_t, src)
     return res
 
 # 获取 key 的字符类型
 def get_key_char(src):
-    res = None
-    key_type = type(src)
-    # 组合键
-    if (key_type == list):
-        res = _eval_comb('char', src)
-    # 字符串
-    elif (key_type == str):
-        if '+' in src:
-            res = _eval_comb('char', src.split('+'))
-        else:
-            res = _eval_single('char', src)
-    # 单键
-    else:
-        res = _eval_single('char', src)
-    return res
+    return _transform_handler('char', src)
 
 # 获取 key 的数字类型
 def get_key_code(src):
-    res = None
-    key_type = type(src)
-    # 组合键
-    if (key_type == list):
-        res = _eval_comb('code', src)
     # 统一转成字符串
-    elif (key_type == int):
-        res = str(src)
-    # 字符串
-    elif (key_type == str):
-        if '+' in src:
-            res = _eval_comb('code', src.split('+'))
-        else:
-            res = _eval_single('code', src)
-    # 单键
+    if (type(src) == int):
+        return str(src)
     else:
-        res = _eval_single('code', src)
-    return res
+        return _transform_handler('code', src)
 
+# 获取 key 的对象类型
 def get_keyboard_key(src):
-    res = None
-    key_type = type(src)
-    # 组合键
-    if (key_type == list):
-        res = _eval_comb('key', src)
-    # 字符串
-    elif (key_type == str):
-        if '+' in src:
-            res = _eval_comb('key', src.split('+'))
-        else:
-            res = _eval_single('key', src)
-    # 单键
-    else:
-        res = _eval_single('key', src)
-    return res
-
-# 功能键部分左右，所以去掉 'ctrl_l' 的 '_l'，返回 'ctrl'
-def flat_asst_key(key):
-    signs = ['ctrl', 'alt', 'shift']
-    key_char = _eval_single('char', key)
-    res = key
-    for sign in signs:
-        if (re.match(sign, key_char)):
-            res = sign
-            break
-    return res
+    return _transform_handler('key', src)
 
 # 判断是否是功能键，包括组合键
 def is_function_key(key_or_comb):
     res = False
     # 保证 key_char 转换后的格式
     key_char = get_key_char(key_or_comb)
-    if type(key_char) == list:
-        key_char.sort()
     for fn_type in config.HOTKEY:
         name_map = config.HOTKEY[fn_type]
         for fn_name in name_map:
             fn_info = name_map[fn_name]
             fn_key_char = get_key_char(fn_info['key'])
-            if type(fn_key_char) == list:
-                fn_key_char.sort()
-            if fn_key_char == key_char:
+            if compare_keys(fn_key_char, key_char) == True:
                 res = True
                 break
         if res == True:
             break
     return res
+
+def compare_keys(l_k, r_k):
+    if type(l_k) == type(r_k) or _both_in_combs(l_k, r_k) or _both_in_combs(r_k, l_k):
+        l_code = get_key_char(l_k)
+        r_code = get_key_char(r_k)
+        if type(l_code) == list:
+            l_code.sort()
+            r_code.sort()
+        return l_code == r_code
+    else:
+        return False
+
+def _both_in_combs(l_k, r_k):
+    return type(l_k) == list and type(r_k) == str and '+' in r_k
