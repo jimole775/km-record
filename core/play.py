@@ -66,10 +66,6 @@ class Play:
         self.step = opr_file.tell()
         while len(line) > 0:
             step_item = json.loads(line)
-            """
-            # todo 需要区分事件类型：
-            # 包括 点击，拖拽，按键，组合键
-            """
             # 鼠标事件
             if step_item[abbr['type']] == abbr['mouse']:
                 loc = step_item[abbr['loc']]
@@ -106,9 +102,6 @@ class Play:
             self.step = opr_file.tell()
         opr_file.close()
 
-    """
-    # todo 使用 press 和 release 来模拟type，因为keyboard.type()方法对code的输入支持一般
-    """
     def _kb_type(self, keys):
         kb_key = get_keyboard_key(keys)
         if (kb_key == random_type_key):
@@ -116,20 +109,26 @@ class Play:
             pass
         if type(kb_key) == list:
             for item in kb_key:
+                print('comb press:', item)
                 k_handler.press(item)
             l = len(kb_key)
             while(l > 0):
                 l = l - 1
                 item = kb_key[l]
+                print('comb release:', item)
                 k_handler.release(item)
         else:
+            print('press:', kb_key)
             k_handler.press(kb_key)
+            print('release:', kb_key)
             k_handler.release(kb_key)
         pass
 
     # 输入随机数
     def _rundom_type():
-        k_handler.type(time.time())
+        r_t = time.time()
+        print('_rundom_type:', r_t)
+        k_handler.type(r_t)
 
     # 计算匹配消耗的时间
     def _checkedSeconds(self):
@@ -161,9 +160,9 @@ class Play:
         else:
           self.check_i = 0
 
-    def _stepGrow(self):
-        self.step = self.step + 1
-        print('step:', self.step)
+    # def _stepGrow(self):
+    #     self.step = self.step + 1
+    #     print('step:', self.step)
 
     def _doplay(self):
         if self.play_type == 'once':
@@ -219,31 +218,31 @@ class Play:
         self.k_controller.bindExecution(ctrl.execution)
         self.k_controller.active()
 
-    def _getSteps(self):
-        i = 0
-        step_items = []
-        if config.MATCH: # 是否启用视觉匹配
-            match_pic_dir = assets_dir + '\\shots'
-            file_list = os.listdir(match_pic_dir)
-            for file_name in file_list:
-                timestamp = re.search(r'^\d*?\.?\d*?(?=\_)', file_name).group()
-                loc = eval(re.search(r'\(\d*?, \d*?\)', file_name).group())
-                insert = re.search(r'insert', file_name)
-                nextTime = self._getNextTime(i, file_list)
-                step_items.append({
-                    'loc': loc,
-                    'insert': insert, # 判断是否是手动插入帧
-                    'shot': assets_dir + '\\' + file_name,
-                    'sleep': float(nextTime) - float(timestamp),
-                })
-                i = i + 1
-        else: # 直接从log中拉取操作记录
-            opr_file = open(assets_dir + '\\index.log', 'r')
-            line = opr_file.readline()
-            item = json.loads(line)
-            step_items.append({
-                'loc': item.loc,
-                'shot': None
-                # 'sleep': float(nextTime) - float(timestamp),
-            })
-        return step_items
+    # def _getSteps(self):
+    #     i = 0
+    #     step_items = []
+    #     if config.MATCH: # 是否启用视觉匹配
+    #         match_pic_dir = assets_dir + '\\shots'
+    #         file_list = os.listdir(match_pic_dir)
+    #         for file_name in file_list:
+    #             timestamp = re.search(r'^\d*?\.?\d*?(?=\_)', file_name).group()
+    #             loc = eval(re.search(r'\(\d*?, \d*?\)', file_name).group())
+    #             insert = re.search(r'insert', file_name)
+    #             nextTime = self._getNextTime(i, file_list)
+    #             step_items.append({
+    #                 'loc': loc,
+    #                 'insert': insert, # 判断是否是手动插入帧
+    #                 'shot': assets_dir + '\\' + file_name,
+    #                 'sleep': float(nextTime) - float(timestamp),
+    #             })
+    #             i = i + 1
+    #     else: # 直接从log中拉取操作记录
+    #         opr_file = open(assets_dir + '\\index.log', 'r')
+    #         line = opr_file.readline()
+    #         item = json.loads(line)
+    #         step_items.append({
+    #             'loc': item.loc,
+    #             'shot': None
+    #             # 'sleep': float(nextTime) - float(timestamp),
+    #         })
+    #     return step_items

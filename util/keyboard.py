@@ -18,7 +18,7 @@ def _eval_single(exp_t, src):
     if exp_t == 'code': # 返回 code
         if s_type == str: # char 转 code
             if (len(src) == 1):
-                res = ord(src)
+                res = ord(src.upper())
             else:
                 key = keyboard.Key[src]
                 res = getattr(key, 'value')
@@ -47,7 +47,7 @@ def _eval_single(exp_t, src):
             res = keyboard.KeyCode.from_vk(src)
         if s_type == str: # char 转 key
             if len(src) == 1:
-                code = ord(src)
+                code = ord(src.upper())
                 res = keyboard.KeyCode.from_vk(code)
             else:
                 res = keyboard.Key[src]
