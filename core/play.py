@@ -25,7 +25,7 @@ ctypes.windll.shcore.SetProcessDpiAwareness(PROCESS_PER_MONITOR_DPI_AWARE)
 abbr = config.ABBR
 assets_dir = config.PROJECT['path'] + config.PROJECT['name']
 
-random_type_key = get_keyboard_key(config.CMD['random_type'])
+random_type_key = get_keyboard_key(config.CMD['random_type']['key'])
 
 m_handler = pynput.mouse.Controller()
 k_handler = pynput.keyboard.Controller()
@@ -106,7 +106,7 @@ class Play:
         kb_key = get_keyboard_key(keys)
         if (kb_key == random_type_key):
             self._rundom_type()
-            pass
+            return
         if type(kb_key) == list:
             for item in kb_key:
                 print('comb press:', item)
@@ -125,24 +125,13 @@ class Play:
         pass
 
     # 输入随机数
-    def _rundom_type():
+    def _rundom_type(self):
         r_t = time.time()
-        print('_rundom_type:', r_t)
-        k_handler.type(r_t)
+        k_handler.type(str(r_t))
 
     # 计算匹配消耗的时间
     def _checkedSeconds(self):
         return (self.check_max - self.check_i) * self.interval
-
-    # def _domoves(self, step_item):
-    #     x, y = step_item['loc']
-    #     gui.moveTo(x, y)
-    #     time.sleep(self.interval)
-
-    # def _doclick(self, step_item):
-    #     x, y = step_item['loc']
-    #     gui.moveTo(x, y)
-    #     gui.click()
 
     def _waiting(self, t_remian):
         if t_remian > self.interval:
