@@ -1,3 +1,4 @@
+# 判断windows中英文输入法（不可靠，win10 专业版获取的“lid”值并没有改变）
 import ctypes
 import time
 import os

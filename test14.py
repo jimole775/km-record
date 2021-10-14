@@ -1,3 +1,4 @@
+# 测试os的移位效果
 path = './business/temp/index.log'
 file = open(path)
 file.seek(1694)

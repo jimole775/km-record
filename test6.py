@@ -6,17 +6,17 @@ from PIL import Image,ImageDraw,ImageFont,ImageOps
  
 width=100
 height=100
-#字体
+# 字体
 font_path="C:\\Windows\\Fonts\\Arial.ttf"
 img = Image.new("RGB", (width, height), "black")  # 黑色背景
 draw = ImageDraw.Draw(img)
-#按宽度比例显示文字
+# 按宽度比例显示文字
 font = ImageFont.truetype(font_path, int(width * 0.7))
 # 白色字体
 draw.text((5, 0), '7', (255, 255, 255), font=font)
 img=np.array(img)
 # cv2.imshow('img', img)
-#旋转图片
+# 旋转图片
 # angle=-45      #旋转角度
 # center=(width/2,height/2)   #中心点
 # M = cv2.getRotationMatrix2D(center, angle, 1.0)

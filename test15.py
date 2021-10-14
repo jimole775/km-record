@@ -1,3 +1,4 @@
+# 测试键盘键位的捕获和输入
 from pynput import keyboard,mouse
 m_handler = mouse.Controller()
 k_handler = keyboard.Controller()
