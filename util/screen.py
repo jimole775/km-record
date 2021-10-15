@@ -24,7 +24,19 @@ zoom_work_height = work_area[3]
 # 缩放比
 zoom = cur_screen_height / zoom_screen_height
 
+def get_task_bar_size():
+  task_bar_w = cur_screen_width
+  task_bar_h = cur_screen_height
+  # 宽度相等，就说明任务栏在 “左侧” 或者 “右侧”
+  if (zoom_screen_height == zoom_work_height) and (zoom_screen_width != zoom_work_width):
+    task_bar_w = (zoom_screen_width - zoom_work_width) * zoom
+  # 宽度相等，就说明任务栏在 “顶部” 或者 “底部”
+  if (zoom_screen_width == zoom_work_width) and (zoom_screen_height != zoom_work_height):
+    task_bar_h = (zoom_screen_height - zoom_work_height) * zoom
+  return (task_bar_w, task_bar_h)
 
-task_height = zoom_screen_height * zoom - zoom_work_height * zoom
+def get_screen_size():
+  return (cur_screen_width, cur_screen_height)
 
-print(task_height)
+if __name__ == '__main__':
+  print(get_task_bar_size())
