@@ -1,3 +1,4 @@
+import os
 DEFAULT = {
     # 'match': {
     #     'times': 10, # 在执行click事件的时候，是否需要匹配有没有目标元素
@@ -5,7 +6,7 @@ DEFAULT = {
     # },
     'match': False,
     'assets': {
-        'path': '.\\assets\\'
+        'path': os.path.abspath('.\\assets\\')
     },
     'project': {
         'name': 'temp', # 录制的项目名，默认为temp

@@ -66,3 +66,8 @@ class Scaner:
             return cv.cvtColor(np.array(img), cv.COLOR_RGB2BGR)
         if isinstance(img, np.ndarray):
             return img
+
+    # todo 需要理解图片的RGBA，BGRA，pl，cv 之间的转换区别
+    def toGray(self, img):
+        return cv.cvtColor(self.__pl2cv__(img), cv.COLOR_BGR2GRAY)
+
