@@ -1,5 +1,5 @@
 import win32gui
-import time
+# import time
 import cv2 as cv
 import numpy as np
 from PIL import Image, ImageGrab
@@ -8,6 +8,7 @@ class Scaner:
         x,y = ImageGrab.grab().size
         self.win = (0, 0, x, y)
         self.bbox = (0, 0, 0, 0)
+
     def findWindow(self, wdname):
         """初始化"""
         # 取得窗口句柄
@@ -30,9 +31,9 @@ class Scaner:
         cv_temp = self.__pl2cv__(temp)
         cv_screen = self.__pl2cv__(screen)
         res = cv.matchTemplate(cv_screen, cv_temp, cv.TM_CCOEFF_NORMED)
-        threshold = 0.8
+        threshold = 0.9
         loc = np.where(res >= threshold) # 返回下标
-        print('hasUniqueTarget:', len(loc), len(loc[0]), len(loc[1]))
+        # print('hasUniqueTarget:', len(loc), len(loc[0]), len(loc[1]))
         if len(loc) > 0 and len(loc[0]) == 1:
             return True
         else:

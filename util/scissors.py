@@ -16,22 +16,30 @@ class Scissors:
         cv_screen = self._pl2cv(screen)
         thread = threading.Thread(target=self._uniqueHandle, args=(cv_screen, point, 1, timeStamp,))
         thread.start()
+    
+    def cutReact(self, loc):
+        scn = self.cutScreen()
+        x1,y1,x2,y2 = loc
+        cv_screen = self._pl2cv(scn)
+        return cv_screen[round(y1):round(y2), round(x1):round(x2)]
 
-    def cutReact(self, screen, point, zoom=1):
+    def cutScreen(self):
+        return ImageGrab.grab()
+
+    def _cutReactForLoop(self, screen, point, zoom=1):
         x1,y1,x2,y2 = self._countReactSize(screen, point, zoom)
         cv_screen = self._pl2cv(screen)
         return cv_screen[y1:y2, x1:x2]
 
     def cutReactAndSave(self, screen, point, timeStamp):
-        temp = self.cutReact(screen, point)
+        temp = self._cutReactForLoop(screen, point)
         return self.save(temp, timeStamp)
 
-    def cutScreen(self):
-        return ImageGrab.grab()
-
-    def save(self, temp, timeStamp):
+    def save(self, temp, *stamp):
+        if not stamp:
+            stamp = time.time()
         cv_temp = self._pl2cv(temp)
-        fileName = str(timeStamp) + '.jpg'
+        fileName = str(stamp) + '.jpg'
         cv.imwrite(assets_dir + '\\' + fileName, cv_temp)
         return self
 
@@ -42,7 +50,7 @@ class Scissors:
             return img
 
     def _uniqueHandle(self, sv_screen, point, i, timeStamp):
-        temp = self.cutReact(sv_screen, point, i)
+        temp = self._cutReactForLoop(sv_screen, point, i)
         if self.scaner.hasUniqueTarget(sv_screen, temp) or i == 10:
             self.save(temp, timeStamp)
         else:

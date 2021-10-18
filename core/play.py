@@ -1,7 +1,7 @@
 # import pyautogui as gui
 # import numpy as np
 # import cv2 as cv
-import os
+# import os
 import re
 import time
 import threading
@@ -168,7 +168,7 @@ class Play:
 
     def stop(self):
         self.stop_sign = True
-        print('stop play')
+        self.k_controller.stop()
         pass
 
     def pause(self):
