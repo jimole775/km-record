@@ -1,5 +1,5 @@
 import win32gui
-# import time
+import time
 import cv2 as cv
 import numpy as np
 from PIL import Image, ImageGrab
@@ -67,7 +67,18 @@ class Scaner:
         if isinstance(img, np.ndarray):
             return img
 
-    # todo 需要理解图片的RGBA，BGRA，pl，cv 之间的转换区别
+    # 3通道转成2通道
     def toGray(self, img):
-        return cv.cvtColor(self.__pl2cv__(img), cv.COLOR_BGR2GRAY)
+        g_img = cv.cvtColor(self.__pl2cv__(img), cv.COLOR_BGR2GRAY)
+        s = cv.split(g_img)
+        return g_img
 
+    # 图片转负片（补色）
+    def toNegative(self, img):
+        cv_img = self.__pl2cv__(img)
+        h = int(cv_img.shape[0])
+        w = int(cv_img.shape[1])
+        for i in range(h):
+            for j in range(w):
+                cv_img[i][j] = 255 - cv_img[i][j]
+        return cv_img

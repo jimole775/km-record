@@ -8,12 +8,12 @@ sys_assets_path = config.ASSETS['path'] + '\\sys'
 
 def get_icon(name):
     icons = {
-        'win': sys_assets_path + '\\win10\\{}.png'.format(name),
-        'en': sys_assets_path + '\\win10\\{}.png'.format(name),
-        'en_b': sys_assets_path + '\\win10\\{}.png'.format(name),
-        'cn': sys_assets_path + '\\win10\\{}.png'.format(name)
+        'win': sys_assets_path + '\\win10\\{}.png',
+        'en': sys_assets_path + '\\win10\\{}.png',
+        'en_b': sys_assets_path + '\\win10\\{}.png',
+        'cn': sys_assets_path + '\\win10\\{}.png',
     }
-    return icons[name]
+    return icons[name].format(name)
 
 def isWin():
   return True
@@ -35,7 +35,11 @@ def get_task_bar():
     scaner = Scaner()
     # x1, y1, x2, y2 = get_task_bar_pos()
     task_bar = scissors.cutReact(get_task_bar_pos())
-    isEn = scaner.hasUniqueTarget(scaner.toGray(task_bar), get_icon('en_b'))
+    t_b = scaner.toGray(task_bar)
+    e_b = scaner.toGray(get_icon('cn'))
+    t_b_n = scaner.toNegative(t_b)
+    e_b_n = scaner.toNegative(e_b)
+    isEn = scaner.hasUniqueTarget(t_b_n, e_b_n)
     print(isEn)
     # # 左侧或者上侧
     # if x1 == y1 == 0:
