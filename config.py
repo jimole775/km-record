@@ -25,6 +25,8 @@ DEFAULT = {
         'release': 'r', # 鼠标事件-放
         'keyboard': 'kb', # 键盘
         'drag_move': 'dm', # 鼠标拖拽过程
+        'input_language': 'il', # 当前输入法的语言
+        'input_system': 'is', # 当前输入法的系统（微软拼音|搜狗）
         'mouse_event': 'me', # 鼠标事件类型
     },
     'cmd': {

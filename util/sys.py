@@ -3,15 +3,17 @@ from util.scissors import Scissors
 from util.monitor import get_task_bar_pos
 from config import config
 
+scaner = Scaner()
+scissors = Scissors()
 
 sys_assets_path = config.ASSETS['path'] + '\\sys'
 
 def get_icon(name):
     icons = {
-        'win': sys_assets_path + '\\win10\\{}.png',
-        'en': sys_assets_path + '\\win10\\{}.png',
-        'en_b': sys_assets_path + '\\win10\\{}.png',
-        'cn': sys_assets_path + '\\win10\\{}.png',
+        'win': sys_assets_path + '\\win10\\{}',
+        'en': sys_assets_path + '\\win10\\{}',
+        'en_sg': sys_assets_path + '\\win10\\{}',
+        'cn': sys_assets_path + '\\win10\\{}',
     }
     return icons[name].format(name)
 
@@ -25,22 +27,22 @@ def isUnx():
   return False
 
 def isEnType():
-  return False
+    en = _get_gray_negative(get_icon('en.png'))
+    en_sg = _get_gray_negative(get_icon('en_sg.png'))
+    task_bar = _get_gray_negative(scissors.cutReact(get_task_bar_pos()))
+    return scaner.hasUniqueTarget(task_bar, en) or scaner.hasUniqueTarget(task_bar, en_sg)
 
 def isCnType():
-  return False
+    cn = _get_gray_negative(get_icon('cn.png'))
+    cn_sg = _get_gray_negative(get_icon('cn_sg.png'))
+    task_bar = _get_gray_negative(scissors.cutReact(get_task_bar_pos()))
+    return scaner.hasUniqueTarget(task_bar, cn) or scaner.hasUniqueTarget(task_bar, cn_sg)
 
-def get_task_bar():
-    scissors = Scissors()
-    scaner = Scaner()
-    # x1, y1, x2, y2 = get_task_bar_pos()
-    task_bar = scissors.cutReact(get_task_bar_pos())
-    t_b = scaner.toGray(task_bar)
-    e_b = scaner.toGray(get_icon('cn'))
-    t_b_n = scaner.toNegative(t_b)
-    e_b_n = scaner.toNegative(e_b)
-    isEn = scaner.hasUniqueTarget(t_b_n, e_b_n)
-    print(isEn)
+def _get_gray_negative(img):
+    return scaner.toNegative(scaner.toGray(img))
+
+
+# def get_task_bar():
     # # 左侧或者上侧
     # if x1 == y1 == 0:
     #     if (x2 > y2): # 上侧

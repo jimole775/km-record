@@ -1,5 +1,6 @@
 import json
 import time
+import threading
 from core.mouse import MouseController
 from core.keyboard import KeyboardController
 from config import config
@@ -7,15 +8,23 @@ from core.controller import createController
 from util.keyboard import get_key_char
 from util.scissors import Scissors
 from util.times import cute_head
-import threading
-assets_dir = config.PROJECT['path'] + config.PROJECT['name']
+from util.sys import isCnType, isEnType
+
 abbr = config.ABBR
+assets_dir = config.PROJECT['path'] + config.PROJECT['name']
+
 class Record ():
     work = False
+    input_language = 'en' # 当前中英文
+    input_system = 'ms' # 当前输入法，一般就是讯飞，搜狗，微软，五笔
     def __init__ (self):
         self.scissors = Scissors()
         self.k_controller = KeyboardController()
         self.m_controller = MouseController()
+        if isCnType():
+            Record.input_language = 'cn'
+        else:
+            Record.input_language = 'en'
         pass
 
     def _createThread (self, event):
@@ -78,11 +87,18 @@ class Record ():
         self.m_controller.stop()
 
     def _record_kb_behavior(self, key, stamp):
+        key_char = get_key_char(key)
+        if 'shift' in key_char:
+            if isCnType():
+                Record.input_language = 'cn'
+            else:
+                Record.input_language = 'en'
         if Record.work == True:
             data = {
                 abbr['type']: abbr['keyboard'],
                 abbr['time']: cute_head(stamp),
-                abbr['key']: get_key_char(key)
+                abbr['key']: key_char,
+                abbr['input_language']: Record.input_language
             }
             self._write(data)
         pass
