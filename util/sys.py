@@ -10,10 +10,13 @@ sys_assets_path = config.ASSETS['path'] + '\\sys'
 
 def get_icon(name):
     icons = {
-        'win': sys_assets_path + '\\win10\\{}',
-        'en': sys_assets_path + '\\win10\\{}',
-        'en_sg': sys_assets_path + '\\win10\\{}',
-        'cn': sys_assets_path + '\\win10\\{}',
+        'win.png': sys_assets_path + '\\win10\\{}', # win键
+        'en.png': sys_assets_path + '\\win10\\{}', # win10专业版
+        'en_sg.png': sys_assets_path + '\\win10\\{}', # 搜狗
+        'en_home.png': sys_assets_path + '\\win10\\{}', # win10家庭版
+        'cn.png': sys_assets_path + '\\win10\\{}', # win10专业版
+        'cn_sg.png': sys_assets_path + '\\win10\\{}', # 搜狗
+        'cn_home.png': sys_assets_path + '\\win10\\{}', # win10家庭版
     }
     return icons[name].format(name)
 
@@ -29,14 +32,16 @@ def isUnx():
 def isEnType():
     en = _get_gray_negative(get_icon('en.png'))
     en_sg = _get_gray_negative(get_icon('en_sg.png'))
+    en_home = _get_gray_negative(get_icon('en_home.png'))
     task_bar = _get_gray_negative(scissors.cutReact(get_task_bar_pos()))
-    return scaner.hasUniqueTarget(task_bar, en) or scaner.hasUniqueTarget(task_bar, en_sg)
+    return scaner.hasUniqueTarget(task_bar, en) or scaner.hasUniqueTarget(task_bar, en_sg) or scaner.hasUniqueTarget(task_bar, en_home)
 
 def isCnType():
     cn = _get_gray_negative(get_icon('cn.png'))
     cn_sg = _get_gray_negative(get_icon('cn_sg.png'))
+    cn_home = _get_gray_negative(get_icon('cn_home.png'))
     task_bar = _get_gray_negative(scissors.cutReact(get_task_bar_pos()))
-    return scaner.hasUniqueTarget(task_bar, cn) or scaner.hasUniqueTarget(task_bar, cn_sg)
+    return scaner.hasUniqueTarget(task_bar, cn) or scaner.hasUniqueTarget(task_bar, cn_sg) or scaner.hasUniqueTarget(task_bar, cn_home)
 
 def _get_gray_negative(img):
     return scaner.toNegative(scaner.toGray(img))
