@@ -46,6 +46,11 @@ def isCnType():
 def _get_gray_negative(img):
     return scaner.toNegative(scaner.toGray(img))
 
+def get_sys_language():
+    if isEnType():
+        return 'en'
+    if isCnType():
+        return 'cn'
 
 # def get_task_bar():
     # # 左侧或者上侧
