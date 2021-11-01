@@ -1,6 +1,51 @@
 import re
 from config import config
 from pynput import keyboard
+# 获取 key 的字符类型
+def get_key_char(src):
+    return _transform_handler('char', src)
+
+# 获取 key 的数字类型
+def get_key_code(src):
+    # 统一转成字符串
+    if (type(src) == int):
+        return str(src)
+    else:
+        return _transform_handler('code', src)
+
+# 获取 key 的对象类型
+def get_keyboard_key(src):
+    return _transform_handler('key', src)
+
+# 判断是否是功能键，包括组合键
+def is_function_key(key_or_comb):
+    res = False
+    # 保证 key_char 转换后的格式
+    key_char = get_key_char(key_or_comb)
+    for fn_type in config.HOTKEY:
+        name_map = config.HOTKEY[fn_type]
+        for fn_name in name_map:
+            fn_info = name_map[fn_name]
+            fn_key_char = get_key_char(fn_info['key'])
+            if compare_keys(fn_key_char, key_char) == True:
+                res = True
+                break
+        if res == True:
+            break
+    return res
+
+# 比对两个键的code是否相等，支持不同类型的比对
+def compare_keys(l_k, r_k):
+    if type(l_k) == type(r_k) or _both_in_combs(l_k, r_k) or _both_in_combs(r_k, l_k):
+        l_code = get_key_char(l_k)
+        r_code = get_key_char(r_k)
+        if type(l_code) == list:
+            l_code.sort()
+            r_code.sort()
+        return l_code == r_code
+    else:
+        return False
+
 # 功能键部分左右，所以去掉 'ctrl_l' 的 '_l'，返回 'ctrl'
 def flat_asst_key(key):
     signs = ['ctrl', 'alt', 'shift']
@@ -78,50 +123,6 @@ def _transform_handler(exp_t, src):
     else:
         res = _eval_single(exp_t, src)
     return res
-
-# 获取 key 的字符类型
-def get_key_char(src):
-    return _transform_handler('char', src)
-
-# 获取 key 的数字类型
-def get_key_code(src):
-    # 统一转成字符串
-    if (type(src) == int):
-        return str(src)
-    else:
-        return _transform_handler('code', src)
-
-# 获取 key 的对象类型
-def get_keyboard_key(src):
-    return _transform_handler('key', src)
-
-# 判断是否是功能键，包括组合键
-def is_function_key(key_or_comb):
-    res = False
-    # 保证 key_char 转换后的格式
-    key_char = get_key_char(key_or_comb)
-    for fn_type in config.HOTKEY:
-        name_map = config.HOTKEY[fn_type]
-        for fn_name in name_map:
-            fn_info = name_map[fn_name]
-            fn_key_char = get_key_char(fn_info['key'])
-            if compare_keys(fn_key_char, key_char) == True:
-                res = True
-                break
-        if res == True:
-            break
-    return res
-
-def compare_keys(l_k, r_k):
-    if type(l_k) == type(r_k) or _both_in_combs(l_k, r_k) or _both_in_combs(r_k, l_k):
-        l_code = get_key_char(l_k)
-        r_code = get_key_char(r_k)
-        if type(l_code) == list:
-            l_code.sort()
-            r_code.sort()
-        return l_code == r_code
-    else:
-        return False
 
 def _both_in_combs(l_k, r_k):
     return type(l_k) == list and type(r_k) == str and '+' in r_k
