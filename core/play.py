@@ -9,12 +9,11 @@ import json
 import pynput
 import ctypes
 
-
+from util.sys import get_sys_language
 from config import config
 from util.keyboard import get_keyboard_key
 from util.scaner import Scaner
 from util.scissors import Scissors
-# from core.mouse import MouseController
 from core.keyboard import KeyboardController
 from core.controller import createController
 
@@ -22,13 +21,27 @@ from core.controller import createController
 PROCESS_PER_MONITOR_DPI_AWARE = 2
 ctypes.windll.shcore.SetProcessDpiAwareness(PROCESS_PER_MONITOR_DPI_AWARE)
 
-abbr = config.ABBR
-assets_dir = config.PROJECT['path'] + config.PROJECT['name']
+g = {
+    'abbr': config.ABBR,
+    'assets_dir': config.PROJECT['path'] + config.PROJECT['name'],
+    'random_type_key': get_keyboard_key(config.CMD['random_type']['key']),
+    'm_handler': pynput.mouse.Controller(),
+    'k_handler': pynput.keyboard.Controller(),
+    'sys_language': get_sys_language(),
+}
 
-random_type_key = get_keyboard_key(config.CMD['random_type']['key'])
+# 输入随机数
+def _rundom_type():
+    r_t = time.time()
+    g['k_handler'].type(str(r_t))
 
-m_handler = pynput.mouse.Controller()
-k_handler = pynput.keyboard.Controller()
+def _chang_input_language():
+    kb_key = get_keyboard_key('shift')
+    g['k_handler'].press(kb_key)
+    g['k_handler'].release(kb_key)
+    time.sleep(0.2)
+    g['sys_language'] = get_sys_language()
+
 class Play:
     def __init__(self):
         self.play_type = 'once'
@@ -51,83 +64,95 @@ class Play:
             self.interval = 0.5
         pass
 
-    def _getNextTime(self, cur_index, file_list):
-        if cur_index < len(file_list) - 1:
-            nextFile = file_list[cur_index + 1]
-        else:
-            nextFile = file_list[cur_index]
-        return re.search(r'^\d*?\.?\d*?(?=\_)', nextFile).group()
-
     def _runHandler(self):
-        opr_file = open(assets_dir + '\\index.log', 'r')
-        if self.step > 0:
-            opr_file.seek(self.step)
-        line = opr_file.readline()
-        self.step = opr_file.tell()
+        opr_file = open(g['assets_dir'] + '\\index.log', 'r')
+        self._sync_pionter(opr_file)
+        line = self._get_opr_line(opr_file)
         while len(line) > 0:
             step_item = json.loads(line)
             # 鼠标事件
-            if step_item[abbr['type']] == abbr['mouse']:
-                loc = step_item[abbr['loc']]
-                m_handler.position = (loc[0], loc[1])
-                if step_item[abbr['mouse_event']] == abbr['press']:
-                    m_handler.press(pynput.mouse.Button.left)
-
-                if step_item[abbr['mouse_event']] == abbr['release']:
-                    if config.MATCH:
-                        screen = self.scissors.cutScreen()
-                        shot_name = step_item[abbr['time']]
-                        shot_img = assets_dir + '\\shots\\' + shot_name + '.jpg'
-                        if self.scaner.hasUniqueTarget(screen, shot_img) or self.check_i == 0:
-                            self._resetCheckTimes()
-                            m_handler.release(pynput.mouse.Button.left)
-                        else:
-                            self._checkReduce()
-                    else:
-                        m_handler.release(pynput.mouse.Button.left)
-                if step_item[abbr['mouse_event']] == abbr['scroll']:
-                    m_handler.scroll(loc[2], loc[3])
+            if step_item[g['abbr']['type']] == g['abbr']['mouse']:
+                self._run_mouse_events(step_item)
 
             # 键盘事件
-            if step_item[abbr['type']] == abbr['keyboard']:
-                key_code = step_item[abbr['key']]
-                self._kb_type(key_code)
+            if step_item[g['abbr']['type']] == g['abbr']['keyboard']:
+                self._kb_type(step_item)
+
             if (self.pause_sign or self.stop_sign):
                 break
-            line = opr_file.readline()
-            if len(line) > 0:
-                o_item = step_item
-                n_item = json.loads(line)
-                time.sleep(float(n_item['i']) - float(o_item['i']))
-            self.step = opr_file.tell()
-        opr_file.close()
 
-    def _kb_type(self, keys):
-        kb_key = get_keyboard_key(keys)
-        if (kb_key == random_type_key):
-            self._rundom_type()
+            line = self._prepare_next(opr_file, step_item)
+        opr_file.close()
+        pass
+
+    def _sync_pionter(self, opr_file):
+        if self.step > 0:
+            opr_file.seek(self.step)
+        pass
+
+    def _prepare_next(self, opr_file, step_item):
+        line = self._get_opr_line(opr_file)
+        if len(line) > 0:
+            o_item = step_item
+            n_item = json.loads(line)
+            time.sleep(float(n_item['i']) - float(o_item['i']))
+        return line
+
+    def _get_opr_line(self, opr_file):
+        line = opr_file.readline()
+        self._step_grow(opr_file)
+        return line
+
+    def _run_mouse_events(self, step_item):
+        loc = step_item[g['abbr']['loc']]
+        g['m_handler'].position = (loc[0], loc[1])
+        if step_item[g['abbr']['mouse_event']] == g['abbr']['press']:
+            g['m_handler'].press(pynput.mouse.Button.left)
+
+        if step_item[g['abbr']['mouse_event']] == g['abbr']['release']:
+            if config.MATCH:
+                screen = self.scissors.cutScreen()
+                shot_name = step_item[g['abbr']['time']]
+                shot_img = g['assets_dir'] + '\\shots\\' + shot_name + '.jpg'
+                if self.scaner.hasUniqueTarget(screen, shot_img) or self.check_i == 0:
+                    self._resetCheckTimes()
+                    g['m_handler'].release(pynput.mouse.Button.left)
+                else:
+                    self._checkReduce()
+            else:
+                g['m_handler'].release(pynput.mouse.Button.left)
+        if step_item[g['abbr']['mouse_event']] == g['abbr']['scroll']:
+            g['m_handler'].scroll(loc[2], loc[3])
+        pass
+
+    def _sync_input_language(self, step_item):
+        cur_step_il = step_item[g['abbr']['input_language']]
+        if (g['sys_language'] != cur_step_il):
+            _chang_input_language()
+
+    def _kb_type(self, step_item):
+        key_code = step_item[g['abbr']['key']]
+        kb_key = get_keyboard_key(key_code)
+        self._sync_input_language(step_item)
+        if (kb_key == g['random_type_key']):
+            _rundom_type()
             return
         if type(kb_key) == list:
             for item in kb_key:
-                print('comb press:', item)
-                k_handler.press(item)
+                # print('comb press:', item)
+                g['k_handler'].press(item)
             l = len(kb_key)
             while(l > 0):
                 l = l - 1
                 item = kb_key[l]
-                print('comb release:', item)
-                k_handler.release(item)
+                # print('comb release:', item)
+                g['k_handler'].release(item)
         else:
-            print('press:', kb_key)
-            k_handler.press(kb_key)
-            print('release:', kb_key)
-            k_handler.release(kb_key)
+            # print('press:', kb_key)
+            g['k_handler'].press(kb_key)
+            # print('release:', kb_key)
+            g['k_handler'].release(kb_key)
         pass
-
-    # 输入随机数
-    def _rundom_type(self):
-        r_t = time.time()
-        k_handler.type(str(r_t))
 
     # 计算匹配消耗的时间
     def _checkedSeconds(self):
@@ -149,9 +174,8 @@ class Play:
         else:
           self.check_i = 0
 
-    # def _stepGrow(self):
-    #     self.step = self.step + 1
-    #     print('step:', self.step)
+    def _step_grow(self, opr_file):
+        self.step = opr_file.tell()
 
     def _doplay(self):
         if self.play_type == 'once':
@@ -188,6 +212,7 @@ class Play:
     def once(self):
         self.play_type = 'once'
         self._runHandler()
+        self.stop()
 
     def repeat(self):
         self.play_type = 'repeat'
@@ -206,32 +231,3 @@ class Play:
         ctrl = createController(Play)()
         self.k_controller.bindExecution(ctrl.execution)
         self.k_controller.active()
-
-    # def _getSteps(self):
-    #     i = 0
-    #     step_items = []
-    #     if config.MATCH: # 是否启用视觉匹配
-    #         match_pic_dir = assets_dir + '\\shots'
-    #         file_list = os.listdir(match_pic_dir)
-    #         for file_name in file_list:
-    #             timestamp = re.search(r'^\d*?\.?\d*?(?=\_)', file_name).group()
-    #             loc = eval(re.search(r'\(\d*?, \d*?\)', file_name).group())
-    #             insert = re.search(r'insert', file_name)
-    #             nextTime = self._getNextTime(i, file_list)
-    #             step_items.append({
-    #                 'loc': loc,
-    #                 'insert': insert, # 判断是否是手动插入帧
-    #                 'shot': assets_dir + '\\' + file_name,
-    #                 'sleep': float(nextTime) - float(timestamp),
-    #             })
-    #             i = i + 1
-    #     else: # 直接从log中拉取操作记录
-    #         opr_file = open(assets_dir + '\\index.log', 'r')
-    #         line = opr_file.readline()
-    #         item = json.loads(line)
-    #         step_items.append({
-    #             'loc': item.loc,
-    #             'shot': None
-    #             # 'sleep': float(nextTime) - float(timestamp),
-    #         })
-    #     return step_items
