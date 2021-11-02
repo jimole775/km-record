@@ -7,7 +7,7 @@ from config import config
 from core.controller import createController
 from util.keyboard import get_key_char
 from util.scissors import Scissors
-from util.times import cute_head
+from util.times import skin_time
 from util.sys import get_sys_language
 
 class Record ():
@@ -95,7 +95,7 @@ class Record ():
         if Record.work == True:
             data = {
                 Record.ABBR['type']: Record.ABBR['keyboard'],
-                Record.ABBR['time']: cute_head(stamp),
+                Record.ABBR['time']: skin_time(stamp),
                 Record.ABBR['key']: key_char,
                 Record.ABBR['input_language']: Record.sys_language
             }
@@ -108,7 +108,7 @@ class Record ():
             data = {
                 Record.ABBR['type']: Record.ABBR['mouse'],
                 Record.ABBR['loc']: loc,
-                Record.ABBR['time']: cute_head(stamp),
+                Record.ABBR['time']: skin_time(stamp),
                 Record.ABBR['mouse_event']: event
             }
             self._write(data)
@@ -123,4 +123,4 @@ class Record ():
     def _screen_shot (self, loc, timeStamp):
         if config.MATCH and Record.work == True:
             screen = Record.scissors.cutScreen()
-            Record.scissors.cutUniqueReact(screen, loc, cute_head(timeStamp))
+            Record.scissors.cutUniqueReact(screen, loc, skin_time(timeStamp))
