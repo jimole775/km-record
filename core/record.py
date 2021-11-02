@@ -10,6 +10,19 @@ from util.scissors import Scissors
 from util.times import skin_time
 from util.sys import get_sys_language
 
+# 估算系统的中英状态
+# 不使用 get_sys_language 的原因是：
+#   截图是即时的，切换语法是有延迟的
+# 所以，只能在初始的时候使用一次
+# 往后只能通过键盘 shift 被按压的次数来判断
+def _eval_sys_lang (cur_lang):
+    if (cur_lang == 'en'):
+        return 'cn'
+    elif (cur_lang == 'cn'):
+        return 'en'
+    else:
+        return 'en'
+
 class Record ():
 
     work = False
@@ -90,8 +103,7 @@ class Record ():
     def _record_kb_behavior (self, key, stamp):
         key_char = get_key_char(key)
         if Record.LANG_TRANS_KEY == key_char:
-            time.sleep(0.25)
-            Record.sys_language = get_sys_language()
+            Record.sys_language = _eval_sys_lang(Record.sys_language)
         if Record.work == True:
             data = {
                 Record.ABBR['type']: Record.ABBR['keyboard'],

@@ -42,7 +42,7 @@ class KeyboardController():
         self.thread_active = None
         self.event_press = None
         self.event_release = None
-
+    # todo 的comb的存取方式不正确
     def _press(self, key):
         # 如果是辅助键，就存comb，理论上不限定组合键的个数123
         if is_assist_key(key) or len(self.combo_keys) > 0:
@@ -55,9 +55,6 @@ class KeyboardController():
 
     def _release(self, key):
         stamp = time.time()
-        # 只有一个辅助键松开，需要清空comb数组
-        if is_assist_key(key):
-           self._clearCombo()
         # 有组合键
         if len(self.combo_keys) > 0:
             # 如果配置有功能键，那么就直接触发绑定的事件
@@ -66,6 +63,7 @@ class KeyboardController():
             else:
                 if callable(self.event_release):
                     self.event_release(self.combo_keys, stamp)
+            self._clearCombo()
         else:
             # 如果配置有功能键，那么就直接触发绑定的事件
             if is_function_key(key):
@@ -73,7 +71,6 @@ class KeyboardController():
             else:
                 if callable(self.event_release):
                     self.event_release(key, stamp)
-        self._clearCombo()
         return self._evalExit(key)
 
     def _evalExit(self, key):
@@ -87,9 +84,16 @@ class KeyboardController():
             self.combo_keys.append(key)
         pass
 
-    def _consumeCombo(self):
+    # todo 启用这个方法来进行 “取” comb 操作 
+    def _consumeCombo(self, key):
+        temp = []
+        for item in self.combo_keys:
+            if (item != key): temp.append(item)
+        self.combo_keys = temp
         pass
-
+        def log():
+            print('产生')
+            pass
     def _clearCombo(self):
         self.combo_keys.clear()
 
@@ -150,3 +154,6 @@ class KeyboardController():
 
     def _unActive(self):
         KeyboardController.active = False
+
+
+
