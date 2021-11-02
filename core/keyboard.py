@@ -55,23 +55,24 @@ class KeyboardController():
 
     def _release(self, key):
         stamp = time.time()
-        # 非辅助键松开，才会执行事件
-        if not is_assist_key(key):
-            # 有组合键
-            if len(self.combo_keys) > 0:
-                # 如果配置有功能键，那么就直接触发绑定的事件
-                if is_function_key(self.combo_keys):
-                    self._triggerFunction(self.combo_keys)
-                else:
-                    if callable(self.event_release):
-                        self.event_release(self.combo_keys, stamp)
+        # 只有一个辅助键松开，需要清空comb数组
+        if is_assist_key(key):
+           self._clearCombo()
+        # 有组合键
+        if len(self.combo_keys) > 0:
+            # 如果配置有功能键，那么就直接触发绑定的事件
+            if is_function_key(self.combo_keys):
+                self._triggerFunction(self.combo_keys)
             else:
-                # 如果配置有功能键，那么就直接触发绑定的事件
-                if is_function_key(key):
-                    self._triggerFunction(key)
-                else:
-                    if callable(self.event_release):
-                        self.event_release(key, stamp)
+                if callable(self.event_release):
+                    self.event_release(self.combo_keys, stamp)
+        else:
+            # 如果配置有功能键，那么就直接触发绑定的事件
+            if is_function_key(key):
+                self._triggerFunction(key)
+            else:
+                if callable(self.event_release):
+                    self.event_release(key, stamp)
         self._clearCombo()
         return self._evalExit(key)
 
