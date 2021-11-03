@@ -80,7 +80,6 @@ class KeyboardController():
             self._set_combo_status(1)
         self._store_press(key)
 
-
     def _eval_combo_status (self):
         comb_keys = self._get_combo_keys()
         if is_function_key(comb_keys):
@@ -166,7 +165,11 @@ class KeyboardController():
         pass
 
     def _store_press (self, key):
-        if key not in self.press_keys:
+        # 97: 特意增加一个输入随机数的功能键，不可记录
+        # 98: 已触发功能键，清除中，不可记录
+        # 99: 已匹配功能键，可调用功能函数，不可记录
+        comb_status = self._get_combo_status()
+        if key not in self.press_keys and comb_status not in [97, 98, 99]:
             self.press_keys.append(key)
             self._call_event('press', key)
         pass
