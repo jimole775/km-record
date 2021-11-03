@@ -17,6 +17,9 @@ from util.scissors import Scissors
 from core.keyboard import KeyboardController
 from core.controller import createController
 
+ABBR = config.ABBR
+ASSETS_DIR = config.PROJECT['path'] + config.PROJECT['name']
+
 # 处理windows系统对于坐标读取的误差问题
 PROCESS_PER_MONITOR_DPI_AWARE = 2
 ctypes.windll.shcore.SetProcessDpiAwareness(PROCESS_PER_MONITOR_DPI_AWARE)
@@ -38,9 +41,6 @@ class Play:
     sys_language = get_sys_language()
     k_controller = KeyboardController()
 
-    ABBR = config.ABBR
-    ASSETS_DIR = config.PROJECT['path'] + config.PROJECT['name']
-
     def __init__ (self):
         self.play_type = 'once'
         self.pause_sign = False
@@ -61,17 +61,17 @@ class Play:
         pass
 
     def _runHandler (self):
-        opr_file = open(Play.ASSETS_DIR + '\\index.log', 'r')
+        opr_file = open(ASSETS_DIR + '\\index.log', 'r')
         self._sync_pionter(opr_file)
         line = self._get_opr_line(opr_file)
         while len(line) > 0:
             step_item = json.loads(line)
             # 鼠标事件
-            if step_item[Play.ABBR['type']] == Play.ABBR['mouse']:
+            if step_item[ABBR['type']] == ABBR['mouse']:
                 self._run_mouse_events(step_item)
 
             # 键盘事件
-            if step_item[Play.ABBR['type']] == Play.ABBR['keyboard']:
+            if step_item[ABBR['type']] == ABBR['keyboard']:
                 self._kb_type(step_item)
 
             if (self.pause_sign or self.stop_sign):
@@ -100,16 +100,16 @@ class Play:
         return line
 
     def _run_mouse_events (self, step_item):
-        loc = step_item[Play.ABBR['loc']]
+        loc = step_item[ABBR['loc']]
         Play.m_handler.position = (loc[0], loc[1])
-        if step_item[Play.ABBR['mouse_event']] == Play.ABBR['press']:
+        if step_item[ABBR['mouse_event']] == ABBR['press']:
             Play.m_handler.press(pynput.mouse.Button.left)
 
-        if step_item[Play.ABBR['mouse_event']] == Play.ABBR['release']:
+        if step_item[ABBR['mouse_event']] == ABBR['release']:
             if config.MATCH:
                 screen = Play.scissors.cutScreen()
-                shot_name = step_item[Play.ABBR['time']]
-                shot_img = Play.ASSETS_DIR + '\\shots\\' + shot_name + '.jpg'
+                shot_name = step_item[ABBR['time']]
+                shot_img = ASSETS_DIR + '\\shots\\' + shot_name + '.jpg'
                 if Play.scaner.hasUniqueTarget(screen, shot_img) or self.check_i == 0:
                     self._resetCheckTimes()
                     Play.m_handler.release(pynput.mouse.Button.left)
@@ -117,38 +117,27 @@ class Play:
                     self._checkReduce()
             else:
                 Play.m_handler.release(pynput.mouse.Button.left)
-        if step_item[Play.ABBR['mouse_event']] == Play.ABBR['scroll']:
+        if step_item[ABBR['mouse_event']] == ABBR['scroll']:
             Play.m_handler.scroll(loc[2], loc[3])
         pass
 
     def _sync_input_language (self, step_item):
-        cur_step_il = step_item[Play.ABBR['input_language']]
+        cur_step_il = step_item[ABBR['input_language']]
         if (Play.sys_language != cur_step_il):
             _chang_input_language()
 
     def _kb_type (self, step_item):
-        key = step_item[Play.ABBR['key']]
-        keyboard_event = step_item[Play.ABBR['keyboard_event']]
+        key = step_item[ABBR['key']]
+        keyboard_event = step_item[ABBR['keyboard_event']]
         self._sync_input_language(step_item)
-        # todo 播放的时候支持 text 类型
-        if keyboard_event == Play.ABBR['text']:
-            words = get_keyboard_key(key)
-            return Play.k_handler.type(words)
-        elif keyboard_event == Play.ABBR['press']:
+        if keyboard_event == ABBR['text']:
+            return Play.k_handler.type(key)
+        elif keyboard_event == ABBR['press']:
             kb_key = get_keyboard_key(key)
             return Play.k_handler.press(kb_key)
-        elif keyboard_event == Play.ABBR['release']:
+        elif keyboard_event == ABBR['release']:
             kb_key = get_keyboard_key(key)
             return Play.k_handler.release(kb_key)
-        # elif type(kb_key) == list:
-        #     for item in kb_key:
-        #         Play.k_handler.press(item)
-        #     l = len(kb_key)
-        #     while(l > 0):
-        #         l = l - 1
-        #         item = kb_key[l]
-        #         Play.k_handler.release(item)
-        # else:
         pass
 
     # 计算匹配消耗的时间

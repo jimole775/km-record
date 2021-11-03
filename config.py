@@ -95,3 +95,4 @@ class config():
     HOTKEY = DEFAULT['hotkey']
     ASSETS = DEFAULT['assets']
     CMD = DEFAULT['cmd']
+

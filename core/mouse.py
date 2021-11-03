@@ -1,17 +1,12 @@
 import time
 from pynput import mouse
-from config import config
+from util.func import call
+from util.times import skin_time
 
-assets_dir = config.PROJECT['path'] + config.PROJECT['name']
-abbr = config.ABBR
 class MouseController:
     active = False
     def __init__(self):
-        self.event_drag = None
-        self.event_drag_move = None
-        self.event_press = None
-        self.event_scroll = None
-        self.event_release = None
+        self.event_dict = {}
         self.is_pressed = False
         self.listener = False
         self.sx = None
@@ -29,52 +24,53 @@ class MouseController:
     # 监听鼠标滑动
     def _move(self, x, y):
         if self.is_pressed:
-            timeStamp = time.time()
             self.x = x
             self.y = y
-            self.event_drag_move((x, y), timeStamp)
+            self._call_event('move', (x, y))
         return self._evalExit()
 
     # 监听鼠标点击
     def _click(self, x, y, button, pressed):
-        timeStamp = time.time()
         self.is_pressed = pressed
         if self.is_pressed:
-            self._press(x, y, timeStamp)
+            self._press(x, y)
         if not self.is_pressed:
-            self._release(x, y, timeStamp)
+            self._release(x, y)
         return self._evalExit()
 
     # 监听鼠标滚轮
     def _scroll(self, x, y, dx, dy):
-        timeStamp = time.time()
-        self.event_scroll((x, y, dx, dy), timeStamp)
+        self._call_event('scroll', (x, y, dx, dy))
         return self._evalExit()
 
-    def _press(self, x, y, timeStamp):
+    def _press(self, x, y):
         self.x = self.sx = x
         self.y = self.sy = y
-        self.event_press((x, y), timeStamp)
+        self._call_event('press', (x, y))
 
-    """
-    # todo ctrl + s + a这种是不合理的，不能只判断ctrl有没有release，还要判断s和a有没有release
-    """
-    def _release(self, x, y, timeStamp):
+    def _release(self, x, y):
         if (self.x != self.sx or self.y != self.sy):
-            print('trigge drag event')
-            self.event_drag((x, y), timeStamp)
+            self._call_event('drag', (x, y))
         else:
-            self.event_release((x, y), timeStamp)
+            self._call_event('release', (x, y))
         self.reset()
 
     # 注册鼠标事件
     def registe(self, event_dict):
-        self.event_drag = event_dict['drag']
-        self.event_drag_move = event_dict['drag_move']
-        self.event_press = event_dict['press']
-        self.event_scroll = event_dict['scroll']
-        self.event_release = event_dict['release']
+        self.event_dict = event_dict
         pass
+
+    def _call_event (self, event_name, loc):
+        try:
+            params = {
+                'loc': loc,
+                'time_stamp': skin_time(time.time())
+            }
+            event_fn = self.event_dict[event_name]
+            if callable(event_fn):
+                call(event_fn, params)
+        except Exception:
+            print('is not register "{}" methods yet in mouse.py'.format(event_name))
 
     # 开启鼠标监听
     def active(self):
