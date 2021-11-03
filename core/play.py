@@ -21,11 +21,6 @@ from core.controller import createController
 PROCESS_PER_MONITOR_DPI_AWARE = 2
 ctypes.windll.shcore.SetProcessDpiAwareness(PROCESS_PER_MONITOR_DPI_AWARE)
 
-# 输入随机数
-def _rundom_type():
-    r_t = time.time()
-    Play.k_handler.type(str(r_t))
-
 # 切换系统输入法
 def _chang_input_language():
     kb_key = get_keyboard_key('shift')
@@ -45,7 +40,6 @@ class Play:
 
     ABBR = config.ABBR
     ASSETS_DIR = config.PROJECT['path'] + config.PROJECT['name']
-    RANDOM_TYPE_KEY = get_keyboard_key(config.CMD['random_type']['key'])
 
     def __init__ (self):
         self.play_type = 'once'
@@ -133,27 +127,28 @@ class Play:
             _chang_input_language()
 
     def _kb_type (self, step_item):
-        key_code = step_item[Play.ABBR['key']]
-        kb_key = get_keyboard_key(key_code)
+        key = step_item[Play.ABBR['key']]
+        keyboard_event = step_item[Play.ABBR['keyboard_event']]
         self._sync_input_language(step_item)
-        if (kb_key == Play.RANDOM_TYPE_KEY):
-            _rundom_type()
-            return
-        if type(kb_key) == list:
-            for item in kb_key:
-                # print('comb press:', item)
-                Play.k_handler.press(item)
-            l = len(kb_key)
-            while(l > 0):
-                l = l - 1
-                item = kb_key[l]
-                # print('comb release:', item)
-                Play.k_handler.release(item)
-        else:
-            # print('press:', kb_key)
-            Play.k_handler.press(kb_key)
-            # print('release:', kb_key)
-            Play.k_handler.release(kb_key)
+        # todo 播放的时候支持 text 类型
+        if keyboard_event == Play.ABBR['text']:
+            words = get_keyboard_key(key)
+            return Play.k_handler.type(words)
+        elif keyboard_event == Play.ABBR['press']:
+            kb_key = get_keyboard_key(key)
+            return Play.k_handler.press(kb_key)
+        elif keyboard_event == Play.ABBR['release']:
+            kb_key = get_keyboard_key(key)
+            return Play.k_handler.release(kb_key)
+        # elif type(kb_key) == list:
+        #     for item in kb_key:
+        #         Play.k_handler.press(item)
+        #     l = len(kb_key)
+        #     while(l > 0):
+        #         l = l - 1
+        #         item = kb_key[l]
+        #         Play.k_handler.release(item)
+        # else:
         pass
 
     # 计算匹配消耗的时间

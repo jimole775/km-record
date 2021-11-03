@@ -17,8 +17,10 @@ DEFAULT = {
         'key': 'k', # 键盘按键
         'drag': 'd', # 鼠标拖拽施放事件
         'time': 'i', # 时间戳
+        'text': 'tx', # 文本
         'type': 't', # 类型，对应鼠标或者键盘
         'mouse': 'ms', # 鼠标
+        'words': 'ws', # 文字
         'move': 'mv', # 鼠标事件-移动
         'press': 'p', # 鼠标事件-按
         'scroll': 's', # 鼠标事件-滚轮
@@ -27,6 +29,7 @@ DEFAULT = {
         'drag_move': 'dm', # 鼠标拖拽过程
         'input_language': 'il', # 当前输入法的语言
         'input_system': 'is', # 当前输入法的系统（微软拼音|搜狗）
+        'keyboard_event': 'ke', # 键盘事件类型
         'mouse_event': 'me', # 鼠标事件类型
     },
     'cmd': {

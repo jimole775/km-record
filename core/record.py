@@ -8,20 +8,6 @@ from core.controller import createController
 from util.keyboard import get_key_char
 from util.scissors import Scissors
 from util.times import skin_time
-from util.sys import get_sys_language
-
-# 估算系统的中英状态
-# 不使用 get_sys_language 的原因是：
-#   截图是即时的，切换语法是有延迟的
-# 所以，只能在初始的时候使用一次
-# 往后只能通过键盘 shift 被按压的次数来判断
-def _eval_sys_lang (cur_lang):
-    if (cur_lang == 'en'):
-        return 'cn'
-    elif (cur_lang == 'cn'):
-        return 'en'
-    else:
-        return 'en'
 
 class Record ():
 
@@ -29,21 +15,19 @@ class Record ():
     scissors = Scissors()
     m_controller = MouseController()
     k_controller = KeyboardController()
-    sys_language = get_sys_language() # 当前中英文
 
     ABBR = config.ABBR
     ASSETS_DIR = config.PROJECT['path'] + config.PROJECT['name']
     INPUT_SYSTEM = 'ms' # 当前输入法，一般就是讯飞，搜狗，微软，五笔
-    LANG_TRANS_KEY = 'shift' # 中英切换的键
 
     def __init__ (self):
         pass
-
     def _keyboardEvent (self):
         ctrl = createController(Record)()
         Record.k_controller.registe({
+          'text': self._event_kb_text,
           'press': self._event_kb_press,
-          'release': self._record_kb_behavior
+          'release': self._event_kb_release,
         })
         Record.k_controller.bindExecution(ctrl.execution)
         Record.k_controller.active()
@@ -62,30 +46,37 @@ class Record ():
         })
         Record.m_controller.active()
 
-    def _event_ms_drag (self, loc, timeStamp):
-        self._record_ms_behavior(Record.ABBR['drag'], loc, timeStamp)
+    def _event_ms_drag (self, loc, stamp):
+        self._record_ms_behavior(Record.ABBR['drag'], loc, stamp)
         pass
 
-    def _event_ms_drag_move (self, loc, timeStamp):
-        self._record_ms_behavior(Record.ABBR['drag_move'], loc, timeStamp)
+    def _event_ms_drag_move (self, loc, stamp):
+        self._record_ms_behavior(Record.ABBR['drag_move'], loc, stamp)
         pass
 
-    def _event_ms_scroll (self, loc, timeStamp):
-        self._record_ms_behavior(Record.ABBR['scroll'], loc, timeStamp)
+    def _event_ms_scroll (self, loc, stamp):
+        self._record_ms_behavior(Record.ABBR['scroll'], loc, stamp)
         pass
 
-    def _event_ms_press (self, loc, timeStamp):
-        self._record_ms_behavior(Record.ABBR['press'], loc, timeStamp)
+    def _event_ms_press (self, loc, stamp):
+        self._record_ms_behavior(Record.ABBR['press'], loc, stamp)
         pass
 
-    def _event_ms_release (self, loc, timeStamp):
-        self._screen_shot(loc, timeStamp)
-        self._record_ms_behavior(Record.ABBR['release'], loc, timeStamp)
+    def _event_ms_release (self, loc, stamp):
+        self._screen_shot(loc, stamp)
+        self._record_ms_behavior(Record.ABBR['release'], loc, stamp)
         pass
 
-    def _event_kb_press (self, key):
-        # key_char = get_key_char(key)
-        # print('press key_char:', key_char)
+    def _event_kb_text (self, text, stamp, lang):
+        self._record_kb_behavior(text, 'text', stamp, lang)
+        pass
+
+    def _event_kb_press (self, key, stamp, lang):
+        self._record_kb_behavior(key, 'press', stamp, lang)
+        pass
+
+    def _event_kb_release (self, key, stamp, lang):
+        self._record_kb_behavior(key, 'release', stamp, lang)
         pass
 
     def start (self):
@@ -100,21 +91,22 @@ class Record ():
         Record.k_controller.stop()
         Record.m_controller.stop()
 
-    def _record_kb_behavior (self, key, stamp):
-        key_char = get_key_char(key)
-        if Record.LANG_TRANS_KEY == key_char:
-            Record.sys_language = _eval_sys_lang(Record.sys_language)
+    # 记录键盘操作
+    def _record_kb_behavior (self, key, keyboard_event, stamp, lang):
+        if keyboard_event != 'text':
+            key = get_key_char(key)
         if Record.work == True:
             data = {
                 Record.ABBR['type']: Record.ABBR['keyboard'],
                 Record.ABBR['time']: skin_time(stamp),
-                Record.ABBR['key']: key_char,
-                Record.ABBR['input_language']: Record.sys_language
+                Record.ABBR['key']: key,
+                Record.ABBR['keyboard_event']: Record.ABBR[keyboard_event],
+                Record.ABBR['input_language']: lang
             }
             self._write(data)
         pass
 
-    # 记录操作
+    # 记录鼠标操作
     def _record_ms_behavior (self, event, loc, stamp):
         if Record.work == True:
             data = {
@@ -132,7 +124,7 @@ class Record ():
         r_file.write(str + '\n')
         r_file.close()
 
-    def _screen_shot (self, loc, timeStamp):
+    def _screen_shot (self, loc, stamp):
         if config.MATCH and Record.work == True:
             screen = Record.scissors.cutScreen()
-            Record.scissors.cutUniqueReact(screen, loc, skin_time(timeStamp))
+            Record.scissors.cutUniqueReact(screen, loc, skin_time(stamp))
