@@ -3,7 +3,7 @@ import time
 import threading
 from pynput import keyboard
 from config import config
-from util.keyboard import is_function_key, get_key_char, compare_keys
+from util.keyboard import *
 from util.sys import get_sys_language
 from util.func import call
 from util.times import skin_time
@@ -52,23 +52,25 @@ class KeyboardController():
         self.combo_info = {
             'keys': [],
             'status': 0 # 0: 闲置中（清空状态）
-                        # 1: 按键组合中（shift|ctrl|alt已按下，正在加按其他键）
-                        # 89: 组合键未触发功能键，可记录
-                        # 97: 特意增加一个输入随机数的功能键，不可记录
+                        # 2: 组合键未触发功能键，可记录
+                        # 94: 匹配有ramdon_key，还在存储中，【暂不记录】
+                        # 95: 单独按键（shift|ctrl|alt已按下），还在存储中，【暂不记录】
+                        # 96: 按键超过1个，还在存储中，无法确定是否会匹配组合键，【暂不记录】（release之后再重新判断）
+                        # 97: 已触发ramdon_key，清除中，不可记录
                         # 98: 已触发功能键，清除中，不可记录
                         # 99: 已匹配功能键，可调用功能函数，不可记录
         }
         self.press_keys = []
+        self.press_keys_temp = []
         self.thread_queue = []
         self.thread_active = None
         self.event_dict = {}
         self.events_excution = None
 
-    # todo _store_press需要根据状态来存，否则记录的功能键无法释放
     def _press (self, key):
-
+        print('_press:', key, time.time())
         comb_keys = self._get_combo_keys()
-        # 如果是辅助键，就存comb，理论上不限定组合键的个数123
+        # 如果是辅助键，就存comb
         if len(comb_keys) > 0:
             if key not in comb_keys:
                 self._store_combo_keys(key)
@@ -77,20 +79,26 @@ class KeyboardController():
         # 只按了一个辅助键
         if is_assist_key(key) and len(comb_keys) == 0:
             self._store_combo_keys(key)
-            self._set_combo_status(1)
+            self._set_combo_status(95)
         self._store_press(key)
-
+    # todo 98 没处理
     def _eval_combo_status (self):
         comb_keys = self._get_combo_keys()
+        print('comb on status:', comb_keys, time.time())
         if is_function_key(comb_keys):
             self._set_combo_status(99)
-        else:
-            if compare_keys(comb_keys, KeyboardController.RANDOM_TYPE_KEY):
-                self._set_combo_status(97)
-            else:
-                self._set_combo_status(89)
+        elif include_function_key(comb_keys):
+            self._set_combo_status(96)
+        elif is_random_key(comb_keys):
+            self._set_combo_status(97)
+        elif include_random_key(comb_keys):
+            self._set_combo_status(94)
+        # else:
+        #     self._set_combo_status(2)
 
     def _release (self, key):
+        print('_release:', key, time.time())
+        stamp = time.time()
         combo_status = self._get_combo_status()
         # 没有组合键
         if combo_status == 0:
@@ -98,28 +106,30 @@ class KeyboardController():
             if is_function_key(key):
                 self._trigger_function(key)
             else:
-                self._call_event('release', key)
+                self._call_event('release', key, stamp)
         # 有组合键
         else:
             comb_keys = self._get_combo_keys()
             if combo_status == 99:
                 self._trigger_function(comb_keys)
+                self.press_keys_temp.clear()
                 # 组合键状态被设置为 98 之后，不会被记录，除非状态被修改
                 self._set_combo_status(98)
 
             elif combo_status == 97:
-                words = skin_time(time.time())
-                self._call_event('text', words)
+                words = skin_time(stamp)
+                self._call_event('text', words, stamp)
+                self.press_keys_temp.clear()
                 # 组合键状态被设置为 98 之后，不会被记录，除非状态被修改
                 self._set_combo_status(98)
 
             # 单独点击 shift ctrl alt
-            elif combo_status == 1:
+            elif combo_status == 95:
                 key_char = get_key_char(key)
                 if KeyboardController.LANG_TRANS_KEY == key_char:
                     _eval_sys_lang(KeyboardController)
 
-                self._call_event('release', key)
+                self._call_event('release', key, stamp)
 
             elif combo_status == 98:
                 # 98的状态不做任何处理
@@ -142,6 +152,7 @@ class KeyboardController():
         return self.combo_info['status']
 
     def _set_combo_status (self, code):
+        print('status:', code)
         self.combo_info['status'] = code
         return self.combo_info['status']
 
@@ -152,7 +163,7 @@ class KeyboardController():
 
     def _clear_combo_keys (self):
         self.combo_info['keys'].clear()
-        self.combo_info['status'] = 0
+        self._set_combo_status(0)
 
     def _consume_combo_keys (self, key):
         temp = []
@@ -168,10 +179,24 @@ class KeyboardController():
         # 97: 特意增加一个输入随机数的功能键，不可记录
         # 98: 已触发功能键，清除中，不可记录
         # 99: 已匹配功能键，可调用功能函数，不可记录
+        stamp = time.time()
         comb_status = self._get_combo_status()
-        if key not in self.press_keys and comb_status not in [97, 98, 99]:
+        if key not in self.press_keys and comb_status in [0, 1, 2]:
+            if len(self.press_keys_temp) > 0:
+                for item in self.press_keys_temp:
+                    # print('press for:', item)
+                    self._call_event('press', item['key'], item['stamp'])
+                    self.press_keys.append(item['key'])
+            self.press_keys_temp.clear()
             self.press_keys.append(key)
-            self._call_event('press', key)
+            # print('press:', key)
+            self._call_event('press', key, stamp)
+
+        if key not in self.press_keys_temp and comb_status in [94, 95, 96]:
+            self.press_keys_temp.append({ 'key': key, 'stamp': stamp })
+
+        if comb_status in [97, 98, 99]:
+            self.press_keys_temp.clear()
         pass
 
     def _consume_press (self, key):
@@ -209,11 +234,11 @@ class KeyboardController():
         self.event_dict = event_dict
         pass
 
-    def _call_event (self, event_name, key):
+    def _call_event (self, event_name, key, stamp):
         try:
             params = {
                 'key': key,
-                'time_stamp': skin_time(time.time()),
+                'time_stamp': skin_time(stamp),
                 'sys_language': KeyboardController.sys_language,
             }
             event_fn = self.event_dict[event_name]

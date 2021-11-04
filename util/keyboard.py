@@ -1,6 +1,8 @@
 import re
 from config import config
 from pynput import keyboard
+
+RANDOM_TYPE_KEY = config.CMD['random_type']['key']
 # 获取 key 的字符类型
 def get_key_char(src):
     return _transform_handler('char', src)
@@ -17,6 +19,47 @@ def get_key_code(src):
 def get_keyboard_key(src):
     return _transform_handler('key', src)
 
+def is_random_key(key_or_comb):
+    keys = get_keyboard_key(key_or_comb)
+    if type(keys) != list:
+        keys = [keys]
+    # 额外增加一个输入随机数的指令
+    random_keys = get_keyboard_key(RANDOM_TYPE_KEY)
+    return compare_keys(keys, random_keys)
+
+def include_random_key(key_or_comb):
+    res = False
+    keys = get_keyboard_key(key_or_comb)
+    if type(keys) != list:
+        keys = [keys]
+    # 额外增加一个输入随机数的指令
+    random_keys = get_keyboard_key(RANDOM_TYPE_KEY)
+    for key in keys:
+        if key in random_keys:
+            res = True
+            break
+    return res
+
+def include_function_key(key_or_comb):
+    res = False
+    keys = get_keyboard_key(key_or_comb)
+    if type(keys) != list:
+        keys = [keys]
+    for fn_type in config.HOTKEY:
+        name_map = config.HOTKEY[fn_type]
+        for fn_name in name_map:
+            fn_info = name_map[fn_name]
+            fn_keys = get_keyboard_key(fn_info['key'])
+            for key in keys:
+                if key in fn_keys:
+                    res = True
+                    break
+            if res == True:
+                break
+        if res == True:
+            break
+    return res
+
 # 判断是否是功能键，包括组合键
 def is_function_key(key_or_comb):
     res = False
@@ -27,11 +70,15 @@ def is_function_key(key_or_comb):
         for fn_name in name_map:
             fn_info = name_map[fn_name]
             fn_key_char = get_key_char(fn_info['key'])
-            if compare_keys(fn_key_char, key_char) == True:
+            if compare_keys(fn_key_char, key_char):
                 res = True
                 break
         if res == True:
             break
+
+    # 额外增加一个输入随机数的指令
+    random_key_char = get_key_char(RANDOM_TYPE_KEY)
+    if compare_keys(random_key_char, key_char): res = True
     return res
 
 # 比对两个键的code是否相等，支持不同类型的比对
