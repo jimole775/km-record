@@ -50,15 +50,19 @@ class KeyboardController():
 
     def __init__ (self):
         self.combo_info = {
-            'keys': [],
-            'status': 0 # 0: 闲置中（清空状态）
-                        # 2: 组合键未触发功能键，可记录
+            'press': [],
+            'release': [],
                         # 94: 匹配有ramdon_key，还在存储中，【暂不记录】
                         # 95: 单独按键（shift|ctrl|alt已按下），还在存储中，【暂不记录】
                         # 96: 按键超过1个，还在存储中，无法确定是否会匹配组合键，【暂不记录】（release之后再重新判断）
-                        # 97: 已触发ramdon_key，清除中，不可记录
-                        # 98: 已触发功能键，清除中，不可记录
-                        # 99: 已匹配功能键，可调用功能函数，不可记录
+
+            'status': 0 # 0: 闲置中（清空状态）
+                        # 1: 只有辅助键，【暂不记录】
+                        # 2: 未触发任何功能键，【可记录】
+
+                        # 97: 已触发ramdon_key，清除中，【不可记录】
+                        # 98: 已触发功能键，清除中，【不可记录】
+                        # 99: 已匹配功能键，可调用功能函数，【不可记录】
         }
         self.press_keys = []
         self.press_keys_temp = []
@@ -68,38 +72,61 @@ class KeyboardController():
         self.events_excution = None
 
     def _press (self, key):
-        print('_press:', key, time.time())
-        comb_keys = self._get_combo_keys()
-        # 如果是辅助键，就存comb
-        if len(comb_keys) > 0:
-            if key not in comb_keys:
-                self._store_combo_keys(key)
-                self._eval_combo_status()
+        print('press:', key)
+        combo_keys = self._get_combo_keys('press')
+        if is_assist_key(key):
+            if key not in combo_keys:
+                self._store_combo_keys('press', key)
+                self._set_combo_status(1)
 
-        # 只按了一个辅助键
-        if is_assist_key(key) and len(comb_keys) == 0:
-            self._store_combo_keys(key)
-            self._set_combo_status(95)
+        if not is_assist_key(key):
+            if len(combo_keys) > 0:
+                self._eval_combo_status(key)
+            else:
+                self._set_combo_status(0)
+            # if len(combo_keys) == 0:
+            #     self._store_combo_keys('press', key)
+            #     self._set_combo_status(95)
+
+        # # 如果是辅助键，就存comb
+        # if len(combo_keys) > 0:
+        #     if key not in combo_keys and is_assist_key(key):
+        #         self._store_combo_keys('press', key)
+        #     if not is_assist_key(key):
+        #         self._eval_combo_status(key)
+
+        # # 只按了一个辅助键
+        # if is_assist_key(key) and len(combo_keys) == 0:
+        #     self._store_combo_keys('press', key)
+        #     self._set_combo_status(95)
+
         self._store_press(key)
+
     # todo 98 没处理
-    def _eval_combo_status (self):
-        comb_keys = self._get_combo_keys()
-        print('comb on status:', comb_keys, time.time())
-        if is_function_key(comb_keys):
+    # [ctrl|alt|shift] + [a-z0-9]
+    def _eval_combo_status (self, key):
+        combo_keys = self._get_combo_keys('press')
+        fn_keys = combo_keys[:]
+        fn_keys.append(key)
+        if is_function_key(fn_keys):
             self._set_combo_status(99)
-        elif include_function_key(comb_keys):
-            self._set_combo_status(96)
-        elif is_random_key(comb_keys):
+        elif is_random_key(fn_keys):
             self._set_combo_status(97)
-        elif include_random_key(comb_keys):
-            self._set_combo_status(94)
-        # else:
-        #     self._set_combo_status(2)
+        # elif include_function_key(fn_keys):
+        #     self._set_combo_status(96)
+        # elif include_random_key(fn_keys):
+        #     self._set_combo_status(94)
+        else:
+            self._set_combo_status(2)
 
     def _release (self, key):
-        print('_release:', key, time.time())
         stamp = time.time()
+        print('release:', key)
+        combo_keys = self._get_combo_keys('press')
         combo_status = self._get_combo_status()
+        if is_assist_key(key) and key in combo_keys:
+            return self._consume_combo_keys(key, stamp)
+
         # 没有组合键
         if combo_status == 0:
             # 如果配置有功能键，那么就直接触发绑定的事件
@@ -109,9 +136,10 @@ class KeyboardController():
                 self._call_event('release', key, stamp)
         # 有组合键
         else:
-            comb_keys = self._get_combo_keys()
+            fn_keys = combo_keys[:]
+            fn_keys.append(key)
             if combo_status == 99:
-                self._trigger_function(comb_keys)
+                self._trigger_function(fn_keys)
                 self.press_keys_temp.clear()
                 # 组合键状态被设置为 98 之后，不会被记录，除非状态被修改
                 self._set_combo_status(98)
@@ -134,8 +162,18 @@ class KeyboardController():
             elif combo_status == 98:
                 # 98的状态不做任何处理
                 pass
+            elif combo_status == 2:
+                self._call_event('release', key, stamp)
+                pass
+            elif combo_status == 0:
+                self._call_event('release', key, stamp)
+                pass
+            elif combo_status == 1:
+                if len(combo_keys) == 1 and key in combo_keys:
+                    self._call_event('release', key, stamp)
+                pass
 
-            self._consume_combo_keys(key)
+            self._consume_combo_keys(key, stamp)
         self._consume_press(key)
         return self._eval_exit()
 
@@ -145,8 +183,8 @@ class KeyboardController():
         else:
             return True
 
-    def _get_combo_keys (self):
-        return self.combo_info['keys']
+    def _get_combo_keys (self, _t):
+        return self.combo_info[_t]
 
     def _get_combo_status (self):
         return self.combo_info['status']
@@ -156,23 +194,30 @@ class KeyboardController():
         self.combo_info['status'] = code
         return self.combo_info['status']
 
-    def _store_combo_keys (self, key):
-        if key not in self.combo_info['keys']:
-            self.combo_info['keys'].append(key)
+    def _store_combo_keys (self, _t, key):
+        if key not in self.combo_info[_t]:
+            self.combo_info[_t].append(key)
         pass
 
     def _clear_combo_keys (self):
         self.combo_info['keys'].clear()
         self._set_combo_status(0)
 
-    def _consume_combo_keys (self, key):
+    def _consume_combo_keys (self, key, stamp):
         temp = []
-        for item in self.combo_info['keys']:
+        combo_keys = self.combo_info['press']
+        combo_status = self.combo_info['status']
+        if combo_status == 2:
+            self._call_event('release', key, stamp)
+            pass
+
+        for item in combo_keys:
             if (item != key): temp.append(item)
-        self.combo_info['keys'] = temp
-        self.combo_info['status'] = 2
-        if len(self.combo_info['keys']) == 0:
+        self.combo_info['press'] = temp
+
+        if len(self.combo_info['press']) == 0:
             self.combo_info['status'] = 0
+
         pass
 
     def _store_press (self, key):
@@ -181,18 +226,18 @@ class KeyboardController():
         # 99: 已匹配功能键，可调用功能函数，不可记录
         stamp = time.time()
         comb_status = self._get_combo_status()
-        if key not in self.press_keys and comb_status in [0, 1, 2]:
+        if key not in self.press_keys and comb_status in [0, 2]:
+
             if len(self.press_keys_temp) > 0:
                 for item in self.press_keys_temp:
-                    # print('press for:', item)
                     self._call_event('press', item['key'], item['stamp'])
                     self.press_keys.append(item['key'])
+
             self.press_keys_temp.clear()
             self.press_keys.append(key)
-            # print('press:', key)
             self._call_event('press', key, stamp)
 
-        if key not in self.press_keys_temp and comb_status in [94, 95, 96]:
+        if key not in self.press_keys_temp and comb_status in [1]:
             self.press_keys_temp.append({ 'key': key, 'stamp': stamp })
 
         if comb_status in [97, 98, 99]:

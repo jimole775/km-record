@@ -76,9 +76,6 @@ def is_function_key(key_or_comb):
         if res == True:
             break
 
-    # 额外增加一个输入随机数的指令
-    random_key_char = get_key_char(RANDOM_TYPE_KEY)
-    if compare_keys(random_key_char, key_char): res = True
     return res
 
 # 比对两个键的code是否相等，支持不同类型的比对
