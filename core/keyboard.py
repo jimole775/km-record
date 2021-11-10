@@ -54,7 +54,7 @@ class KeyboardController():
             'release': [],
             'status': 0 # 0: 闲置中（清空状态）
                         # 1: 只有辅助键，【暂不记录】
-                        # 2: 未触发任何功能键，【可记录】
+                        # 2: 按键已经开始释放，未触发任何功能键，【可记录】
 
                         # 97: 已触发ramdon_key，清除中，【不可记录】
                         # 98: 已触发功能键，清除中，【不可记录】
@@ -151,43 +151,39 @@ class KeyboardController():
         else:
             fn_keys = combo_keys[:]
             fn_keys.append(key)
+            # 99 状态不记录
             if combo_status == 99:
                 self._trigger_function(fn_keys)
                 self.press_keys_temp.clear()
                 # 组合键状态被设置为 98 之后，不会被记录，除非状态被修改
                 self._set_combo_status(98)
-
+            # 97 状态不记录
             elif combo_status == 97:
                 words = skin_time(stamp)
                 self._call_event('text', words, stamp)
                 self.press_keys_temp.clear()
                 # 组合键状态被设置为 98 之后，不会被记录，除非状态被修改
                 self._set_combo_status(98)
-
-            # 单独点击 shift ctrl alt
-            elif combo_status == 95:
-                key_char = get_key_char(key)
-                if KeyboardController.LANG_TRANS_KEY == key_char:
-                    _eval_sys_lang(KeyboardController)
-
-                self._call_event('release', key, stamp)
-
+            # 98 状态不记录
             elif combo_status == 98:
-                # 98的状态不做任何处理
+                self.press_keys_temp.clear()
                 pass
+            # 2 状态记录
             elif combo_status == 2:
                 self._call_event('release', key, stamp)
                 pass
+            # 0 状态记录
             elif combo_status == 0:
                 self._call_event('release', key, stamp)
                 pass
+            # 1 状态，如果只有一个按键，就记录，比如按shift进行中英文切换
             elif combo_status == 1:
                 if len(combo_keys) == 1 and key in combo_keys:
                     self._call_event('release', key, stamp)
                 pass
-
             self._consume_combo_keys(key)
         pass
+
     def _store_press (self, key):
         stamp = time.time()
         comb_status = self._get_combo_status()
