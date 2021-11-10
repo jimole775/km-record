@@ -72,7 +72,7 @@ class KeyboardController():
         self.events_excution = None
 
     def _press (self, key):
-        print('press:', key)
+        # print('press:', key)
         combo_keys = self._get_combo_keys('press')
         if is_assist_key(key):
             if key not in combo_keys:
@@ -121,11 +121,9 @@ class KeyboardController():
 
     def _release (self, key):
         stamp = time.time()
-        print('release:', key)
+        # print('release:', key)
         combo_keys = self._get_combo_keys('press')
         combo_status = self._get_combo_status()
-        if is_assist_key(key) and key in combo_keys:
-            return self._consume_combo_keys(key, stamp)
 
         # 没有组合键
         if combo_status == 0:
@@ -173,7 +171,7 @@ class KeyboardController():
                     self._call_event('release', key, stamp)
                 pass
 
-            self._consume_combo_keys(key, stamp)
+            self._consume_combo_keys(key)
         self._consume_press(key)
         return self._eval_exit()
 
@@ -190,7 +188,7 @@ class KeyboardController():
         return self.combo_info['status']
 
     def _set_combo_status (self, code):
-        print('status:', code)
+        # print('status:', code)
         self.combo_info['status'] = code
         return self.combo_info['status']
 
@@ -203,16 +201,17 @@ class KeyboardController():
         self.combo_info['keys'].clear()
         self._set_combo_status(0)
 
-    def _consume_combo_keys (self, key, stamp):
+    def _consume_combo_keys (self, key):
         temp = []
         combo_keys = self.combo_info['press']
-        combo_status = self.combo_info['status']
-        if combo_status == 2:
-            self._call_event('release', key, stamp)
-            pass
+        # combo_status = self.combo_info['status']
+        # if combo_status == 2:
+        #     self._call_event('release', key, stamp)
+        #     pass
 
         for item in combo_keys:
             if (item != key): temp.append(item)
+
         self.combo_info['press'] = temp
 
         if len(self.combo_info['press']) == 0:
@@ -290,8 +289,8 @@ class KeyboardController():
             if callable(event_fn):
                 call(event_fn, params)
         except Exception:
-            print('is not register "{}" methods yet in keyboard.py'.format(event_name))
-
+            # print('is not register "{}" methods yet in keyboard.py'.format(event_name))
+            pass
     """
     # 使用线程队列的模式,会使主线程被子线程队列的递归逻辑占满,
     # 跑不完子线程,主线程就无法有其他动作

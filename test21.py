@@ -15,3 +15,8 @@ for i in range(int(img.shape[0])):
 cv2.imwrite('conv6.png', img)
 def log():
     print('中文')
+def log1():
+    print('中文输入')
+
+def log2():
+    print('中文')
