@@ -25,19 +25,23 @@ class Desktop ():
 
     def record (self):
         self.excuteEventInThread(self.record_events)
+        self.minimize()
         pass
 
     def play (self):
         self.playConfigUI.regConfirmEvent(self.excuteEventInThread, self.play_events)
         self.playConfigUI.Show()
+        self.minimize()
         pass
 
     def edit (self):
         self.excuteEventInThread(self.edit_events)
+        self.minimize()
         pass
 
     def config (self):
         self.excuteEventInThread(self.config_events)
+        self.minimize()
         pass
 
     def excuteEventInThread (self, event):
@@ -90,11 +94,18 @@ class Desktop ():
 
     ## 编辑
 
+    def minimize (self):
+        print('dasdasdsd')
+        self.main.state('icon')
+        pass
+
+    def normalze (self):
+        self.main.state('normal')
+        pass
     ## 快捷键
     "【弹窗】"
     "录制=>开始，暂停，结束..."
     "播放=>开始，暂停，结束..."
-
     ## 注册功能函数
     def registerFunction (self, fn_type, fn_tuple):
         if type(fn_type) == str and type(fn_tuple) == tuple:
