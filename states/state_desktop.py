@@ -1,12 +1,13 @@
 state = {
-  'test': 1
+  'test': 1,
+  'active': 0, # 0: 线程闲置状态，1: 视图最小化，2: 线程退出
 }
 subs = {
   'test': None
 }
 
 class StateDesktop ():
-    def __init__(self):
+    def __init__ (self):
         pass
 
     def subscribe (self, key, callback):
@@ -28,10 +29,15 @@ class StateDesktop ():
         self.unsubscribe(key)
         pass
 
-    def get (self, key):
+    def get_state (self, key):
         return state[key]
 
-    def set (self, key, value):
+    def set_state (self, key, value):
         state[key] = value
         self._publish(key, value)
+        pass
+
+    def reset_state (self):
+        state['active'] = 0
+        self._publish('active', 0)
         pass

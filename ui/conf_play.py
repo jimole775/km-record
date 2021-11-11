@@ -55,7 +55,7 @@ FN_KEY = [ u"F1", u"F2", u"F3", u"F4", u"F5", u"F6", u"F7", u"F8", u"F9", u"F10"
 FN_TITLE = [ u"开始播放", u"循环播放", u"暂停播放", u"继续播放", u"停止播放", u"F6", u"F7", u"退出", u"F9", u"F10", u"F11", u"F12" ]
 class PlayConfigUI ( wx.Frame ):
 
-    def __init__( self, parent ):
+    def __init__ ( self, parent ):
         self.cancelFn = None
         self.cancelParam = None
         self.confirmFn = None

@@ -81,7 +81,7 @@ class RecordConfig ():
         for event in events:
             e_instance = event[0]
             e_paramets = event[1:]
-            call(e_instance, e_paramets)
+            apply(e_instance, e_paramets)
             # if callable(e_instance):
             #     param_dict = {}
             #     # 获取函数的参数数量

@@ -2,6 +2,8 @@ from tkinter import *
 from tkinter import messagebox
 from ui.conf_play import PlayConfigUI
 from util.func import apply
+from states.state_desktop import StateDesktop
+
 import threading
 import wx
 class Desktop ():
@@ -10,10 +12,10 @@ class Desktop ():
         self.main = Tk()
         self.main.title("OPR")
         self.main.geometry("200x30")
-        self.record_events = []
         self.play_events = []
         self.edit_events = []
         self.config_events = []
+        self.record_events = []
         self.createIco()
         self.createButton()
         self.createWxThrd()
