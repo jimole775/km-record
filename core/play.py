@@ -91,7 +91,6 @@ class Play:
         if len(line) > 0:
             o_item = step_item
             n_item = json.loads(line)
-            print(o_item, n_item)
             time.sleep(float(n_item['i']) - float(o_item['i']))
         return line
 

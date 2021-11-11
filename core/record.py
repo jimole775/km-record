@@ -89,12 +89,6 @@ class Record ():
         Record.k_controller.stop()
         Record.m_controller.stop()
 
-    def queue_record_line ():
-        r_file = open(ASSETS_DIR + '/index.log', 'r')
-        r_file.write(str + '\n')
-        r_file.close()
-
-
     # 记录键盘操作
     # event_info: 'key', 'time_stamp', 'sys_language'
     def _record_kb_behavior (self, keyboard_event, event_info):

@@ -179,6 +179,7 @@ class KeyboardController():
             # 1 状态，如果只有一个按键，就记录，比如按shift进行中英文切换
             elif combo_status == 1:
                 if len(combo_keys) == 1 and key in combo_keys:
+                    self._free_temp_press()
                     self._call_event('release', key, stamp)
                 pass
             self._consume_combo_keys(key)
@@ -188,13 +189,7 @@ class KeyboardController():
         stamp = time.time()
         comb_status = self._get_combo_status()
         if key not in self.press_keys and comb_status in [0, 2]:
-            # 如果有存在暂存键，在这里进行存储
-            if len(self.press_keys_temp) > 0:
-                for item in self.press_keys_temp:
-                    self._call_event('press', item['key'], item['stamp'])
-                    self.press_keys.append(item['key'])
-
-            self.press_keys_temp.clear()
+            self._free_temp_press()
             self.press_keys.append(key)
             self._call_event('press', key, stamp)
 
@@ -208,6 +203,15 @@ class KeyboardController():
         if comb_status in [97, 98, 99]:
             self.press_keys_temp.clear()
         pass
+
+    def _free_temp_press (self):
+        # 如果有存在暂存键，在这里进行存储
+        if len(self.press_keys_temp) > 0:
+            for item in self.press_keys_temp:
+                self._call_event('press', item['key'], item['stamp'])
+                self.press_keys.append(item['key'])
+        self.press_keys_temp.clear()
+
 
     def _consume_press (self, key):
         temp = []
