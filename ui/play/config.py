@@ -48,13 +48,14 @@
 import wx
 import wx.xrc
 from util.func import call
+from states.state_desktop import StateDesktop
 ###########################################################################
-## Class PlayConfigUI
+## Class PConfigUI
 ###########################################################################
 FN_KEY = [ u"F1", u"F2", u"F3", u"F4", u"F5", u"F6", u"F7", u"F8", u"F9", u"F10", u"F11", u"F12" ]
 FN_TITLE = [ u"开始播放", u"循环播放", u"暂停播放", u"继续播放", u"停止播放", u"F6", u"F7", u"退出", u"F9", u"F10", u"F11", u"F12" ]
-class PlayConfigUI ( wx.Frame ):
-
+class PConfigUI ( wx.Frame ):
+    desktop_state = StateDesktop()
     def __init__ ( self, parent ):
         self.cancelFn = None
         self.cancelParam = None
@@ -125,7 +126,7 @@ class PlayConfigUI ( wx.Frame ):
         return main_frame
 
     def __MatchConfirmModule__ ( self, main_frame ):
-    
+
         fgSizer = wx.FlexGridSizer( 0, 3, 0, 0 )
         fgSizer.SetFlexibleDirection( wx.BOTH )
         fgSizer.SetNonFlexibleGrowMode( wx.FLEX_GROWMODE_SPECIFIED )
@@ -188,6 +189,7 @@ class PlayConfigUI ( wx.Frame ):
         event.Skip()
         call(self.cancelFn, self.cancelParam)
         self.Hide()
+        PConfigUI.desktop_state.set_state('active', 0)
   
     def confirmHandler( self, event ):
         event.Skip()
@@ -204,6 +206,6 @@ class PlayConfigUI ( wx.Frame ):
 
 if __name__== "__main__":
     app = wx.App()
-    frame = PlayConfigUI(parent=None)
+    frame = PConfigUI(parent=None)
     frame.Show()
     app.MainLoop()

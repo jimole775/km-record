@@ -1,12 +1,14 @@
 from tkinter import *
 from tkinter import messagebox
-from ui.conf_play import PlayConfigUI
+from ui.play.config import PConfigUI
+from ui.record.config import RCConfigUI
 from util.func import apply
 from states.state_desktop import StateDesktop
 
 import threading
 import wx
 class Desktop ():
+    state = StateDesktop()
     def __init__ (self):
         self.app = wx.App()
         self.main = Tk()
@@ -19,31 +21,44 @@ class Desktop ():
         self.createIco()
         self.createButton()
         self.createWxThrd()
-        self.playConfigUI = PlayConfigUI(parent=None)
+        self.PConfigUI = PConfigUI(parent=None)
+        self.RCConfigUI = RCConfigUI(parent=None)
+        Desktop.state.subscribe('active', self.active_callback)
+
+    # 0: 线程闲置状态，1: 视图最小化，2: 线程退出
+    def active_callback (self, val):
+        if (val == 0):
+            self.win_show()
+        elif (val == 1):
+            self.win_hide()
+        elif (val == 2):
+            self.win_destroy()
+            pass
 
     def createWxThrd (self):
         thread = threading.Thread(target=self.app.MainLoop)
         thread.start()
 
     def record (self):
-        self.excuteEventInThread(self.record_events)
-        self.minimize()
+        self.RCConfigUI.regConfirmEvent(self.excuteEventInThread, self.record_events)
+        self.RCConfigUI.Show()
+        self.win_hide()
         pass
 
     def play (self):
-        self.playConfigUI.regConfirmEvent(self.excuteEventInThread, self.play_events)
-        self.playConfigUI.Show()
-        self.minimize()
+        self.PConfigUI.regConfirmEvent(self.excuteEventInThread, self.play_events)
+        self.PConfigUI.Show()
+        self.win_hide()
         pass
 
     def edit (self):
         self.excuteEventInThread(self.edit_events)
-        self.minimize()
+        self.win_hide()
         pass
 
     def config (self):
         self.excuteEventInThread(self.config_events)
-        self.minimize()
+        self.win_hide()
         pass
 
     def excuteEventInThread (self, event):
@@ -96,13 +111,17 @@ class Desktop ():
 
     ## 编辑
 
-    def minimize (self):
-        print('dasdasdsd')
-        self.main.state('icon')
+    def win_destroy (self):
+        self.main.destroy()
         pass
 
-    def normalze (self):
-        self.main.state('normal')
+    def win_hide (self):
+        self.main.withdraw()
+        pass
+
+    def win_show (self):
+        self.main.update()
+        self.main.deiconify()
         pass
     ## 快捷键
     "【弹窗】"

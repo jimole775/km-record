@@ -3,14 +3,14 @@
 ##############################################
 def apply (e_instance, e_paramets=()):
     if callable(e_instance):
-        __core__ (e_instance, e_paramets)
+        __core__(e_instance, e_paramets)
 
 ##############################################
 # @exmple: call(func, param_a, param_b)
 ##############################################
 def call (e_instance, *e_paramets):
     if callable(e_instance):
-        __core__ (e_instance, e_paramets)
+        __core__(e_instance, e_paramets)
 
 
 def __core__ (e_instance, e_paramets):

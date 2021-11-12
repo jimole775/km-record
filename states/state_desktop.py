@@ -1,9 +1,8 @@
 state = {
-  'test': 1,
   'active': 0, # 0: 线程闲置状态，1: 视图最小化，2: 线程退出
 }
 subs = {
-  'test': None
+  'active': []
 }
 
 class StateDesktop ():
@@ -11,20 +10,37 @@ class StateDesktop ():
         pass
 
     def subscribe (self, key, callback):
-        subs[key] = callback
+        self._rise_subs(key, callback)
         pass
+
+    def _rise_subs (self, key, callback):
+        try:
+            queue = subs[key]
+            queue.append(callback)
+        except Exception:
+            subs[key] = []
+            subs[key].append(callback)
+        pass
+
+    def _get_subs_queue (self, key):
+        try:
+            return subs[key]
+        except Exception:
+            subs[key] = []
+            return subs[key]
 
     def unsubscribe (self, key):
         del subs[key]
         pass
 
     def _publish (self, key, value):
-        # for item in subs:
-        if callable(subs[key]):
-            subs[key](value)
+        subs_queue = self._get_subs_queue(key)
+        for sub_item in subs_queue:
+            if callable(sub_item):
+                sub_item(value)
         pass
 
-    def delete (self, key):
+    def del_state (self, key):
         del state[key]
         self.unsubscribe(key)
         pass
@@ -39,5 +55,7 @@ class StateDesktop ():
 
     def reset_state (self):
         state['active'] = 0
-        self._publish('active', 0)
+        for key in state:
+            val = state[key]
+            self._publish(key, val)
         pass
