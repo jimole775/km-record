@@ -1,27 +1,29 @@
-
+import Vue from "vue"
 const TokenKey = 'OMSToken'
 const JumpKey = 'OMSJump'
 
 export function getToken () {
-  return localStorage[TokenKey] || ' '
+  const data = Vue.localStorage.getItem(TokenKey)
+  return  data || ' '
 }
 
 export function setToken (token) {
-  localStorage[TokenKey] = token
+  Vue.localStorage.setItem(TokenKey, token)
 }
 
 export function removeToken () {
-  return delete localStorage[TokenKey]
+  return Vue.localStorage.removeItem(TokenKey)
 }
 
 export function setOMSJump (omsjump) {
-  localStorage[JumpKey] = omsjump
+  Vue.localStorage.setItem(JumpKey, omsjump)
 }
 
 export function getOMSJump () {
-  return localStorage[JumpKey] || ' '
+  const data = Vue.localStorage.getItem(JumpKey)
+  return  data || ' '
 }
 
 export function removeOMSJump () {
-  return delete localStorage[JumpKey]
+  return Vue.localStorage.removeItem(JumpKey)
 }

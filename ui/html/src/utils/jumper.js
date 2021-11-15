@@ -1,3 +1,4 @@
+import Vue from 'vue'
 import api from '@/api'
 import router from '@/router'
 import store from '@/store'
@@ -118,10 +119,10 @@ function dispatchTodoParams (category, item) {
   // 旧业务类型
   if (businessType === 0) {
     if (item.__tabType__ === 'list') {
-      localStorage.setItem('fromHomeTodoCount', JSON.stringify({ ...params, ...item }))
+      Vue.localStorage.setItem('fromHomeTodoCount', JSON.stringify({ ...params, ...item }))
     }
     if (item.__tabType__ === 'detail') {
-      localStorage.setItem('fromHomeTodoDetail', JSON.stringify({ ...params, ...item }))
+      Vue.localStorage.setItem('fromHomeTodoDetail', JSON.stringify({ ...params, ...item }))
     }
   }
   // 新业务类型

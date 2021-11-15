@@ -1,3 +1,4 @@
+import Vue from 'vue'
 import api from '@/api'
 import utils from '@/utils'
 import { Message } from 'ant-design-vue'
@@ -22,7 +23,7 @@ export default {
     getExportingList: (state) => {
       let list = []
       if (!state.exportingList || !state.exportingList.length) {
-        const cache = sessionStorage.getItem(exportingListStoreKey)
+        const cache = Vue.sessionStorage.getItem(exportingListStoreKey)
         if (cache) {
           list = JSON.parse(cache)
         } else {
@@ -109,7 +110,7 @@ export default {
   mutations: {
     setExportList (state, params) {
       state.exportingList = params
-      sessionStorage.setItem(exportingListStoreKey, JSON.stringify(state.exportingList || []))
+      Vue.sessionStorage.setItem(exportingListStoreKey, JSON.stringify(state.exportingList || []))
     },
     setTodoParams (state, params) {
       state.todoParams = params

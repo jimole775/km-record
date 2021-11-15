@@ -1,5 +1,6 @@
 <template>
   <SLayout>
+    {{ text }}
     <Phonevalidate ref="PhonevalidateRef" vtype="clock" />
   </SLayout>
 </template>
@@ -33,6 +34,9 @@ export default {
     userAccount () {
       return this.$store.state.global.user.employeeNumber
     }
+  },
+  created () {
+    // this.text = window.asdfghjkl
   },
   methods: {
     jumpToListPage (item) {

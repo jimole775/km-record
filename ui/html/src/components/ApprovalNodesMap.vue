@@ -83,6 +83,7 @@ export default {
   methods: {
     async fetchData () {
       const res = await api[this.apiName](this.params)
+      debugger
       if (res.code === 200) {
         this.nodes = res.data
       }

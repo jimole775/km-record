@@ -1,8 +1,10 @@
 // const marked = require("marked");
 // const renderer = new marked.Renderer();
 const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer')
-
+const path = require('path')
 module.exports = {
+  publicPath: path.join(__dirname, 'dist').replace(/\\/g, '/'),
+  outputDir: 'dist',
   configureWebpack: {
     devtool: 'source-map',
     plugins: [new BundleAnalyzerPlugin({
@@ -11,6 +13,11 @@ module.exports = {
     })]
   },
   chainWebpack: config => {
+    // config
+    //   .entry('app')
+    //   .clear()
+    //   .add('babel-polyfill')
+    //   .add('E:\\py_pro\\opr-record-pc\\ui\\html\\src\\main.js')
     config.module
       .rule('md')
       .test(/\.md$/)
