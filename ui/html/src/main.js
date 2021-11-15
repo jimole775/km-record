@@ -1,4 +1,4 @@
-import '@babel/polyfill'
+// import '@babel/polyfill'
 import './config/load.styles'
 import './config/load.modules'
 import './config/conf.dev'
