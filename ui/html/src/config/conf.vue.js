@@ -12,7 +12,7 @@ if (!Vue.localStorage && !Vue.sessionStorage) {
     const storage = Vue[field] = {}
     storage.setItem = (key, val) => {
       if (key !== 'setItem') {
-        if (type(val) === 'string') {
+        if (typeof(val) === 'string') {
           storage[key] = val
         } else {
           storage[key] = JSON.stringify(val)

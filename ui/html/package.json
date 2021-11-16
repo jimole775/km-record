@@ -7,6 +7,7 @@
     "init": "npm install && npm run init:commitizen",
     "serve": "vue-cli-service serve --open",
     "build": "vue-cli-service build",
+    "build:ie11": "vue-cli-service build && node ie11-hack.js",
     "lint": "vue-cli-service lint",
     "update:version": "node ./tag.version.js --version && git add package.json && git commit package.json -m \"chore: update project's version\"",
     "make:tag": "node ./tag.version.js --tag",

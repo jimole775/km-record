@@ -1,10 +1,10 @@
-import Vue from "vue"
+import Vue from 'vue'
 const TokenKey = 'OMSToken'
 const JumpKey = 'OMSJump'
 
 export function getToken () {
   const data = Vue.localStorage.getItem(TokenKey)
-  return  data || ' '
+  return data || ' '
 }
 
 export function setToken (token) {
@@ -21,7 +21,7 @@ export function setOMSJump (omsjump) {
 
 export function getOMSJump () {
   const data = Vue.localStorage.getItem(JumpKey)
-  return  data || ' '
+  return data || ' '
 }
 
 export function removeOMSJump () {

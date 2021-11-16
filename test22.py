@@ -6,12 +6,12 @@ class MyBrowser(wx.Frame):
         # 这里需要打开所有权限
         self.key = winreg.OpenKey(winreg.HKEY_CURRENT_USER,
               r"SOFTWARE\\Microsoft\\Internet Explorer\\Main\\FeatureControl\\FEATURE_BROWSER_EMULATION", 0, winreg.KEY_ALL_ACCESS)
-        # try:
-        #     # 设置注册表python.exe 值为 11000(IE11)
-        #     winreg.SetValueEx(self.key, 'python.exe', 0, winreg.REG_DWORD, 0x00002af8)
-        # except:
-        #     # 设置出现错误
-        #     print('error in set value!')
+        try:
+            # 设置注册表python.exe 值为 11000(IE11)
+            winreg.SetValueEx(self.key, 'python.exe', 0, winreg.REG_DWORD, 0x00002af8)
+        except:
+            # 设置出现错误
+            print('error in set value!')
         self.browser = wx.html2.WebView.New(self, style=0)
         self.Bind(wx.EVT_CLOSE, self.OnClose)
 

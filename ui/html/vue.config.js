@@ -1,16 +1,22 @@
 // const marked = require("marked");
 // const renderer = new marked.Renderer();
-const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer')
+// const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer')
+// const HtmlWebpackPlugin = require('html-webpack-plugin')
 const path = require('path')
 module.exports = {
   publicPath: path.join(__dirname, 'dist').replace(/\\/g, '/'),
-  outputDir: 'dist',
   configureWebpack: {
     devtool: 'source-map',
-    plugins: [new BundleAnalyzerPlugin({
-      analyzerHost: 'localhost',
-      analyzerPort: '8088'
-    })]
+    plugins: [
+      // new BundleAnalyzerPlugin({
+      //   analyzerHost: 'localhost',
+      //   analyzerPort: '8088'
+      // }),
+      // new HtmlWebpackPlugin({
+      //   prefetch: false,
+      //   preload: false
+      // }),
+    ]
   },
   chainWebpack: config => {
     // config
@@ -18,6 +24,9 @@ module.exports = {
     //   .clear()
     //   .add('babel-polyfill')
     //   .add('E:\\py_pro\\opr-record-pc\\ui\\html\\src\\main.js')
+    // console.log('plugins:', )
+    // config.plugins.delete('prefetch')
+    // config.plugins.delete('preload')
     config.module
       .rule('md')
       .test(/\.md$/)
@@ -33,6 +42,14 @@ module.exports = {
       // })
       .loader('markdown-loader')
       .end()
+    // config
+    //   .plugin('html')
+    //   .tap(args => {
+    //     // args[0].publicPath = path.join(__dirname, 'dist').replace(/\\/g, '/')
+    //     console.log(args)
+    //     return args
+    //   })
+    //   .end()
   },
   css: {
     loaderOptions: {
