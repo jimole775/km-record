@@ -1,6 +1,0 @@
-import 'ant-design-vue/dist/antd.less'
-import '@/styles/antd_reset.less'
-import '@/styles/common.less'
-import 'quill/dist/quill.core.css'
-import 'quill/dist/quill.snow.css'
-import 'quill/dist/quill.bubble.css'

@@ -1,4 +1,4 @@
-import wx, wx.html2, os, winreg
+import wx, wx.html2, os, winreg, time, asyncio
 
 class MyBrowser(wx.Frame):
     def __init__(self, *args, **kwds):
@@ -15,6 +15,8 @@ class MyBrowser(wx.Frame):
         self.browser = wx.html2.WebView.New(self, style=0)
         self.Bind(wx.EVT_CLOSE, self.OnClose)
 
+    def loadUrl(self, url):
+        self.browser.LoadURL(os.path.realpath(url))
 
     def OnClose(self, evt):
         print('close')
@@ -25,10 +27,12 @@ class MyBrowser(wx.Frame):
         evt.Skip()
 
 if __name__ == '__main__':
-  app = wx.App()
-  frame = MyBrowser()
-  frame.browser.RunScript('window.zxczxvcvxbvb="98765432"')
-  frame.browser.LoadURL(os.path.realpath(".\\ui\\html\\dist\\index.html"))
-  frame.browser.RunScript('window.asdfghjkl="12312323123123123"')
-  frame.Show()
-  app.MainLoop()
+    app = wx.App()
+    frame = MyBrowser()
+    # frame.browser.RunScript('window.zxczxvcvxbvb="98765432"')
+    # frame.browser.IsAccessToDevToolsEnabled()
+    frame.loadUrl(".\\ui\\html\\dist\\index.html")
+    # frame.browser.RunScript('document.title="123"')
+    # success, result = frame.browser.RunScript("window.asd=123")
+    frame.Show()
+    app.MainLoop()
