@@ -13,7 +13,11 @@ class Desktop ():
         self.app = wx.App()
         self.main = Tk()
         self.main.title("OPR")
-        self.main.geometry("200x30")
+        Label(self.main, text="NAME", font=30).grid(row=0)
+        Label(self.main, text="NAME", font=30).grid(row=1)
+        Label(self.main, text="NAME", font=30).grid(row=2)
+        Label(self.main, text="NAME", font=30).grid(row=3)
+        self.main.geometry("780x248")
         self.play_events = []
         self.edit_events = []
         self.config_events = []
@@ -95,10 +99,10 @@ class Desktop ():
         b_edit['image'] = self.ico_edit
         b_record['image'] = self.ico_record
         b_config['image'] = self.ico_config
-        b_record.grid(row=0, column=0)
-        b_play.grid(row=0, column=1)
-        b_edit.grid(row=0, column=2)
-        b_config.grid(row=0, column=3, sticky='E')
+        b_record.grid(row=1, column=0)
+        b_play.grid(row=1, column=1)
+        b_edit.grid(row=1, column=2)
+        b_config.grid(row=1, column=3, sticky='E')
 
     ## 录制
     "【弹窗】"

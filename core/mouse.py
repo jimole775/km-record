@@ -4,7 +4,7 @@ from util.func import call
 from util.times import skin_time
 
 class MouseController:
-    active = False
+    is_active = False
     def __init__(self):
         self.event_dict = {}
         self.is_pressed = False
@@ -16,7 +16,7 @@ class MouseController:
 
     # 评估是否退出监听
     def _evalExit(self):
-        if MouseController.active == False:
+        if MouseController.is_active == False:
             return False
         else:
             return True
@@ -97,8 +97,8 @@ class MouseController:
 
     # 开启监听的逻辑
     def _doActive(self):
-        MouseController.active = True
+        MouseController.is_active = True
 
     # 关闭监听的逻辑
     def _unActive(self):
-        MouseController.active = False
+        MouseController.is_active = False

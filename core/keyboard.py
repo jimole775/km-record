@@ -43,7 +43,7 @@ def is_assist_key(key):
     return res
 
 class KeyboardController():
-    active = False
+    is_active = False
     RANDOM_TYPE_KEY = config.CMD['random_type']['key']
     LANG_TRANS_KEY = 'shift' # 中英切换的键
     sys_language = get_sys_language() # 当前中英文
@@ -98,7 +98,7 @@ class KeyboardController():
         return self._eval_exit()
 
     def _eval_exit (self):
-        if KeyboardController.active == False:
+        if KeyboardController.is_active == False:
             return False
         else:
             return True
@@ -285,7 +285,7 @@ class KeyboardController():
         pass
 
     def _doActive (self):
-        KeyboardController.active = True
+        KeyboardController.is_active = True
 
     def _unActive (self):
-        KeyboardController.active = False
+        KeyboardController.is_active = False
