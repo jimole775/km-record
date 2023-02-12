@@ -11,12 +11,9 @@ def play ():
     Play().run()
 
 
-def desktop ():
-    from ui.desktop import Desktop
-    desktop = Desktop()
-    desktop.registerFunction('record', (record, 1))
-    desktop.registerFunction('play', (play,))
-    desktop.open()
+def client ():
+    from ui.index import open
+    open()
 
 # 把第二个指令参数当作函数调用
 import sys
