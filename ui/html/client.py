@@ -27,7 +27,7 @@ def start():
                                     url='http://localhost:9999/',    
                                     js_api=api,width=client_size['init_w'], height=client_size['init_h'],
                                     x=None, y=None, resizable=False, fullscreen=False,
-                                    hidden=False, frameless=False, easy_drag=False,
+                                    hidden=False, frameless=True, easy_drag=True,
                                     minimized=False, on_top=True, confirm_close=True,
                                     transparent=True, text_select=False, background_color=ui_style['primary_background_color'])
     api.set_window(window)

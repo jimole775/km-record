@@ -19,12 +19,17 @@ class ModalApi ():
     def get_window (self):
         return self.window
     
-    def call (self, fn_name, *params):
-        print('fn been called:', fn_name, params)
-        fn_n = eval('self.window.' + fn_name)
-        fn_n(params)
-        pass
+    # def call (self, fn_name, *params):
+    #     print('fn been called:', fn_name, params)
+    #     fn_n = eval('self.window.' + fn_name)
+    #     fn_n(params)
+    #     pass
     
+    def move (self, x, y):
+        print('move call:', x, y)
+        self.window.move(x, y)
+        pass
+
     def resize (self, width, height):
         w = wh_html_to_py(w=width)
         h = wh_html_to_py(h=height)
