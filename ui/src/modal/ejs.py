@@ -15,40 +15,44 @@ class ModalEvalJs ():
     def set_window (self, window):
         self.window = window
         pass
-    
+
     def get_window (self):
         return self.window
     
     def init (self):
         w = modal_size['html_w']
         h = modal_size['html_h']
-        self.resize(w, h)
-        self.send_data({
-            "kmr_modal_rect": {
-                "w": w,
-                "h": h,
-                "x": 0,
-                "y": 0,
-            }
-        })
+        self.default_size(w, h)
+        # self.send_data({
+        #     "kmr_modal_rect": {
+        #         "w": w,
+        #         "h": h,
+        #         "x": 0,
+        #         "y": 0,
+        #     }
+        # })
         pass
-    
+
     def _eval_jsonp (self, func, *args):
         js_str = """
             var kmr = window.__kmr__ || {}
-            var methodMap = krm.methods || {}
+            var methodMap = kmr.methods || {}
             var fun = methodMap['%s'] || function () {}
             console.log('global function "%s" being called by webview')
             try {
-                fun.appli(null, %s)
+                fun.apply(null, %s)
             } catch (e) {
                 console.error(e.message)
             }
-        """%(func.___name__, func.__name__, json.dumps(args))
+        """%(func.__name__, func.__name__, json.dumps(args))
         self.window.evaluate_js(js_str)
 
     def send_data (self, data):
         self._eval_jsonp(self.send_data, data)
+        pass
+
+    def default_size (self, w, h):
+        self._eval_jsonp(self.default_size, w, h)
         pass
 
     def resize (self, w, h):

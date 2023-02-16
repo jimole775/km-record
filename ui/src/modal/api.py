@@ -6,7 +6,7 @@
  # @ Description: 本模块主要用于向 modal 弹窗 暴露 python 的方法
  '''
 
-from ui.util.wincompat import set_window_size, wh_html_to_py
+from ui.util.wincompat import set_window_size, px_html_to_py
 
 class ModalApi ():
     def __init__ (self) -> None:
@@ -31,8 +31,8 @@ class ModalApi ():
         pass
 
     def resize (self, width, height):
-        w = wh_html_to_py(w=width)
-        h = wh_html_to_py(h=height)
+        w = px_html_to_py(w=width)
+        h = px_html_to_py(h=height)
         set_window_size(self.window, w, h)
         pass
     

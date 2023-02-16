@@ -36,7 +36,7 @@ class Record ():
 
     def _mouseEvent (self):
         Record.m_controller.registe({
-          'drag': self._event_ms_drag,
+          'drop': self._event_ms_drop,
           'move': self._event_ms_move,
           'press': self._event_ms_press,
           'scroll': self._event_ms_scroll,
@@ -44,8 +44,8 @@ class Record ():
         })
         Record.m_controller.active()
 
-    def _event_ms_drag (self, event_info):
-        self._record_ms_behavior('drag', event_info)
+    def _event_ms_drop (self, event_info):
+        self._record_ms_behavior('drop', event_info)
         pass
 
     def _event_ms_move (self, event_info):

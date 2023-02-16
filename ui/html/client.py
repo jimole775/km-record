@@ -32,4 +32,4 @@ def start():
                                     transparent=True, text_select=False, background_color=ui_style['primary_background_color'])
     api.set_window(window)
     ejs.set_window(window)
-    mainUI.start(func=ejs.init, gui='cef', debug=False)
+    mainUI.start(func=ejs.init, gui='cef', debug=True)

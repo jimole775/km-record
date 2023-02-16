@@ -6,7 +6,7 @@
  # @ Description: 主窗口的常量声明
  '''
 
-from ui.util.wincompat import wh_py_to_html, wh_tolerance
+from ui.util.wincompat import px_py_to_html, wh_tolerance
 
 _base_rect = {
     'w': 1000,
@@ -24,10 +24,10 @@ _base_rect = {
 client_size = {
     'py_w': _base_rect['w'],
     'py_h': _base_rect['h'],
-    'html_w': wh_py_to_html(w=_base_rect['w']),
-    'html_h': wh_py_to_html(h=_base_rect['h']),
-    'init_w': wh_py_to_html(w=_base_rect['w'] + wh_tolerance['w']),
-    'init_h': wh_py_to_html(h=_base_rect['h'] + wh_tolerance['h']),
+    'html_w': px_py_to_html(_base_rect['w']),
+    'html_h': px_py_to_html(_base_rect['h']),
+    'init_w': px_py_to_html(_base_rect['w'] + wh_tolerance['w']),
+    'init_h': px_py_to_html(_base_rect['h'] + wh_tolerance['h']),
 }
 
 ui_style = {

@@ -4,57 +4,70 @@ from util.func import call
 from util.times import skin_time
 
 class MouseController:
-    # is_active = False
     def __init__(self):
-        self.is_active = True
-        self.event_dict = {}
+        self.is_active = False
         self.is_pressed = False
         self.listener = False
+        self.event_dict = {}
         self.sx = None
         self.sy = None
         self.x = None
         self.y = None
 
-    # 评估是否退出监听
-    def _evalExit(self):
-        if self.is_active == False:
-            return False
+    def manual_event (self, event_name, *params):
+        fn_alias = {
+            'press': self._press,
+            'release': self._release,
+            'move': self._move,
+            'scroll': self._scroll
+        }
+        fn = fn_alias[event_name]
+        if callable(fn):
+            fn(*params)
         else:
-            return True
+            print(event_name + ' is not support called by manual! => mouse.manual_event')
+        pass
 
     # 监听鼠标滑动
     def _move(self, x, y):
-        if self.is_pressed:
+        if self.is_pressed is True:
             self.x = x
             self.y = y
             self._call_event('move', (x, y))
-        return self._evalExit()
+        # 返回 False，监听事件就会注销
+        return self.is_active
 
     # 监听鼠标点击
     def _click(self, x, y, button, pressed):
         self.is_pressed = pressed
-        if self.is_pressed:
+        if pressed is True:
             self._press(x, y)
-        if not self.is_pressed:
+        else:
             self._release(x, y)
-        return self._evalExit()
+        # 返回 False，监听事件就会注销
+        return self.is_active
 
     # 监听鼠标滚轮
     def _scroll(self, x, y, dx, dy):
         self._call_event('scroll', (x, y, dx, dy))
-        return self._evalExit()
+        # 返回 False，监听事件就会注销
+        return self.is_active
 
     def _press(self, x, y):
+        self.is_pressed = True
         self.x = self.sx = x
         self.y = self.sy = y
         self._call_event('press', (x, y))
+        pass
 
     def _release(self, x, y):
+        self.is_pressed = False
         if (self.x != self.sx or self.y != self.sy):
-            self._call_event('drag', (x, y))
+            self._call_event('drop', (x, y))
         else:
             self._call_event('release', (x, y))
         self.reset()
+        pass
 
     # 注册鼠标事件
     def registe(self, event_dict):
@@ -75,6 +88,9 @@ class MouseController:
 
     # 开启鼠标监听
     def active(self):
+        # 如果 active 还在激活状态，就不再开启 join()
+        if self.is_active is True:
+            return False
         self._doActive()
         with mouse.Listener(
           on_move=self._move,

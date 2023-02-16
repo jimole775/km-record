@@ -26,19 +26,12 @@ def set_window_size (win, w, h):
     这一段，会导致设置高宽时，出现空白间隙，我们需要在调用时重新补全
     :::这两个数值的间隙，是底层代码留给 titlebar 和 scrollbar 的
     """
+    win.resize(w + wh_tolerance['w'], h + wh_tolerance['h'])
+    pass
 
-def wh_html_to_py (**wh):
-    for each in wh:
-        if each == 'w':
-            res = round(wh['w'] * scale_rate)
-        if each == 'h':
-            res = round(wh['h'] * scale_rate)
-    return res
 
-def wh_py_to_html (**wh):
-    for each in wh:
-        if each == 'w':
-            res = round(wh['w'] / scale_rate)
-        if each == 'h':
-            res = round(wh['h'] / scale_rate)
-    return res
+def px_html_to_py (val):
+    return round(val * scale_rate)
+
+def px_py_to_html (val):
+    return round(val / scale_rate)

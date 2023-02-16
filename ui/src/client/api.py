@@ -6,7 +6,7 @@
  # @ Description: 本模块主要用于向 client 主窗口 暴露 python 的方法
  '''
 
-from ui.util.wincompat import set_window_size, wh_html_to_py
+from ui.util.wincompat import set_window_size, px_html_to_py, scale_rate
 from ui.html.modal import start as modal_start
 from ui.util.move_event import MoveEvent
 
@@ -16,6 +16,7 @@ class Api ():
         pass
     
     def set_window (self, window):
+        self.move_event.set_window(window)
         self.window = window
         pass
     
@@ -33,9 +34,9 @@ class Api ():
         self.window.move(x, y)
         pass
 
-    def move_start (self):
+    def move_start (self, x_in_html, y_in_html):
         print('move_start runing')
-        self.move_event.mount()
+        self.move_event.mount(x_in_html, y_in_html)
         pass
 
     def move_end (self):
@@ -44,8 +45,8 @@ class Api ():
         pass
 
     def resize (self, width, height):
-        w = wh_html_to_py(w=width)
-        h = wh_html_to_py(h=height)
+        w = px_html_to_py(width)
+        h = px_html_to_py(height)
         set_window_size(self.window, w, h)
         pass
     
@@ -63,9 +64,10 @@ class Api ():
         # 只有注册的事件，才能被触发
         pass
     
-    def show (self, sign):
-        if sign == 1:
-            self.window.show()
-        if sign == -1:
-            self.window.hide()
+    def show (self):
+        self.window.show()
+        pass
+
+    def hide (self):
+        self.window.hide()
         pass
