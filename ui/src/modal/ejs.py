@@ -11,26 +11,12 @@ from ui.src.modal.const import modal_size
 class ModalEvalJs ():
     def __init__ (self) -> None:
         pass
-    
-    def set_window (self, window):
-        self.window = window
-        pass
 
-    def get_window (self):
-        return self.window
-    
-    def init (self):
+    def init (self, window):
+        self.window = window
         w = modal_size['html_w']
         h = modal_size['html_h']
         self.default_size(w, h)
-        # self.send_data({
-        #     "kmr_modal_rect": {
-        #         "w": w,
-        #         "h": h,
-        #         "x": 0,
-        #         "y": 0,
-        #     }
-        # })
         pass
 
     def _eval_jsonp (self, func, *args):
@@ -64,7 +50,7 @@ class ModalEvalJs ():
         pass
 
     def modal_route (self, route_name):
-        self._eval_jsonp(self.move, route_name)
+        self._eval_jsonp(self.modal_route, route_name)
         pass
 
     def modal_state (self, flag):

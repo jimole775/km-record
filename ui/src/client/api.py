@@ -6,23 +6,21 @@
  # @ Description: 本模块主要用于向 client 主窗口 暴露 python 的方法
  '''
 
-from ui.util.wincompat import set_window_size, px_html_to_py, scale_rate
+from ui.util.wincompat import px_html_to_py, scale_rate
 from ui.html.modal import start as modal_start
 from ui.util.move_event import MoveEvent
 
 class Api ():
-    move_event = MoveEvent()
     def __init__ (self) -> None:
         pass
     
-    def set_window (self, window):
-        self.move_event.set_window(window)
+    def init (self, window):
         self.window = window
+        self.move_event = MoveEvent()
+        self.move_event.init(window)
+        self.window.events.closed += self.reset
         pass
-    
-    def get_window (self):
-        return self.window
-    
+
     # def call (self, fn_name, *params):
     #     print('fn been called:', fn_name, params)
     #     fn_n = eval('self.window.' + fn_name)
@@ -47,7 +45,7 @@ class Api ():
     def resize (self, width, height):
         w = px_html_to_py(width)
         h = px_html_to_py(height)
-        set_window_size(self.window, w, h)
+        self.window.resize(w, h)
         pass
     
     def init_modal (self):
@@ -55,15 +53,19 @@ class Api ():
         pass
     
     def open_modal (self, modal_name):
+        if not self.modal or not self.modal['api'].window:
+            self.modal = modal_start()
         self.modal['ejs'].modal_state(True)
         self.modal['ejs'].modal_route(modal_name)
         self.modal['api'].show()
         pass
 
-    def regist_event ():
-        # 只有注册的事件，才能被触发
+    def reset (self):
+        self.modal = None
+        self.window = None
+        self.move_event = None
         pass
-    
+
     def show (self):
         self.window.show()
         pass

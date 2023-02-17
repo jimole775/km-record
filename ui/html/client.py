@@ -20,6 +20,11 @@ app = Flask(__name__)
 def index():
     return render_template('/index.html')
 
+def init (api, ejs, win):
+    api.init(win)
+    ejs.init(win)
+    pass
+
 def start():
     api = Api()
     ejs = EvalJs()
@@ -29,7 +34,5 @@ def start():
                                     x=None, y=None, resizable=False, fullscreen=False,
                                     hidden=False, frameless=True, easy_drag=True,
                                     minimized=False, on_top=True, confirm_close=True,
-                                    transparent=True, text_select=False, background_color=ui_style['primary_background_color'])
-    api.set_window(window)
-    ejs.set_window(window)
-    mainUI.start(func=ejs.init, gui='cef', debug=True)
+                                    transparent=False, text_select=False, background_color=ui_style['primary_background_color'])
+    mainUI.start(func=init, args=[api, ejs, window], gui='cef', debug=True)

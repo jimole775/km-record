@@ -24,10 +24,10 @@ _base_rect = {
 client_size = {
     'py_w': _base_rect['w'],
     'py_h': _base_rect['h'],
-    'html_w': px_py_to_html(_base_rect['w']),
-    'html_h': px_py_to_html(_base_rect['h']),
-    'init_w': px_py_to_html(_base_rect['w'] + wh_tolerance['w']),
-    'init_h': px_py_to_html(_base_rect['h'] + wh_tolerance['h']),
+    'html_w': int(px_py_to_html(_base_rect['w'])),
+    'html_h': int(px_py_to_html(_base_rect['h'])),
+    'init_w': int(_base_rect['w'] + wh_tolerance['w']),
+    'init_h': int(_base_rect['h'] + wh_tolerance['h']),
 }
 
 ui_style = {

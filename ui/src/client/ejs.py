@@ -12,12 +12,10 @@ class EvalJs ():
     def __init__ (self) -> None:
         pass
     
-    def set_window (self, window):
+    def init (self, window):
         self.window = window
+        self.default_size(client_size['html_w'], client_size['html_h'])
         pass
-
-    def get_window (self):
-        return self.window
 
     def _eval_jsonp (self, func, *args):
         js_str = """
@@ -41,8 +39,3 @@ class EvalJs ():
         self._eval_jsonp(self.default_size, w, h)
         pass
 
-    def init (self):
-        w = client_size['html_w']
-        h = client_size['html_h']
-        self.default_size(w, h)
-        pass

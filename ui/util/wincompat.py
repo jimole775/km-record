@@ -13,7 +13,7 @@ from win32.win32api import GetSystemMetrics
 
 wh_tolerance = {
     'w': 16,
-    'h': 16,
+    'h': 48,
 }
 
 scale_rate = round(win32print.GetDeviceCaps(win32gui.GetDC(0), win32con.DESKTOPHORZRES) / GetSystemMetrics(0), 2)
@@ -21,7 +21,7 @@ scale_rate = round(win32print.GetDeviceCaps(win32gui.GetDC(0), win32con.DESKTOPH
 def set_window_size (win, w, h):
     """
     根据 https://github.com/r0x0r/pywebview/issues/589 的反馈，
-    在 webview.platforms.cef.Browser 中的 resize 方法中
+    在 pywebview 3.x 版本的 CEF 渲染器中 webview.platforms.cef.Browser 中的 resize 方法中
     `webview.platforms.cef.windll.user32.SetWindowPos(self.inner_hwnd, 0, 0, 0, width - 16, height - 38,...`
     这一段，会导致设置高宽时，出现空白间隙，我们需要在调用时重新补全
     :::这两个数值的间隙，是底层代码留给 titlebar 和 scrollbar 的
@@ -29,9 +29,8 @@ def set_window_size (win, w, h):
     win.resize(w + wh_tolerance['w'], h + wh_tolerance['h'])
     pass
 
-
 def px_html_to_py (val):
-    return round(val * scale_rate)
+    return val * scale_rate
 
 def px_py_to_html (val):
-    return round(val / scale_rate)
+    return val / scale_rate
