@@ -32,5 +32,5 @@ client_size = {
 
 ui_style = {
     'primary_font_color': '#D1D1D2',
-    'primary_background_color': '#1A1B20'
+    'primary_background_color': '#1C1C1F'
 }

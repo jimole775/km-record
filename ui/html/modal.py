@@ -25,11 +25,14 @@ def start():
     ejs = ModalEvalJs()
     window = mainUI.create_window('modal',
                                     url='http://localhost:9999/modal',    
-                                    js_api=api,width=modal_size['py_w'], height=modal_size['py_h'],
+                                    js_api=api,width=modal_size['init_w'], height=modal_size['init_h'],
                                     x=None, y=None, resizable=False, fullscreen=False,
-                                    hidden=True, frameless=True, easy_drag=True,
+                                    hidden=False, frameless=True, easy_drag=True,
                                     minimized=False, on_top=True, confirm_close=False,
                                     transparent=False, text_select=False, background_color=ui_style['primary_background_color'])
     api.init(window)
     ejs.init(window)
+    w = modal_size['html_w']
+    h = modal_size['html_h']
+    ejs.default_html_size(w, h)
     return { 'api': api, 'ejs': ejs }

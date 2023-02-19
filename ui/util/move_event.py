@@ -5,7 +5,6 @@
  # @ Modified time: 2023-02-13 21:44:57
  # @ Description:
  '''
-
 from core.mouse import MouseController
 from ui.util.wincompat import px_py_to_html, px_html_to_py
 
@@ -17,6 +16,7 @@ class MoveEvent ():
         self.start_x = 0
         self.start_y = 0
         self.window = window
+        self.renderer = window.gui.renderer
         pass
 
     def mount (self, x, y):
@@ -28,7 +28,9 @@ class MoveEvent ():
 
         # x, y 对于 py 端来说，就是点击位和左上角的差值
         self._save_diff(x, y)
-        self._save_start(x, y)
+
+        # 根据差值来确定首次点击的坐标
+        self._save_start()
 
         # 由于触发事件在前端，此时 press 已经在前端按压了，
         # MoveEvent.mount 时已经不会再有 press 事件触发，
@@ -42,21 +44,26 @@ class MoveEvent ():
         pass
 
     def _save_diff (self, x, y):
-        self.diff_x = x
-        self.diff_y = y
+        self.diff_x = px_html_to_py(x)
+        self.diff_y = px_html_to_py(y)
         pass
 
-    def _save_start (self, x, y):
-        self.start_x = x + self.window.x
-        self.start_y = y + self.window.y
+    def _save_start (self):
+        self.start_x = self.window.x + self.diff_x
+        self.start_y = self.window.y + self.diff_y
         pass
 
     def _move (self, coord):
         point_x = coord['loc'][0]
         point_y = coord['loc'][1]
-        start_x = point_x - px_html_to_py(self.diff_x)
-        start_y = point_y - px_html_to_py(self.diff_y)
-        self.window.move(start_x, start_y)
+        move_x = point_x - self.diff_x
+        move_y = point_y - self.diff_y
+
+        # edgechromium 的 move 坐标 需要考虑显示器的缩放比例
+        if self.renderer == 'edgechromium':
+            self.window.move(px_py_to_html(move_x), px_py_to_html(move_y))
+        else:
+            self.window.move(move_x, move_y)
         pass
 
     def _release (self, loc):

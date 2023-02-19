@@ -6,8 +6,8 @@
  # @ Description:
  '''
 import webview as mainUI
-from ui.src.client.api import Api
-from ui.src.client.ejs import EvalJs
+from ui.src.client.api import ClientApi
+from ui.src.client.ejs import ClientEvalJs
 from ui.src.client.const import client_size, ui_style
 from flask import Flask, render_template
 
@@ -23,11 +23,12 @@ def index():
 def init (api, ejs, win):
     api.init(win)
     ejs.init(win)
+    ejs.default_html_size(client_size['html_w'], client_size['html_h'])
     pass
 
 def start():
-    api = Api()
-    ejs = EvalJs()
+    api = ClientApi()
+    ejs = ClientEvalJs()
     window = mainUI.create_window('main',
                                     url='http://localhost:9999/',    
                                     js_api=api,width=client_size['init_w'], height=client_size['init_h'],
@@ -35,4 +36,5 @@ def start():
                                     hidden=False, frameless=True, easy_drag=True,
                                     minimized=False, on_top=True, confirm_close=True,
                                     transparent=False, text_select=False, background_color=ui_style['primary_background_color'])
-    mainUI.start(func=init, args=[api, ejs, window], gui='cef', debug=True)
+
+    mainUI.start(func=init, args=[api, ejs, window], gui='edgechromium', debug=False)
