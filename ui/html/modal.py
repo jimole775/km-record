@@ -34,5 +34,5 @@ def start():
     ejs.init(window)
     w = modal_size['html_w']
     h = modal_size['html_h']
-    ejs.default_html_size(w, h)
+    ejs.default_modal_size(w, h)
     return { 'api': api, 'ejs': ejs }

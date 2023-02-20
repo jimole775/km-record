@@ -23,7 +23,7 @@ def index():
 def init (api, ejs, win):
     api.init(win)
     ejs.init(win)
-    ejs.default_html_size(client_size['html_w'], client_size['html_h'])
+    ejs.default_client_size(client_size['html_w'], client_size['html_h'])
     pass
 
 def start():
@@ -37,4 +37,4 @@ def start():
                                     minimized=False, on_top=True, confirm_close=True,
                                     transparent=False, text_select=False, background_color=ui_style['primary_background_color'])
 
-    mainUI.start(func=init, args=[api, ejs, window], gui='edgechromium', debug=False)
+    mainUI.start(func=init, args=[api, ejs, window], gui='edgechromium', debug=True)

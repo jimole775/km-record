@@ -40,7 +40,7 @@ class Api ():
     def resize (self, width, height):
         w = px_html_to_py(width)
         h = px_html_to_py(height)
-        self.window.resize(w, h)
+        self.window.resize(int(w), int(h))
         pass
 
     def reset (self):

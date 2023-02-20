@@ -36,6 +36,10 @@ class EvalJs ():
         self._eval_jsonp(self.resize, w, h)
         pass
 
-    def default_html_size (self, w, h):
-        self._eval_jsonp(self.default_html_size, w, h)
+    def default_client_size (self, w, h):
+        self._eval_jsonp(self.default_client_size, w, h)
+        pass
+
+    def default_modal_size (self, w, h):
+        self._eval_jsonp(self.default_modal_size, w, h)
         pass
