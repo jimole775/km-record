@@ -14,6 +14,12 @@ class MouseController:
         self.x = None
         self.y = None
 
+    """
+    # 提供给外部手动触发事件
+    # 当前主要用于适应 webview 由前端发起的拖拽事件：
+    # 当前端发起拖拽事件时，press 事件不会响应到 py 端
+    # 所以需要手动触发
+    """
     def manual_event (self, event_name, *params):
         fn_alias = {
             'press': self._press,
@@ -70,6 +76,11 @@ class MouseController:
         pass
 
     # 注册鼠标事件
+    # drop: 明确的拖拽事件
+    # move: 移动事件
+    # press: 鼠标 “按” 事件
+    # scroll: 滚动 事件
+    # release: 鼠标 “松” 事件
     def registe(self, event_dict):
         self.event_dict = event_dict
         pass

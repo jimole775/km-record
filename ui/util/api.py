@@ -8,8 +8,9 @@
 
 from ui.util.wincompat import px_html_to_py
 from ui.util.move_event import MoveEvent
+from state.handler import Handler
 
-class Api ():
+class Api (Handler):
     def __init__ (self) -> None:
         pass
 

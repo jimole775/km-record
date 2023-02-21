@@ -1,13 +1,13 @@
 def record ():
-    from core.record import Record
-    from core.initbuspace import initbuspace
+    from modules.record import Record
+    from modules.initbuspace import initbuspace
     initbuspace()
     Record().run()
     pass
 
 
 def play ():
-    from core.play import Play
+    from modules.play import Play
     Play().run()
 
 

@@ -14,35 +14,36 @@ ASSETS_DIR = config.PROJECT['path'] + config.PROJECT['name']
 INPUT_SYSTEM = 'ms' # 当前输入法，一般就是讯飞，搜狗，微软，五笔
 
 class Record ():
-    work = False
-    scissors = Scissors()
-    m_controller = MouseController()
-    k_controller = KeyboardController()
     def __init__ (self):
+        self.scissors = Scissors()
+        self.m_controller = MouseController()
+        self.k_controller = KeyboardController()
+        self.working = False
         pass
+
     def _keyboardEvent (self):
         ctrl = createController(Record)()
-        Record.k_controller.registe({
+        self.k_controller.registe({
           'text': self._event_kb_text,
           'press': self._event_kb_press,
           'release': self._event_kb_release,
         })
-        Record.k_controller.bindExecution(ctrl.execution)
-        Record.k_controller.active()
+        self.k_controller.bindExecution(ctrl.execution)
+        self.k_controller.active()
 
     def _createThread (self, event):
         thread = threading.Thread(target=event)
         thread.start()
 
     def _mouseEvent (self):
-        Record.m_controller.registe({
+        self.m_controller.registe({
           'drop': self._event_ms_drop,
           'move': self._event_ms_move,
           'press': self._event_ms_press,
           'scroll': self._event_ms_scroll,
           'release': self._event_ms_release
         })
-        Record.m_controller.active()
+        self.m_controller.active()
 
     def _event_ms_drop (self, event_info):
         self._record_ms_behavior('drop', event_info)
@@ -78,7 +79,7 @@ class Record ():
         pass
 
     def start (self):
-        Record.work = True
+        self.working = True
         pass
 
     def run (self):
@@ -86,8 +87,8 @@ class Record ():
         self._createThread(self._mouseEvent)
 
     def stop (self):
-        Record.k_controller.stop()
-        Record.m_controller.stop()
+        self.k_controller.stop()
+        self.m_controller.stop()
 
     # 记录键盘操作
     # event_info: 'key', 'time_stamp', 'sys_language'
@@ -95,7 +96,7 @@ class Record ():
         key = event_info['key']
         if keyboard_event != 'text':
             key = get_key_char(key)
-        if Record.work == True:
+        if self.working == True:
             data = {
                 ABBR['type']: ABBR['keyboard'],
                 ABBR['time']: event_info['time_stamp'],
@@ -109,7 +110,7 @@ class Record ():
     # 记录鼠标操作
     # event_info: 'loc', 'time_stamp'
     def _record_ms_behavior (self, mouse_event, event_info):
-        if Record.work == True:
+        if self.working == True:
             data = {
                 ABBR['type']: ABBR['mouse'],
                 ABBR['loc']: event_info['loc'],
@@ -126,6 +127,6 @@ class Record ():
         r_file.close()
 
     def _screen_shot (self, event_info):
-        if config.MATCH and Record.work == True:
-            screen = Record.scissors.cutScreen()
-            Record.scissors.cutUniqueReact(screen, event_info['loc'], event_info['time_stamp'])
+        if config.MATCH and self.working == True:
+            screen = self.scissors.cutScreen()
+            self.scissors.cutUniqueReact(screen, event_info['loc'], event_info['time_stamp'])

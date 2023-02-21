@@ -43,7 +43,6 @@ def is_assist_key(key):
     return res
 
 class KeyboardController():
-    is_active = False
     RANDOM_TYPE_KEY = config.CMD['random_type']['key']
     LANG_TRANS_KEY = 'shift' # 中英切换的键
     sys_language = get_sys_language() # 当前中英文
@@ -66,6 +65,7 @@ class KeyboardController():
         self.thread_active = None
         self.event_dict = {}
         self.events_excution = None
+        self.is_active = False
 
     def _press (self, key):
         combo_keys = self._get_combo_keys('press')
@@ -98,7 +98,7 @@ class KeyboardController():
         return self._eval_exit()
 
     def _eval_exit (self):
-        if KeyboardController.is_active == False:
+        if self.is_active == False:
             return False
         else:
             return True
@@ -221,6 +221,9 @@ class KeyboardController():
         pass
 
     def active (self):
+        # 如果 active 还在激活状态，就不再开启 join()
+        if self.is_active is True:
+            return False
         self._doActive()
         with keyboard.Listener(
           on_press=self._press,
@@ -245,6 +248,9 @@ class KeyboardController():
 
     # 注册键盘事件
     def registe (self, event_dict):
+        # text: 文本输入事件
+        # press: 键盘 "按" 事件
+        # release: 键盘 "松" 事件
         self.event_dict = event_dict
         pass
 
@@ -285,7 +291,7 @@ class KeyboardController():
         pass
 
     def _doActive (self):
-        KeyboardController.is_active = True
+        self.is_active = True
 
     def _unActive (self):
-        KeyboardController.is_active = False
+        self.is_active = False

@@ -24,24 +24,16 @@ ASSETS_DIR = config.PROJECT['path'] + config.PROJECT['name']
 PROCESS_PER_MONITOR_DPI_AWARE = 2
 ctypes.windll.shcore.SetProcessDpiAwareness(PROCESS_PER_MONITOR_DPI_AWARE)
 
-# 切换系统输入法
-def _chang_input_language():
-    kb_key = get_keyboard_key('shift')
-    Play.k_handler.press(kb_key)
-    Play.k_handler.release(kb_key)
-    time.sleep(0.5)
-    Play.sys_language = get_sys_language()
-
 class Play:
 
-    scaner = Scaner()
-    scissors = Scissors()
-    m_handler = pynput.mouse.Controller()
-    k_handler = pynput.keyboard.Controller()
-    sys_language = get_sys_language()
-    k_controller = KeyboardController()
-
     def __init__ (self):
+        self.scaner = Scaner()
+        self.scissors = Scissors()
+        self.m_handler = pynput.mouse.Controller()
+        self.k_handler = pynput.keyboard.Controller()
+        self.sys_language = get_sys_language()
+        self.k_controller = KeyboardController()
+
         self.play_type = 'once'
         self.pause_sign = False
         self.stop_sign = False
@@ -59,6 +51,14 @@ class Play:
             self.check_max = 0
             self.interval = 0.5
         pass
+
+    # 切换系统输入法
+    def _chang_input_language(self):
+        kb_key = get_keyboard_key('shift')
+        self.k_handler.press(kb_key)
+        self.k_handler.release(kb_key)
+        time.sleep(0.5)
+        self.sys_language = get_sys_language()
 
     def _runHandler (self):
         opr_file = open(ASSETS_DIR + '\\index.log', 'r')
@@ -101,43 +101,43 @@ class Play:
 
     def _run_mouse_events (self, step_item):
         loc = step_item[ABBR['loc']]
-        Play.m_handler.position = (loc[0], loc[1])
+        self.m_handler.position = (loc[0], loc[1])
         if step_item[ABBR['mouse_event']] == ABBR['press']:
-            Play.m_handler.press(pynput.mouse.Button.left)
+            self.m_handler.press(pynput.mouse.Button.left)
 
         if step_item[ABBR['mouse_event']] == ABBR['release']:
             if config.MATCH:
-                screen = Play.scissors.cutScreen()
+                screen = self.scissors.cutScreen()
                 shot_name = step_item[ABBR['time']]
                 shot_img = ASSETS_DIR + '\\shots\\' + shot_name + '.jpg'
-                if Play.scaner.hasUniqueTarget(screen, shot_img) or self.check_i == 0:
+                if self.scaner.hasUniqueTarget(screen, shot_img) or self.check_i == 0:
                     self._resetCheckTimes()
-                    Play.m_handler.release(pynput.mouse.Button.left)
+                    self.m_handler.release(pynput.mouse.Button.left)
                 else:
                     self._checkReduce()
             else:
-                Play.m_handler.release(pynput.mouse.Button.left)
+                self.m_handler.release(pynput.mouse.Button.left)
         if step_item[ABBR['mouse_event']] == ABBR['scroll']:
-            Play.m_handler.scroll(loc[2], loc[3])
+            self.m_handler.scroll(loc[2], loc[3])
         pass
 
     def _sync_input_language (self, step_item):
         cur_step_il = step_item[ABBR['input_language']]
-        if (Play.sys_language != cur_step_il):
-            _chang_input_language()
+        if (self.sys_language != cur_step_il):
+            self._chang_input_language()
 
     def _kb_type (self, step_item):
         key = step_item[ABBR['key']]
         keyboard_event = step_item[ABBR['keyboard_event']]
         self._sync_input_language(step_item)
         if keyboard_event == ABBR['text']:
-            return Play.k_handler.type(key)
+            return self.k_handler.type(key)
         elif keyboard_event == ABBR['press']:
             kb_key = get_keyboard_key(key)
-            return Play.k_handler.press(kb_key)
+            return self.k_handler.press(kb_key)
         elif keyboard_event == ABBR['release']:
             kb_key = get_keyboard_key(key)
-            return Play.k_handler.release(kb_key)
+            return self.k_handler.release(kb_key)
         pass
 
     # 计算匹配消耗的时间
@@ -178,7 +178,7 @@ class Play:
 
     def stop (self):
         self.stop_sign = True
-        Play.k_controller.stop()
+        self.k_controller.stop()
         pass
 
     def pause (self):
@@ -215,5 +215,5 @@ class Play:
 
     def _keyboardEvent (self):
         ctrl = createController(Play)()
-        Play.k_controller.bindExecution(ctrl.execution)
-        Play.k_controller.active()
+        self.k_controller.bindExecution(ctrl.execution)
+        self.k_controller.active()

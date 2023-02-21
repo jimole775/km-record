@@ -18,8 +18,8 @@ def createController (_cls): # 继承后，cls原本的变更无法跟踪，需�
                 fn_inst()
 
         # 获取执行事件实体
-        def _getFnInst(self, instance, type, hot_key):
-            key_map = config.HOTKEY[type]
+        def _getFnInst(self, instance, _type, hot_key):
+            key_map = config.HOTKEY[_type]
             fn_name = self._getFnName(key_map, hot_key)
             if fn_name in dir(instance):
                 return eval('instance.' + fn_name)

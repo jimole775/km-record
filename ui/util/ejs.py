@@ -43,3 +43,4 @@ class EvalJs ():
     def default_modal_size (self, w, h):
         self._eval_jsonp(self.default_modal_size, w, h)
         pass
+

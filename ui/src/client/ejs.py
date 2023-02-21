@@ -10,3 +10,7 @@ from ui.util.ejs import EvalJs
 class ClientEvalJs (EvalJs):
     def __init__ (self) -> None:
         pass
+
+    def sync_step (self, step):
+        self._eval_jsonp(self.sync_step, step)
+        pass
