@@ -6,8 +6,8 @@
  # @ Description: 本模块主要用于向 client 主窗口 暴露 python 的方法
  '''
 
-from ui.util.wincompat import px_html_to_py
-from ui.util.move_event import MoveEvent
+from ui.common.wincompat import px_html_to_py
+from ui.common.move_event import MoveEvent
 from state.handler import Handler
 
 class Api (Handler):

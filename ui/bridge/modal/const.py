@@ -6,7 +6,7 @@
  # @ Description: modal弹窗的常量声明
  '''
 
-from ui.util.wincompat import px_py_to_html, wh_tolerance
+from ui.common.wincompat import px_py_to_html, wh_tolerance
 
 _base_rect = {
     'w': 900,

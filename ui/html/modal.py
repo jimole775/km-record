@@ -6,9 +6,9 @@
  # @ Description:
  '''
 import webview as mainUI
-from ui.src.modal.api import ModalApi
-from ui.src.modal.ejs import ModalEvalJs
-from ui.src.modal.const import modal_size, ui_style
+from ui.bridge.modal.api import ModalApi
+from ui.bridge.modal.ejs import ModalEvalJs
+from ui.bridge.modal.const import modal_size, ui_style
 from flask import Flask, render_template
 
 # 实例化 flask 对象

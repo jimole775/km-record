@@ -6,9 +6,9 @@
  # @ Description: 本模块主要用于向 modal 弹窗 暴露 python 的方法
  '''
 
-# from ui.util.move_event import MoveEvent
-# from ui.util.wincompat import px_html_to_py
-from ui.util.api import Api
+# from ui.common.move_event import MoveEvent
+# from ui.common.wincompat import px_html_to_py
+from ui.common.api import Api
 class ModalApi (Api):
     def __init__ (self) -> None:
         pass

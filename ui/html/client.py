@@ -6,9 +6,9 @@
  # @ Description:
  '''
 import webview as mainUI
-from ui.src.client.api import ClientApi
-from ui.src.client.ejs import ClientEvalJs
-from ui.src.client.const import client_size, ui_style
+from ui.bridge.client.api import ClientApi
+from ui.bridge.client.ejs import ClientEvalJs
+from ui.bridge.client.const import client_size, ui_style
 from flask import Flask, render_template
 
 # 实例化 flask 对象
