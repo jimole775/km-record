@@ -25,3 +25,11 @@ class ClientApi (Api):
         self.modal['ejs'].modal_route(modal_name)
         self.modal['api'].show()
         pass
+
+    def record_call (self, fn, *params):
+
+        pass
+
+    def play_call (self, fn, *params):
+
+        pass

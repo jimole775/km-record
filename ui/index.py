@@ -6,8 +6,8 @@
  # @ Description:
  '''
 
-from ui.html.client import start as desktop_start
+from ui.html.client import start as client_start
 from ui.html.modal import start as modal_start
 
-def open ():
-    desktop_start()
+def ui_render ():
+    client_start()

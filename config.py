@@ -19,6 +19,7 @@ DEFAULT = {
         'time': 'i', # 时间戳
         'text': 'tx', # 文本
         'type': 't', # 类型，对应鼠标或者键盘
+        'step': 'st', # 记录操作步骤
         'mouse': 'ms', # 鼠标
         'words': 'ws', # 文字
         'move': 'mv', # 鼠标事件-移动

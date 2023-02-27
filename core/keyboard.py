@@ -62,7 +62,7 @@ class KeyboardController():
         self.press_keys = []
         self.press_keys_temp = []
         self.thread_queue = []
-        self.thread_active = None
+        self.active_thread = None
         self.event_dict = {}
         self.events_excution = None
         self.is_active = False
@@ -234,6 +234,12 @@ class KeyboardController():
     def stop (self):
         self._unActive()
 
+    def pause (self):
+        pass
+
+    def continued (self):
+        pass
+
     def bindExecution (self, excutionFn):
         self.events_excution = excutionFn
 
@@ -273,20 +279,20 @@ class KeyboardController():
     # 这导致控制器的其他功能无法使用
     """
     def _consume_thread (self):
-        if self.thread_active:
-            if self.thread_active.is_alive():
+        if self.active_thread:
+            if self.active_thread.is_alive():
                 return self._consume_thread()
             else:
                 if len(self.thread_queue):
-                    self.thread_active = self.thread_queue.pop(0)
-                    self.thread_active.start()
-                    self.thread_active.join()
+                    self.active_thread = self.thread_queue.pop(0)
+                    self.active_thread.start()
+                    self.active_thread.join()
                     return self._consume_thread()
         else:
             if len(self.thread_queue):
-                self.thread_active = self.thread_queue.pop(0)
-                self.thread_active.start()
-                self.thread_active.join()
+                self.active_thread = self.thread_queue.pop(0)
+                self.active_thread.start()
+                self.active_thread.join()
                 return self._consume_thread()
         pass
 

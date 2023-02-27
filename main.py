@@ -2,18 +2,18 @@ def record ():
     from modules.record import Record
     from modules.initbuspace import initbuspace
     initbuspace()
-    Record().run()
+    Record()
     pass
 
 
 def play ():
     from modules.play import Play
-    Play().run()
+    Play()
 
 
 def client ():
-    from ui.index import open
-    open()
+    from ui.index import ui_render
+    ui_render()
 
 # 把第二个指令参数当作函数调用
 import sys

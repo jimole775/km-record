@@ -2,27 +2,30 @@ from state.play import PLAY_STATE, DEFAULT_PLAY_STATE
 from state.record import RECORD_STATE, DEFAULT_RECORD_STATE
 
 class Handler ():
+    def __init__ (self):
+        pass
+
     def start (self):
         if PLAY_STATE['idle']:
             PLAY_STATE['working'] = True
             PLAY_STATE['paused'] = False
-            PLAY_STATE['dile'] = False
+            PLAY_STATE['idle'] = False
         if RECORD_STATE['idle']:
             RECORD_STATE['working'] = True
             RECORD_STATE['paused'] = False
-            RECORD_STATE['dile'] = False
+            RECORD_STATE['idle'] = False
         pass
 
     def stop (self):
         if not PLAY_STATE['idle']:
             PLAY_STATE['working'] = False
             PLAY_STATE['paused'] = False
-            PLAY_STATE['dile'] = True
+            PLAY_STATE['idle'] = True
             self.reset_play_store()
         if not RECORD_STATE['idle']:
             RECORD_STATE['working'] = False
             RECORD_STATE['paused'] = False
-            RECORD_STATE['dile'] = True
+            RECORD_STATE['idle'] = True
             self.reset_record_store()
         pass
 
@@ -36,7 +39,7 @@ class Handler ():
             RECORD_STATE['paused'] = True
         pass
 
-    def continues (self):
+    def continued (self):
         if PLAY_STATE['paused'] and not PLAY_STATE['idle']:
             PLAY_STATE['working'] = True
             PLAY_STATE['paused'] = False

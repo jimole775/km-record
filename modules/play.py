@@ -24,9 +24,13 @@ ASSETS_DIR = config.PROJECT['path'] + config.PROJECT['name']
 PROCESS_PER_MONITOR_DPI_AWARE = 2
 ctypes.windll.shcore.SetProcessDpiAwareness(PROCESS_PER_MONITOR_DPI_AWARE)
 
-class Play:
+class Play ():
 
     def __init__ (self):
+        self.init()
+        pass
+
+    def init (self):
         self.scaner = Scaner()
         self.scissors = Scissors()
         self.m_handler = pynput.mouse.Controller()
@@ -187,7 +191,7 @@ class Play:
         print('pause:', self.step)
         pass
 
-    def continues (self):
+    def continued (self):
         self.stop_sign = False
         self.pause_sign = False
         self.step = self.step_at_pause
@@ -206,7 +210,7 @@ class Play:
             self._runHandler()
             self.step = 0
 
-    def run (self):
+    def mount (self):
         self._createThread(self._keyboardEvent)
 
     def _createThread (self, event):

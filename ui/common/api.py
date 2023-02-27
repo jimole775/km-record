@@ -10,12 +10,13 @@ from ui.common.wincompat import px_html_to_py
 from ui.common.move_event import MoveEvent
 from state.handler import Handler
 
-class Api (Handler):
+class Api ():
     def __init__ (self) -> None:
         pass
 
     def init (self, window):
         self.window = window
+        self.state = Handler()
         self.move_event = MoveEvent()
         self.move_event.init(window)
         self.window.events.closed += self.reset

@@ -5,6 +5,7 @@ from core.mouse import MouseController
 from core.keyboard import KeyboardController
 from config import config
 from core.controller import createController
+from state.handler import Handler as StateHandler
 from util.keyboard import get_key_char
 from util.scissors import Scissors
 from util.times import skin_time
@@ -14,11 +15,18 @@ ASSETS_DIR = config.PROJECT['path'] + config.PROJECT['name']
 INPUT_SYSTEM = 'ms' # 当前输入法，一般就是讯飞，搜狗，微软，五笔
 
 class Record ():
+    # 不传入UI，就说明当前程序用指令运行
     def __init__ (self):
+        self.init()
+        pass
+
+    def init (self):
+        self.ui = None
+        self.is_working = False
         self.scissors = Scissors()
+        self.state = StateHandler()
         self.m_controller = MouseController()
         self.k_controller = KeyboardController()
-        self.working = False
         pass
 
     def _keyboardEvent (self):
@@ -79,10 +87,11 @@ class Record ():
         pass
 
     def start (self):
-        self.working = True
+        self.is_working = True
         pass
 
-    def run (self):
+    # 挂载监听事件
+    def mount (self):
         self._createThread(self._keyboardEvent)
         self._createThread(self._mouseEvent)
 
@@ -96,8 +105,9 @@ class Record ():
         key = event_info['key']
         if keyboard_event != 'text':
             key = get_key_char(key)
-        if self.working == True:
+        if self.is_working == True:
             data = {
+                ABBR['step']: self.state.update_step(),
                 ABBR['type']: ABBR['keyboard'],
                 ABBR['time']: event_info['time_stamp'],
                 ABBR['key']: key,
@@ -110,8 +120,9 @@ class Record ():
     # 记录鼠标操作
     # event_info: 'loc', 'time_stamp'
     def _record_ms_behavior (self, mouse_event, event_info):
-        if self.working == True:
+        if self.is_working == True:
             data = {
+                ABBR['step']: self.state.update_step(),
                 ABBR['type']: ABBR['mouse'],
                 ABBR['loc']: event_info['loc'],
                 ABBR['time']: event_info['time_stamp'],
@@ -127,6 +138,6 @@ class Record ():
         r_file.close()
 
     def _screen_shot (self, event_info):
-        if config.MATCH and self.working == True:
+        if config.MATCH and self.is_working == True:
             screen = self.scissors.cutScreen()
             self.scissors.cutUniqueReact(screen, event_info['loc'], event_info['time_stamp'])
