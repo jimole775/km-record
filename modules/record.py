@@ -9,7 +9,8 @@ from state.handler import Handler as StateHandler
 from util.keyboard import get_key_char
 from util.scissors import Scissors
 from util.times import skin_time
-
+from modules.initbuspace import initbuspace
+    
 ABBR = config.ABBR
 ASSETS_DIR = config.PROJECT['path'] + config.PROJECT['name']
 INPUT_SYSTEM = 'ms' # 当前输入法，一般就是讯飞，搜狗，微软，五笔

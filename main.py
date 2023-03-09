@@ -1,7 +1,5 @@
 def record ():
     from modules.record import Record
-    from modules.initbuspace import initbuspace
-    initbuspace()
     Record()
     pass
 

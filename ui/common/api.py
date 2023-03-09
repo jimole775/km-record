@@ -6,6 +6,8 @@
  # @ Description: 本模块主要用于向 client 主窗口 暴露 python 的方法
  '''
 
+from modules.play import Play
+from modules.record import Record
 from ui.common.wincompat import px_html_to_py
 from ui.common.move_event import MoveEvent
 from state.handler import Handler
@@ -22,6 +24,10 @@ class Api ():
         self.window.events.closed += self.reset
         self.window.events.minimized += self.minimized
         self.window.events.restored += self.restored
+        self.module = {
+            'play': Play(),
+            'record': Record()
+        }
         pass
 
     def move_start (self, x_in_html, y_in_html):
@@ -69,4 +75,16 @@ class Api ():
 
     def close (self):
         self.window.destroy()
+        pass
+
+    def record (self, method, params):
+        fn = eval('self.module["record"].' + method)
+        if callable(fn):
+            fn(*params)
+        pass
+
+    def play (self, method, params):
+        fn = eval('self.module["play"].' + method)
+        if callable(fn):
+            fn(*params)
         pass
